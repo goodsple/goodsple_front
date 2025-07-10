@@ -1,25 +1,38 @@
 {
   "compilerOptions": {
+    "composite": true,
+    /* 타입스크립트 빌드 캐시 파일 위치 */
+    "incremental": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
-    "target": "ES2023",
-    "lib": ["ES2023"],
-    "module": "ESNext",
-    "skipLibCheck": true,
 
-    /* Bundler mode */
+    /* ECMAScript 타겟 및 라이브러리 */
+    "target": "ES2022",           // Node.js LTS 대응 (안정적)
+    "lib": ["DOM","ES2022"],
+
+    /* 모듈 시스템 설정 (bundler/Vite 최적화) */
+    "module": "ESNext",
     "moduleResolution": "bundler",
+    "moduleDetection": "force",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "moduleDetection": "force",
-    "noEmit": true,
+    "noEmit": true,               // 타입만 체크하고 JS 출력은 안 함
 
-    /* Linting */
+
+    /* JSX 설정 */
+    "jsx": "react-jsx", 
+    
+    /* 타입 검사 및 정적 분석 강화 */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    //"erasableSyntaxOnly": true,              // ✅ TS 5.5+ dead code 제거 보조
+   // "noUncheckedSideEffectImports": true,    // ✅ TS 5.5+ 부작용 있는 import 경고
+
+    /* 성능 최적화 */
+    "skipLibCheck": true
   },
-  "include": ["vite.config.ts"]
+
+  /* 포함할 타입 검사 대상 */
+  "include": ["src"]
 }
