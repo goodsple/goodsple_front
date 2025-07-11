@@ -12,8 +12,12 @@
 * 기능 개발 전, **이슈 등록 하고, 마일스톤에 연결**
 
 ### 4. 🌿 브랜치 네이밍 규칙
+* 'display/화면이름' 형태로 생성
+  * 예시 : 'display/header'
+* 이슈도 동일한 구조로 작성
+    
 * `feature/기능이름/상세기능` 형태로 생성
-  * 예시: `feature/login/oauth`
+  * 예시: `feature/login/auth`
 * 이슈도 동일한 구조로 작성
 
 
