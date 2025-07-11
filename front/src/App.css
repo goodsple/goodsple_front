@@ -24,3 +24,6 @@ body {
 button:focus {
   outline: none;
 }
+ul>li {
+  list-style: none;
+}
