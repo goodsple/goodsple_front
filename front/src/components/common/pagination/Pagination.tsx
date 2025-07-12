@@ -17,7 +17,7 @@ const Pagination: React.FC<PaginationProps> = ({
   const startPage = Math.floor((currentPage - 1) / pageRange) * pageRange + 1;
   const endPage = Math.min(startPage + pageRange - 1, totalPages);
 
-  // ✅ 1. 1~5페이지: 번호만
+  // 1. 1~5페이지: 번호만
   if (totalPages <= 5) {
     return (
       <style.PaginationContainer>
@@ -34,7 +34,7 @@ const Pagination: React.FC<PaginationProps> = ({
     );
   }
 
-  // ✅ 2. 6~12페이지: 화살표만, … 없음
+  // 2. 6~12페이지: 화살표만, … 없음
   if (totalPages >= 6 && totalPages <= 12) {
     return (
       <style.PaginationContainer>
@@ -63,7 +63,7 @@ const Pagination: React.FC<PaginationProps> = ({
     );
   }
 
-  // ✅ 3. 13페이지 이상: 화살표 + … 표시
+  // 3. 13페이지 이상: 화살표 + … 표시
   return (
     <style.PaginationContainer>
       {startPage > 1 && (

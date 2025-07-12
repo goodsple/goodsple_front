@@ -9,11 +9,12 @@ export const PaginationContainer = styled.div`
 export const PageButton = styled.button<{active?:boolean}>`
     width: 40px;
     height: 40px;
+    font-size: 16px;
     border: ${({ active }) => (active ? '1px solid #D9D9D9' : 'none')};
     background: ${({ active }) => (active ? '#fff' : 'transparent')};
-    color: #000;
+    color: #444444;
     font-weight: ${({ active }) => (active ? '700' : '500')};
-    border-radius: 8px;
+    border-radius: 5px;
     cursor: pointer;
     display: flex;
     align-items: center;
