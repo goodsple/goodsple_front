@@ -7,6 +7,7 @@ export const HeaderContainer = styled.header`
     top: 0;
     left: 0;
     z-index: 10;
+    border-bottom: 1px solid #E5E5E5;
 `
 export const HeaderInner = styled.div`
     max-width: 1800px;

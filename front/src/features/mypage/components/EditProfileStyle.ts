@@ -2,13 +2,13 @@ import styled from "styled-components";
 import * as s from '../../auth/components/SignUpStyle';
 
 export const EditProfileContainer = styled(s.SignUpContainer)`
-    padding: 40px 0;
+    padding-top: 100px;
 `;
 export const ProfileImageWrap = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
 `;
 export const ProfileImage = styled.div`
     width: 120px;
@@ -20,7 +20,8 @@ export const ProfileImage = styled.div`
     align-items: center;
     overflow: hidden;
     margin-bottom: 16px;
-
+    margin-top: 10px;
+    
     img {
         width: 100%;
         height: 100%;
