@@ -148,3 +148,12 @@ export const LogoutButton = styled.button`
     height: 42px;
     margin-left: 10px;
 `;
+
+export const Overlay = styled.div`
+  position: fixed;
+  top: 0; 
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(154, 154, 154, 0.6);
+  z-index: 100;
+`;
