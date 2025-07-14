@@ -7,6 +7,7 @@ import FindId from './features/auth/components/FindId';
 import FindPassword from './features/auth/components/FindPassword';
 import EditProfile from './features/mypage/components/EditProfile';
 import Layout from './components/layout/Layout';
+import ReportModal from './components/common/modal/ReportModal';
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path='/signup' element={<SignUp/>}/>
         <Route path='/findid' element={<FindId/>}/>
         <Route path='/findpwd' element={<FindPassword/>}/>
+        <Route path='/report' element={<ReportModal/>}/>
       </Routes>
     </BrowserRouter>
   )
