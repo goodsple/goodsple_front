@@ -188,3 +188,9 @@ export const DeleteButton = styled.button`
         color:#fff;
       }
 `;
+
+export const EmptyMessage = styled.p`
+    font-size:16px;
+    color:#444;
+    text-align:center;
+`;
