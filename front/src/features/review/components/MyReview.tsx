@@ -38,15 +38,35 @@ const MyReview:React.FC=()=>{
                 </rs.ReceivedButton>
             </rs.ReviewTabMenu>
                 <rs.ReviewList>
-                    {dummyReviews.map((review) => (
-                        activeTab === 'written' ? (
-                       <MyReviewCard key={review.id} review={review} />
-                        ):(
-                            <ReceivedReviewCard key={review.id} review={review}/>
-                        )
-                ))}
-                <Pagination currentPage={1} totalPages={2} onPageChange={function (page: number): void {;
-                } }/>
+                {activeTab === 'written' ? (
+                    dummyReviews.length > 0 ? (
+                        <>
+                        {dummyReviews.map((review) => (
+                            <MyReviewCard key={review.id} review={review} />
+                        ))}
+                        <Pagination currentPage={1} totalPages={2} onPageChange={() => {}} />
+                        </>
+                    ) : (
+                        <rs.EmptyMessage>
+                            아직 작성한 후기가 없어요!<br/>
+                            굿즈 거래 후 소중한 후기를 남겨보세요.
+                        </rs.EmptyMessage>
+                    )
+                ) : (
+                    dummyReviews.length > 0 ? (
+                        <>
+                        {dummyReviews.map((review) => (
+                            <ReceivedReviewCard key={review.id} review={review} />
+                        ))}
+                        <Pagination currentPage={1} totalPages={2} onPageChange={() => {}} />
+                        </>    
+                    ) : (
+                    <rs.EmptyMessage>
+                        아직 받은 후기가 없어요!<br/>
+                        굿즈 거래를 하면 상대방이 후기를 남길 수 있어요.
+                    </rs.EmptyMessage>
+                    )
+                )}
                 </rs.ReviewList>
         </rs.MyReviewContainer>
     )
