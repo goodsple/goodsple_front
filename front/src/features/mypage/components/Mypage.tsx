@@ -34,18 +34,18 @@ const MyPage:React.FC = () => {
 
                 </s.MyProfile>
                 <s.outProfileInfo>
-                    <s.stasItem>
+                    <s.stasItem to="/mypage">
                         <s.stasNum>0</s.stasNum>
                         게시글
-                        </s.stasItem>
-                    <s.stasItem>
+                    </s.stasItem>
+                    <s.stasItem to="/mypage">
                         <s.stasNum>0</s.stasNum>
                         북마크
-                        </s.stasItem>
-                    <s.stasItem>
+                    </s.stasItem>
+                    <s.stasItem to="/mypage">
                         <s.stasNum>0</s.stasNum>
                         후기
-                        </s.stasItem>
+                    </s.stasItem>
                 </s.outProfileInfo>
             </s.ProfileSection>
 
@@ -53,26 +53,26 @@ const MyPage:React.FC = () => {
                 <s.Activity>
                     <s.ActivityHeader>나의 활동</s.ActivityHeader>
                     <s.StyledHr />
-                    <s.ActivityLink>후기</s.ActivityLink>
-                    <s.ActivityLink>이벤트존 활동 내역</s.ActivityLink>
-                    <s.ActivityLink>내 알림</s.ActivityLink>
-                    <s.ActivityLink>찜 목록</s.ActivityLink>
+                    <s.ActivityLink to="/mypage">후기</s.ActivityLink>
+                    <s.ActivityLink to="/mypage">이벤트존 활동 내역</s.ActivityLink>
+                    <s.ActivityLink to="/mypage">내 알림</s.ActivityLink>
+                    <s.ActivityLink to="/mypage">찜 목록</s.ActivityLink>
                 </s.Activity>
 
                 <s.Activity>
                     <s.ActivityHeader>거래 관리</s.ActivityHeader>
                     <s.StyledHr />
-                    <s.ActivityLink>내 거래글</s.ActivityLink>
-                    <s.ActivityLink>거래 내역</s.ActivityLink>
-                    <s.ActivityLink>줄서기 내역</s.ActivityLink>
-                    <s.ActivityLink>나의 낙찰 목록</s.ActivityLink>
+                    <s.ActivityLink to="/mypage">내 거래글</s.ActivityLink>
+                    <s.ActivityLink to="/mypage">거래 내역</s.ActivityLink>
+                    <s.ActivityLink to="/mypage">줄서기 내역</s.ActivityLink>
+                    <s.ActivityLink to="/mypage">나의 낙찰 목록</s.ActivityLink>
                 </s.Activity>
 
                 <s.Activity>
                     <s.ActivityHeader>내 계정 관리</s.ActivityHeader>
                     <s.StyledHr />
-                    <s.ActivityLink>내 등급(뱃지)</s.ActivityLink>
-                    <s.ActivityLink>내 채팅목록</s.ActivityLink>
+                    <s.ActivityLink to="/mypage">내 등급(뱃지)</s.ActivityLink>
+                    <s.ActivityLink to="/mypage">내 채팅목록</s.ActivityLink>
                 </s.Activity>
             </s.LinkList>
 
