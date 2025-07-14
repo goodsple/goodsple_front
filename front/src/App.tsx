@@ -7,7 +7,6 @@ import FindId from './features/auth/components/FindId';
 import FindPassword from './features/auth/components/FindPassword';
 import EditProfile from './features/mypage/components/EditProfile';
 import Layout from './components/layout/Layout';
-import ReportModal from './components/common/modal/ReportModal';
 import WriteReview from './features/review/components/WriteReview';
 import MyReview from './features/review/components/MyReview';
 import Error from './components/common/error/Error';
