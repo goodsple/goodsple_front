@@ -8,7 +8,10 @@ const reasonOptions = [
     "기타"
 ]
 
-const ReportModal:React.FC=()=>{
+const ReportModal:React.FC<{
+    onConfirm: (selectedReasons: string[], detailText: string) => void;
+    onCancel: () => void;
+}>=({onConfirm,onCancel})=>{
 
     const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
     const [detailText, setDetailText] = useState("");
@@ -43,9 +46,13 @@ const ReportModal:React.FC=()=>{
                     placeholder='신고 사유에 대한 상세 설명을 적어주세요.'
                 />
                 <rm.ButtonRow>
-                    <rm.CancelButton>취소</rm.CancelButton>
-                    <rm.ReportButton disabled={!isSubmitEnabled}>
-                        신고하기</rm.ReportButton>
+                    <rm.CancelButton onClick={onCancel}>취소</rm.CancelButton>
+                    <rm.ReportButton 
+                        disabled={!isSubmitEnabled}
+                        onClick={()=>onConfirm(selectedReasons,detailText)}
+                        >
+                        신고하기
+                    </rm.ReportButton>
                 </rm.ButtonRow>
             </rm.ReportWrap>
         </rm.ReportContainer>
