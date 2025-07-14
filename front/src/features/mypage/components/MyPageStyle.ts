@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const MyPageContainer = styled.div`
@@ -83,15 +84,23 @@ export const outProfileInfo = styled.div`
         margin-top: 45px;
 `;
  
-export const stasItem = styled.div` 
+export const stasItem = styled(Link)` 
         width: 50px;
         font-size: 16px;
         text-align: center;
         cursor: pointer;
 
+        color: inherit;
+        text-decoration: none;
+        display: block;
+        
         &:nth-child(2) {
             margin: 0 180px;
         }
+
+        &:hover {
+            color: #997BEB; 
+        }            
 `;
 
 export const stasNum = styled.div`
@@ -141,7 +150,7 @@ export const StyledHr = styled.hr`
 `;
 
 // 박스 안 링크들 
-export const ActivityLink = styled.div`
+export const ActivityLink = styled(Link)`
         width: 300px; 
         line-height: 30px;
         padding-left: 13px;
@@ -149,4 +158,12 @@ export const ActivityLink = styled.div`
         font-size: 16px;
         font-weight: 500;
         cursor: pointer;
+
+        color: inherit;
+        text-decoration: none;
+        display: block;
+
+        &:hover {
+            color: #997BEB;          
+        }
 `;
