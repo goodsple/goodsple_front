@@ -74,7 +74,7 @@ export const ReportButton = styled.button<{ disabled?: boolean }>`
     flex: 1;
     padding: 12px;
     border: none;
-    background: ${({ disabled }) => (disabled ? "#ccc" : "#997beb")};
+    background: ${({ disabled }) => (disabled ? "#D9D9D9" : "#997beb")};
     color: white;
     font-size:16px;
     border-radius: 10px;
