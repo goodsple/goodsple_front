@@ -8,6 +8,7 @@ import FindPassword from './features/auth/components/FindPassword';
 import EditProfile from './features/mypage/components/EditProfile';
 import Layout from './components/layout/Layout';
 import ReportModal from './components/common/modal/ReportModal';
+import WriteReview from './features/review/components/WriteReview';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         {/* Layout이 적용되는 페이지 */}
         <Route element={<Layout />}>
           <Route path='/editprofile' element={<EditProfile/>}/>
+          <Route path='/writereview' element={<WriteReview/>}/>
         </Route>
 
         {/* Layout 없이 단독 페이지 */}
