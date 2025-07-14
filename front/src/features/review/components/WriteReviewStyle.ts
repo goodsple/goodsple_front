@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const ReviewContainer = styled.div`
-    max-width: 600px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 120px 20px 40px;
     box-sizing: border-box;
@@ -62,13 +62,13 @@ export const ReviewTextarea = styled.textarea`
     resize: none;
     margin-bottom: 16px;
     font-size: 14px;
+    box-sizing: border-box;
 `;
 export const TextCount = styled.p`
     font-size: 12px;
     color: #999;
     text-align: right;
-    margin-top: -10px;
-    margin-right: -25px;
+    margin-top: -8px;
     margin-bottom: 16px;
 `;
 
@@ -106,12 +106,15 @@ export const ImagePreview = styled.div`
         width: 30px;
         height: 30px;
         font-size: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-          }
+        }
     }
 
     .overlay {
@@ -126,11 +129,11 @@ export const ImagePreview = styled.div`
         align-items: center;
         opacity: 0;
         transition: opacity 0.2s ease;
-      }
+    }
     
-      &:hover .overlay {
-        opacity: 1;
-      }
+    &:hover .overlay {
+    opacity: 1;
+    }
     
 `;
 export const UploadLabel = styled.label`
@@ -150,7 +153,7 @@ export const UploadLabel = styled.label`
         margin-top: 4px;
         font-size: 12px;
         color: #997beb;
-      }
+    }
 
 `;
 export const SubmitButton = styled.button<{ disabled?: boolean }>`

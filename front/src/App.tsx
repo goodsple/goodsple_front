@@ -9,6 +9,7 @@ import EditProfile from './features/mypage/components/EditProfile';
 import Layout from './components/layout/Layout';
 import ReportModal from './components/common/modal/ReportModal';
 import WriteReview from './features/review/components/WriteReview';
+import MyReview from './features/review/components/MyReview';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route element={<Layout />}>
           <Route path='/editprofile' element={<EditProfile/>}/>
           <Route path='/writereview' element={<WriteReview/>}/>
+          <Route path='/reviews' element={<MyReview/>}/>
         </Route>
 
         {/* Layout 없이 단독 페이지 */}
