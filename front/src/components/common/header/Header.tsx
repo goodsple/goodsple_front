@@ -8,15 +8,18 @@ import UserNav from '../nav/UserNav';
 import { useState } from 'react';
 
 function Header() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // 햄버거 버튼용
+  const [menuOpen, setMenuOpen] = useState(false);  // 메뉴바 전용
+
   const [isLoggedIn, setIsLoggedin] = useState(false);
+
 
   return (
     <>
       <style.HeaderContainer>
         <style.HeaderInner>
           <style.LeftArea>
-            <style.HamburgerButton onClick={() => setIsOpen(!isOpen)} $open={isOpen}>
+          <style.HamburgerButton onClick={() => { setIsOpen(!isOpen); setMenuOpen(!menuOpen); }} $open={isOpen}>
               <span />
               <span />
               <span />
@@ -53,10 +56,10 @@ function Header() {
 
       </style.HeaderContainer>
 
-      {isOpen && (
+      {menuOpen && (
         <>
-          <UserNav onClose={() => setIsOpen(false)} />
-          <style.Overlay onClick={() => setIsOpen(false)} />
+          <UserNav onClose={() => { setIsOpen(false); setMenuOpen(false); } } menuOpen={menuOpen}  />
+          <style.Overlay onClick={() => { setIsOpen(false); setMenuOpen(false); }} />
         </>
       )}
     </>

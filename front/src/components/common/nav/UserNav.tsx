@@ -3,14 +3,14 @@ import { ExtraBoldLink, ExtraBoldText, HamburgerButton, MenuLine, NavContainer, 
 import { useState } from "react";
 
 
-const UserNav = ({ onClose }: { onClose: () => void }) => {
+const UserNav = ({ onClose, menuOpen }: { onClose: () => void; menuOpen: boolean }) => {
     const [showSubMenu, setShowSubMenu] = useState(false);
 
     return (
-        <NavContainer>
+        <NavContainer $open={menuOpen}>
             <NavHeader>
                 {/* 닫기 버튼: 열렸을 때는 X 모양 */}
-                <HamburgerButton $open={true} onClick={onClose} aria-label="메뉴 닫기">
+                <HamburgerButton $open={menuOpen} onClick={onClose} aria-label="메뉴 닫기">
                     <span />
                     <span />
                     <span />
