@@ -1,13 +1,14 @@
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import Login from './features/auth/components/Login';
-import SignUp from './features/auth/components/SignUp';
+import ReportModal from './components/common/modal/ReportModal';
+import Layout from './components/layout/Layout';
 import FindId from './features/auth/components/FindId';
 import FindPassword from './features/auth/components/FindPassword';
+import Login from './features/auth/components/Login';
+import SignUp from './features/auth/components/SignUp';
 import EditProfile from './features/mypage/components/EditProfile';
-import Layout from './components/layout/Layout';
-import ReportModal from './components/common/modal/ReportModal';
+import MyPage from './features/mypage/components/Mypage';
 import WriteReview from './features/review/components/WriteReview';
 
 
@@ -19,6 +20,7 @@ function App() {
       <Routes>
         {/* Layout이 적용되는 페이지 */}
         <Route element={<Layout />}>
+          <Route path='/mypage' element={<MyPage />} />
           <Route path='/editprofile' element={<EditProfile/>}/>
           <Route path='/writereview' element={<WriteReview/>}/>
         </Route>
