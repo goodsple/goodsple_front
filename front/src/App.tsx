@@ -10,6 +10,7 @@ import Layout from './components/layout/Layout';
 import ReportModal from './components/common/modal/ReportModal';
 import WriteReview from './features/review/components/WriteReview';
 import MyReview from './features/review/components/MyReview';
+import Error from './components/common/error/Error';
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
         <Route path='/findid' element={<FindId/>}/>
         <Route path='/findpwd' element={<FindPassword/>}/>
         <Route path='/report' element={<ReportModal/>}/>
+        <Route path='*' element={<Error/>}/>
       </Routes>
     </BrowserRouter>
   )
