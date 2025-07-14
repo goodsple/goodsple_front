@@ -69,6 +69,7 @@ export const CancelButton = styled.button`
     background: white;
     border-radius: 10px;
     font-size:16px;
+    cursor: pointer;  
 `;
 export const ReportButton = styled.button<{ disabled?: boolean }>`
     flex: 1;
@@ -78,5 +79,5 @@ export const ReportButton = styled.button<{ disabled?: boolean }>`
     color: white;
     font-size:16px;
     border-radius: 10px;
-    cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
+    cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
 `;
