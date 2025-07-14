@@ -11,6 +11,7 @@ import ReportModal from './components/common/modal/ReportModal';
 import WriteReview from './features/review/components/WriteReview';
 import MyReview from './features/review/components/MyReview';
 import Error from './components/common/error/Error';
+import KakaoInfo from './features/auth/components/KakaoInfo';
 
 
 function App() {
@@ -29,9 +30,9 @@ function App() {
         {/* Layout 없이 단독 페이지 */}
         <Route path='/login' element={<Login/>}/>
         <Route path='/signup' element={<SignUp/>}/>
+        <Route path='/signup/kakao' element={<KakaoInfo/>}/>
         <Route path='/findid' element={<FindId/>}/>
         <Route path='/findpwd' element={<FindPassword/>}/>
-        <Route path='/report' element={<ReportModal/>}/>
         <Route path='*' element={<Error/>}/>
       </Routes>
     </BrowserRouter>
