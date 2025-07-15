@@ -119,11 +119,11 @@ export const IconBox = styled.div<{ iconType?: string }>`
     `}
 `;
 
-export const ProfileWrapper = styled.div`
+export const ProfileWrapper = styled.div<{ isDefault?: boolean }>`
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    background: #ccc;
+    background: ${({ isDefault }) => (isDefault ? '#D9D9D9' : 'transparent')};
     display: flex;
     justify-content: center;
     align-items: center;
@@ -131,12 +131,14 @@ export const ProfileWrapper = styled.div`
     margin-left: 15px;
 `;
 
-export const ProfileIcon = styled.img`
+export const ProfileIcon = styled.img<{ isDefault?: boolean }>`
     width: 90%;
     height: 90%;
     object-fit: contain;
+    ${({ isDefault }) => isDefault && `
     transform: translateY(16%);
     opacity: 0.8;
+  `}
 `;
 
 export const LogoutButton = styled.button`
