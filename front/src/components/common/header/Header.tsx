@@ -7,6 +7,7 @@ import profileImg from '../../../assets/images/default_profile.png';
 
 import UserNav from '../nav/UserNav';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
 function Header() {
@@ -16,6 +17,7 @@ function Header() {
   const [isLoggedIn, setIsLoggedin] = useState(false);
   const [userProfileImg, setUserProfileImg] = useState<string | null>(null);
 
+  const navigate = useNavigate();
 
   return (
     <>
@@ -42,7 +44,9 @@ function Header() {
 
                 <style.IconBox iconType="alarm">
                   <img src={alarmImg} alt="알림" />
+                  <img src={alarmImg} alt="알림" />
                 </style.IconBox>
+
 
                 <style.ProfileWrapper isDefault={!userProfileImg}>
                   {userProfileImg ? (
@@ -51,12 +55,15 @@ function Header() {
                     <style.ProfileIcon src={profileImg} alt="기본 프로필 이미지" isDefault />
                   )}
                 </style.ProfileWrapper>
-                <style.LogoutButton>로그아웃</style.LogoutButton>
+                <style.LogoutButton onClick={()=>{
+                  setIsLoggedin(false)
+                  navigate('/');
+                  }}>로그아웃</style.LogoutButton>
               </>
             ) : (
               <>
-                <style.SignupButton>회원가입</style.SignupButton>
-                <style.LoginButton>로그인</style.LoginButton>
+                <style.SignupButton onClick={()=>navigate('/signup')}>회원가입</style.SignupButton>
+                <style.LoginButton onClick={()=>navigate('/login')}>로그인</style.LoginButton>
               </>
             )}
           </style.RightArea>
