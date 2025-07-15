@@ -1,8 +1,11 @@
 import * as s from './LoginStyle'
 import LogoImg from '../../../assets/images/logo.png'
 import KaKaoImg from '../../../assets/images/kakao_symbol.png'
+import { useNavigate } from 'react-router-dom'
 
 const Login:React.FC = () => {
+
+    const navigate = useNavigate();
 
     return(
         <s.LoginContainer>
@@ -21,14 +24,15 @@ const Login:React.FC = () => {
                     name='password'
                     placeholder='비밀번호를 입력하세요'
                     />
-                   <s.LoginButton type='submit'>로그인</s.LoginButton>
+                   <s.LoginButton 
+                    type="button" onClick={() => navigate('/')}>로그인</s.LoginButton>
                 </s.Form>
                 <s.LinkList>
-                    <a href="#">아이디 찾기</a>
-                    <a href="#">비밀번호 찾기</a>
-                    <a href="#">회원가입</a>
+                    <a onClick={()=> navigate('/findid')}>아이디 찾기</a>
+                    <a onClick={()=> navigate('/findpwd')}>비밀번호 찾기</a>
+                    <a onClick={()=> navigate('/signup')}>회원가입</a>
                 </s.LinkList>
-                <s.KakaoButton>
+                <s.KakaoButton  type="button" onClick={() => navigate('/signup/kakao')}>
                     <img src={KaKaoImg} alt="카카오" />
                     카카오 로그인
                 </s.KakaoButton>
