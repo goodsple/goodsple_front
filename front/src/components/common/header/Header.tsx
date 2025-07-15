@@ -31,7 +31,7 @@ function Header() {
             </style.HamburgerButton>
           </style.LeftArea>
 
-          <style.CenterArea>
+          <style.CenterArea onClick={()=>{navigate('/')}}>
             <style.Logo src={logoImg} alt="GoodsPle 로고" />
           </style.CenterArea>
 
@@ -48,7 +48,7 @@ function Header() {
                 </style.IconBox>
 
 
-                <style.ProfileWrapper isDefault={!userProfileImg}>
+                <style.ProfileWrapper isDefault={!userProfileImg} onClick={()=> navigate('/mypage')}>
                   {userProfileImg ? (
                     <style.ProfileIcon src={userProfileImg} alt="업로드된 프로필 이미지" />
                   ):(
