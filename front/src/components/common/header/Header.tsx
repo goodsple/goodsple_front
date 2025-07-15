@@ -8,10 +8,14 @@ import profileImg from '../../../assets/images/default_profile.png';
 import UserNav from '../nav/UserNav';
 import { useState } from 'react';
 
-function Header(){
-    const [isOpen, setIsOpen] = useState(false);
-    const [isLoggedIn, setIsLoggedin] = useState(false);
-    const [userProfileImg, setUserProfileImg] = useState<string | null>(null);
+
+function Header() {
+  const [isOpen, setIsOpen] = useState(false); // 햄버거 버튼용
+  const [menuOpen, setMenuOpen] = useState(false);  // 메뉴바 전용
+
+  const [isLoggedIn, setIsLoggedin] = useState(false);
+  const [userProfileImg, setUserProfileImg] = useState<string | null>(null);
+
 
   return (
     <>
@@ -31,14 +35,15 @@ function Header(){
 
           <style.RightArea>
             {isLoggedIn ? (
-            <>
+              <>
                 <style.IconBox iconType="chat">
-                <img src={chatImg} alt="채팅" />
+                  <img src={chatImg} alt="채팅" />
                 </style.IconBox>
 
                 <style.IconBox iconType="alarm">
-                <img src={alarmImg} alt="알림" />
+                  <img src={alarmImg} alt="알림" />
                 </style.IconBox>
+
                 <style.ProfileWrapper isDefault={!userProfileImg}>
                   {userProfileImg ? (
                     <style.ProfileIcon src={userProfileImg} alt="업로드된 프로필 이미지" />
@@ -47,19 +52,25 @@ function Header(){
                   )}
                 </style.ProfileWrapper>
                 <style.LogoutButton>로그아웃</style.LogoutButton>
-            </>
-            ):(
-            <>
+              </>
+            ) : (
+              <>
                 <style.SignupButton>회원가입</style.SignupButton>
                 <style.LoginButton>로그인</style.LoginButton>
-            </>
+              </>
             )}
-        </style.RightArea>
-            </style.HeaderInner>
+          </style.RightArea>
+        </style.HeaderInner>
 
       </style.HeaderContainer>
-      </>
-    )
+      {menuOpen && (
+        <>
+          <UserNav onClose={() => { setIsOpen(false); setMenuOpen(false); } } menuOpen={menuOpen}  />
+          <style.Overlay onClick={() => { setIsOpen(false); setMenuOpen(false); }} />
+        </>
+      )}
+    </>
+  );
 }
 
 export default Header;

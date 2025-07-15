@@ -7,6 +7,7 @@ export const HeaderContainer = styled.header`
     top: 0;
     left: 0;
     z-index: 10;
+    border-bottom: 1px solid #E5E5E5;
 `
 export const HeaderInner = styled.div`
     max-width: 1800px;
@@ -148,4 +149,13 @@ export const LogoutButton = styled.button`
     width: 120px;
     height: 42px;
     margin-left: 10px;
+`;
+
+export const Overlay = styled.div`
+  position: fixed;
+  top: 0; 
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(154, 154, 154, 0.6);
+  z-index: 100;
 `;
