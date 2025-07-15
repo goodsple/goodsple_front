@@ -2,13 +2,13 @@ import styled from "styled-components";
 import * as s from '../../auth/components/SignUpStyle';
 
 export const EditProfileContainer = styled(s.SignUpContainer)`
-    padding: 40px 0;
+    padding-top: 100px;
 `;
 export const ProfileImageWrap = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
 `;
 export const ProfileImage = styled.div<{ isDefault?: boolean }>`
     width: 120px;
@@ -20,7 +20,8 @@ export const ProfileImage = styled.div<{ isDefault?: boolean }>`
     align-items: center;
     overflow: hidden;
     margin-bottom: 25px;
-
+    margin-top: 10px;
+    
     img {
         width: 100%;
         height: 100%;
@@ -107,6 +108,7 @@ export const WithdrawText = styled.p`
     color: #444;
     cursor: pointer;
     font-size: 14px;
+    margin-bottom: 30px;
 `;
 
 export const ReadOnlyInput = styled(s.SignUpInput)`
