@@ -58,6 +58,7 @@ export const LinkList = styled.div`
     a {
     color: #888;
     text-decoration: none;
+    cursor: pointer;
     }
 `;
 export const KakaoButton = styled.button`
