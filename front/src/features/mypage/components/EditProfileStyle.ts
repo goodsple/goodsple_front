@@ -19,7 +19,7 @@ export const ProfileImage = styled.div<{ isDefault?: boolean }>`
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    margin-bottom: 16px;
+    margin-bottom: 25px;
     margin-top: 10px;
     
     img {
@@ -108,6 +108,7 @@ export const WithdrawText = styled.p`
     color: #444;
     cursor: pointer;
     font-size: 14px;
+    margin-bottom: 30px;
 `;
 
 export const ReadOnlyInput = styled(s.SignUpInput)`
