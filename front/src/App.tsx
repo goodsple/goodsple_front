@@ -2,7 +2,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Error from './components/common/error/Error';
-import Layout from './components/layout/Layout';
+// import Layout from './components/layout/Layout';
 import FindId from './features/auth/components/FindId';
 import FindPassword from './features/auth/components/FindPassword';
 import KakaoInfo from './features/auth/components/KakaoInfo';
@@ -12,7 +12,9 @@ import EditProfile from './features/mypage/components/EditProfile';
 import MyPage from './features/mypage/components/Mypage';
 import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview';
-
+import Layout from "./components/common/layouts/Layout.tsx";
+import UserMain from "./pages/UserMain.tsx";
+// import Header from './components/common/header/Header';  -- header 컴포넌트 추후 연결
 
 function App() {
 
@@ -22,12 +24,12 @@ function App() {
       <Routes>
         {/* Layout이 적용되는 페이지 */}
         <Route element={<Layout />}>
+          <Route index element={<UserMain/>} />
           <Route path='/mypage' element={<MyPage />} />
           <Route path='/editprofile' element={<EditProfile/>}/>
           <Route path='/writereview' element={<WriteReview/>}/>
           <Route path='/reviews' element={<MyReview/>}/>
         </Route>
-
         {/* Layout 없이 단독 페이지 */}
         <Route path='/login' element={<Login/>}/>
         <Route path='/signup' element={<SignUp/>}/>
