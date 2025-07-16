@@ -7,6 +7,7 @@ export const HeaderContainer = styled.header`
     top: 0;
     left: 0;
     z-index: 10;
+    border-bottom: 1px solid #E5E5E5;
 `
 export const HeaderInner = styled.div`
     max-width: 1800px;
@@ -38,7 +39,7 @@ export const RightArea = styled.div`
 export const Logo = styled.img`
     height: 68px;
     object-fit: contain;
-    cursor:pointer;
+    cursor: pointer;
 `;
 
 export const HamburgerButton = styled.button<{ $open: boolean }>`
@@ -81,6 +82,7 @@ export const SignupButton = styled.button`
   color : #fff;
   width: 120px;
   height: 42px;
+  cursor: pointer;
 `;
 
 export const LoginButton = styled.button`
@@ -90,6 +92,7 @@ export const LoginButton = styled.button`
   border-radius: 5px;
   width:92px;
   height: 42px;
+  cursor: pointer;
 `;
 
 export const IconBox = styled.div<{ iconType?: string }>`
@@ -104,6 +107,7 @@ export const IconBox = styled.div<{ iconType?: string }>`
     width: 100%;
     height: 100%;
     object-fit: contain;
+    cursor: pointer;
   }
 
     ${({ iconType }) =>
@@ -118,24 +122,27 @@ export const IconBox = styled.div<{ iconType?: string }>`
     `}
 `;
 
-export const ProfileWrapper = styled.div`
+export const ProfileWrapper = styled.div<{ isDefault?: boolean }>`
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    background: #ccc;
+    background: ${({ isDefault }) => (isDefault ? '#D9D9D9' : 'transparent')};
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     margin-left: 15px;
+    cursor: pointer;
 `;
 
-export const ProfileIcon = styled.img`
+export const ProfileIcon = styled.img<{ isDefault?: boolean }>`
     width: 90%;
     height: 90%;
     object-fit: contain;
+    ${({ isDefault }) => isDefault && `
     transform: translateY(16%);
     opacity: 0.8;
+  `}
 `;
 
 export const LogoutButton = styled.button`
@@ -146,4 +153,14 @@ export const LogoutButton = styled.button`
     width: 120px;
     height: 42px;
     margin-left: 10px;
+    cursor: pointer;
+`;
+
+export const Overlay = styled.div`
+  position: fixed;
+  top: 0; 
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(154, 154, 154, 0.6);
+  z-index: 100;
 `;
