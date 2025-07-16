@@ -5,7 +5,7 @@ import megaPhone from '../../assets/images/megaphone.png';
 
 function BasicComponents() {
   return (<>
-    <hr className={CSS.headerLine} />
+    {/*<hr className={CSS.headerLine} />*/}
     <div className={CSS.basicComponent}>
       <div className={CSS.searchWrap}>
         <img src={map} className={CSS.searchIcon} />
@@ -34,8 +34,6 @@ function BasicComponents() {
         </p>
         <button className={CSS.megaButton}>참여하기</button>
       </div>
-
-
     </div>
   </>);
 }

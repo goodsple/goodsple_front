@@ -14,7 +14,6 @@ import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview';
 import Layout from "./components/common/layouts/Layout.tsx";
 import UserMain from "./pages/UserMain.tsx";
-// import Header from './components/common/header/Header';  -- header 컴포넌트 추후 연결
 
 function App() {
 
@@ -27,7 +26,7 @@ function App() {
           <Route index element={<UserMain/>} />
           <Route path='/mypage' element={<MyPage />} />
           <Route path='/editprofile' element={<EditProfile/>}/>
-          <Route path='/writereview' element={<WriteReview/>}/>
+          {/*<Route path='/writereview' element={<WriteReview/>}/>*/}
           <Route path='/reviews' element={<MyReview/>}/>
         </Route>
         {/* Layout 없이 단독 페이지 */}

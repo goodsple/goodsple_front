@@ -1,3 +1,5 @@
+/*basicComponent*/
+
 .basicComponent {
     display: flex;
     flex-direction: column;
@@ -7,41 +9,10 @@
     position: relative;
 }
 
-.realTimePopularCate {
-    display: flex;
-    flex-direction: column;
-    width: 1220px;
-    max-height: 550px;
-    /*align-items: center;*/
-    position: relative;
-    margin-top:50px;
-}
-
-.title {
-    display: flex;
-    flex-direction: row;
-    font-size: 30px;
-    font-family: 'Pretendard', sans-serif;
-    letter-spacing: -1px;
-    font-weight: 600;
-    justify-content: space-between;
-}
-
-.headerLine {
-    border: 1px solid #F0EDED;
-    width: 100%;
-    position:fixed;
-}
-
-.mainLine {
-    border: 2px solid #997BEB;
-    width: 1220px;
-}
-
 .searchIcon {
     width: 50px;
     height: 50px;
-    margin-right:20px;
+    margin-right: 20px;
     transform: translateX(150%);
 }
 
@@ -190,4 +161,104 @@
     font-size: 16px;
     cursor: pointer;
     text-align: center;
+}
+
+/* realTimePopular */
+.realTimePopularCate {
+    display: flex;
+    flex-direction: column;
+    width: 1220px;
+    height: 550px;
+    position: relative;
+    margin-top: 50px;
+    border-bottom: 1px solid #997BEB;
+}
+
+.title {
+    display: flex;
+    flex-direction: row;
+    font-size: 30px;
+    font-family: 'Pretendard', sans-serif;
+    letter-spacing: -1px;
+    font-weight: 600;
+    justify-content: space-between;
+}
+
+.mainLine {
+    border: 2px solid #997BEB;
+    width: 1220px;
+    margin-bottom: 60px;
+}
+
+.popularCateWrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 80px;
+}
+
+.cateWrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 220px;
+}
+
+.cateImgContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.cateImg {
+    width: 200px;
+    height: 250px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.cateFont1 {
+    color: #997BEB;
+    font-size: 16px;
+    font-family: 'Pretendard', sans-serif;
+    letter-spacing: -1px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.cateFont2 {
+    color: #444444;
+    font-size: 24px;
+    font-family: 'Pretendard', sans-serif;
+    letter-spacing: -1px;
+    font-weight: 1000;
+    margin: 0;
+}
+
+.cateWrap:hover {
+    z-index: 10; /* hover 시 최상단으로 */
+}
+
+.cateWrap:hover .cateImg {
+    transform: scale(1.3);
+    transition: all 0.3s ease;
+    border: 10px solid #997BEB;
+}
+
+.cateWrap:hover .cateFont1 {
+    transform: translateY(150%);
+    transition: all 0.3s ease;
+    font-size: 20px;
+    color: #997BEB;
+}
+
+.cateWrap:hover .cateFont2 {
+    transform: translateY(100%);
+    transition: all 0.3s ease;
+    font-size: 30px;
+    color: #997BEB;
 }
