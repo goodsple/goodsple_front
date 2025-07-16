@@ -10,23 +10,23 @@ export const ProfileImageWrap = styled.div`
     align-items: center;
     margin-bottom: 40px;
 `;
-export const ProfileImage = styled.div`
+export const ProfileImage = styled.div<{ isDefault?: boolean }>`
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background: #D9D9D9; 
+    background: ${({ isDefault }) => (isDefault ? '#D9D9D9' : 'none')}; 
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    margin-bottom: 16px;
+    margin-bottom: 25px;
     margin-top: 10px;
     
     img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        margin-top: 25px;
+        ${({ isDefault }) => isDefault && 'margin-top: 25px;'}
     }
 `;
 
@@ -85,6 +85,12 @@ export const GenderRow = styled.div`
     align-items: center;
     margin-bottom: 24px;
 
+    label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
     input {
         margin-right: 8px;
         width: 20px;
@@ -102,6 +108,7 @@ export const WithdrawText = styled.p`
     color: #444;
     cursor: pointer;
     font-size: 14px;
+    margin-bottom: 30px;
 `;
 
 export const ReadOnlyInput = styled(s.SignUpInput)`
