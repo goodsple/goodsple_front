@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Error from './components/common/error/Error';
 // import Layout from './components/layout/Layout';
+import Layout from "./components/common/layouts/Layout.tsx";
 import FindId from './features/auth/components/FindId';
 import FindPassword from './features/auth/components/FindPassword';
 import KakaoInfo from './features/auth/components/KakaoInfo';
@@ -11,9 +12,10 @@ import SignUp from './features/auth/components/SignUp';
 import EditProfile from './features/mypage/components/EditProfile';
 import MyPage from './features/mypage/components/Mypage';
 import MyReview from './features/review/components/MyReview';
-import WriteReview from './features/review/components/WriteReview';
-import Layout from "./components/common/layouts/Layout.tsx";
 import UserMain from "./pages/UserMain.tsx";
+
+import AdminLayout from './components/common/layouts/AdminLayout.tsx';
+import AdminMain from './pages/AdminMain.tsx';
 
 function App() {
 
@@ -29,6 +31,12 @@ function App() {
           {/*<Route path='/writereview' element={<WriteReview/>}/>*/}
           <Route path='/reviews' element={<MyReview/>}/>
         </Route>
+
+        <Route element={<AdminLayout />}>
+          <Route path='/admin' element={<AdminMain/>} />
+        </Route>
+
+        
         {/* Layout 없이 단독 페이지 */}
         <Route path='/login' element={<Login/>}/>
         <Route path='/signup' element={<SignUp/>}/>

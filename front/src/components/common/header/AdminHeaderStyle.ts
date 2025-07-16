@@ -8,12 +8,13 @@ export const HeaderContainer = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   box-sizing: border-box; 
+
+  height: 100px;
 `;
 
 export const LogoImage = styled.img`
-  height: 32px;
+  height: 68px;
   cursor: pointer;
 `;
 
@@ -26,7 +27,7 @@ export const LogoutButton = styled.button`
   
   padding: 8px 16px;
   border: none;
-  border-radius: 10px; 
+  border-radius: 5px; 
   
   cursor: pointer;
   transition: opacity 0.2s ease-in-out;
@@ -34,4 +35,12 @@ export const LogoutButton = styled.button`
   &:hover {
     opacity: 0.9;
   }
+`;
+
+export const MainContent = styled.main`
+  padding-top: 100px; 
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
