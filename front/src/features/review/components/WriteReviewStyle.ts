@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const ReviewContainer = styled.div`
     max-width: 900px;
     margin: 0 auto;
-    padding: 120px 20px 40px;
+    padding: 40px 20px 60px;
     box-sizing: border-box;
 `;
 export const ReviewTitle = styled.h2`

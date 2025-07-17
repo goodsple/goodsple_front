@@ -3,27 +3,26 @@ import styled from "styled-components";
 export const FooterContainer = styled.footer`
     background : #444444;
     width: 100%;
-    padding: 40px 0;
+    padding: 30px 0;
     color: #ffffff;
 `;
 
 export const FooterInner = styled.div`
-    max-width: 1800px;
+    max-width: 1440px;
     width: 100%;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: 0 16px;
-    gap: 40px;
+    gap: 70px;
 `;
 export const FooterLeft = styled.div`
-    flex: 0.5;
+    flex: 0.6;
     display: flex;
     flex-direction: column;
     gap: 12px;
     border-right: 3px solid #D9D9D9;
-    height: 210px;
+    height: 214px;
 
     span {
     font-size: 14px;
@@ -39,10 +38,11 @@ export const FooterRight = styled.div`
     display: flex;
     flex-direction: column;
     gap: 16px;
+    margin-top: 10px;
 `;
 
 export const FooterLogo = styled.img`
-    width: 180px;
+    width: 160px;
     object-fit: contain;
     margin-top: 20px;
 `;

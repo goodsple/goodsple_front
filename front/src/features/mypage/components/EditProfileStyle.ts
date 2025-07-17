@@ -2,7 +2,7 @@ import styled from "styled-components";
 import * as s from '../../auth/components/SignUpStyle';
 
 export const EditProfileContainer = styled(s.SignUpContainer)`
-    padding-top: 100px;
+  
 `;
 export const ProfileImageWrap = styled.div`
     display: flex;
