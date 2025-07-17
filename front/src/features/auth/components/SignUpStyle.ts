@@ -61,6 +61,12 @@ export const SignUpDupli = styled.button`
     width: 110px;
     flex-shrink: 0;
     margin-left: 20px;
+
+    &.active {
+      background: #997BEB;
+      color: #fff;
+      border: none;
+    }
 `;
 
 export const RadioGroup = styled.div`
@@ -192,4 +198,16 @@ export const SignUpButton = styled.button`
     border: none;
     cursor: pointer;
     }
+`;
+
+export const ErrorMessage = styled.p`
+    color: #E03131;
+    font-size: 12px;
+    margin: -15px 0 12px 12px;
+`;
+
+export const CheckMessage = styled.p`
+    color: #444;
+    font-size: 12px;
+    margin: -15px 0 12px 12px;
 `;
