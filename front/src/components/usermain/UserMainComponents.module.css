@@ -169,6 +169,7 @@
     flex-direction: column;
     width: 1220px;
     min-height: 550px;
+    max-height: 750px;
     position: relative;
     margin-top: 50px;
     border-bottom: 1px solid #997BEB;
@@ -281,7 +282,7 @@
     width: 355px;
     height: 500px;
     border-radius: 20px;
-    z-index: 100;
+    z-index: 2;
     transition: all 0.3s ease;
 }
 
@@ -300,10 +301,6 @@
     border: 1px solid rgba(153, 123, 235, 0.3);
     transform: translateY(-75%) translateX(-1px);
 }
-
-/*.eventZoneDesc p {*/
-/*    transform: translateY(75%);*/
-/*}*/
 
 .eventZoneDesc .eTitle {
     text-align: center;
@@ -334,7 +331,6 @@
     font-size: 16px;
     font-weight: 400;
     letter-spacing: -1px;
-
 }
 
 .eventZoneDesc .eText {
@@ -368,5 +364,110 @@
 
 .eventZoneChange {
     transition: all 0.3s ease;
+}
 
+/* CurrentAuction */
+.currentAuction {
+    margin: 50px auto;
+    width:1220px;
+    height: 360px;
+    border: 1px solid #997BEB;
+    border-radius: 20px;
+    box-shadow: 4px 4px 0 0 #997BEB;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 100px;
+}
+
+.currentAuction p {
+    font-family: 'Pretendard', sans-serif;
+    color: #444444;
+    letter-spacing: -1px;
+    text-align: center;
+    margin: 0;
+}
+
+.currentAuction img {
+    width: 260px;
+    height: 260px;
+    border-radius: 20px;
+    object-fit: cover;
+    transform: translateX(-60%);
+}
+
+.currentAuctionRight {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.prTitle {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.prName {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.prTextWrap {
+    display: flex;
+    flex-direction: row;
+    text-align: right;
+    gap: 20px;
+}
+
+.prText1Wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.prText1Wrap p {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    font-size: 20px;
+}
+
+.prText2Wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.prText2Wrap p {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    font-size: 20px;
+}
+
+.currentBidBox {
+    background-color: #B1FF90;
+    transform: skewY(-8deg);
+}
+
+.currentBid {
+    text-align: left;
+    font-size: 22px;
+    font-weight: 700;
+    transform: skewY(8deg); /* 반대로 기울여서 상쇄 */
+}
+
+.auctionButton {
+    all: unset;
+    width: 455px;
+    height: 75px;
+    border-radius: 10px;
+    background-color: #4C4C4C;
+    color: white;
+    text-align: center;
+    font-size: 32px;
+    font-weight: 600;
+    cursor: pointer;
 }
