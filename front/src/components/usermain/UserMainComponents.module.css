@@ -168,7 +168,7 @@
     display: flex;
     flex-direction: column;
     width: 1220px;
-    height: 550px;
+    min-height: 550px;
     position: relative;
     margin-top: 50px;
     border-bottom: 1px solid #997BEB;
@@ -261,4 +261,112 @@
     transition: all 0.3s ease;
     font-size: 30px;
     color: #997BEB;
+}
+
+/* RealTimeEventZone */
+
+.eventZoneWrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 80px;
+}
+
+.num1Wrap {
+    display: flex;
+    flex-direction: column;
+}
+
+.eventZoneWrap1 {
+    width: 355px;
+    height: 500px;
+    border-radius: 20px;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.eventZoneWrap1 img {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+.eventZoneDesc {
+    position: relative;
+    width: 354px;
+    height: 350px;
+    border-radius: 20px;
+    border: 1px solid rgba(153, 123, 235, 0.3);
+    transform: translateY(-75%) translateX(-1px);
+}
+
+/*.eventZoneDesc p {*/
+/*    transform: translateY(75%);*/
+/*}*/
+
+.eventZoneDesc .eTitle {
+    text-align: center;
+    margin-top: 275px;
+    color: #444444;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 5px;
+}
+
+.eventZoneDesc .eWrap1 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.eventZoneDesc .eWrap2 {
+    display: flex;
+    flex-direction: column;
+}
+
+.eventZoneDesc .eDateLoc {
+    margin: 0;
+    color: #444444;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: -1px;
+
+}
+
+.eventZoneDesc .eText {
+    margin: 0;
+    color: #444444;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.eventZoneWrap2 {
+    width: 225px;
+    height: 300px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 0 0 #997BEB;
+    transform: translateY(40%);
+}
+
+.eventZoneWrap2 img {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.eventZoneButton {
+    all: unset;
+    cursor: pointer;
+    transform: translateY(-20%);
+}
+
+.eventZoneChange {
+    transition: all 0.3s ease;
+
 }
