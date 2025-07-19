@@ -16,6 +16,7 @@ import UserMain from "./pages/UserMain.tsx";
 
 import AdminLayout from './components/common/layouts/AdminLayout.tsx';
 import AdminMain from './pages/AdminMain.tsx';
+import ExchangePost from './features/exchange/ExchangePost.tsx';
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
           <Route path='/editprofile' element={<EditProfile/>}/>
           {/*<Route path='/writereview' element={<WriteReview/>}/>*/}
           <Route path='/reviews' element={<MyReview/>}/>
+          <Route path='/exchange/post' element={<ExchangePost/>}/>
         </Route>
 
         <Route element={<AdminLayout />}>
