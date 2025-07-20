@@ -47,6 +47,8 @@
     align-items: center;
     margin-left: 30px;
     transform: translateX(40%);
+    z-index: 9999;
+    position: relative;
 }
 
 .realTimePopularKeywords1 {
@@ -163,6 +165,45 @@
     text-align: center;
 }
 
+.popularKeywordsWrap {
+    display: flex;
+    flex-direction: column;
+    width: 230px;
+    height: 330px;
+    border-radius: 10px;
+    border: 1px solid #997BEB;
+    position: absolute;
+    background-color: white;
+    transform: translateY(180px) translateZ(100px);
+    padding: 10px 20px;
+    box-sizing: border-box;
+    justify-content: center;
+}
+
+.rank {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+.numBox {
+    width: 20px;
+    height: 20px;
+    background-color: #997BEB;
+    color: white;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+.keyword {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -1px;
+    margin: 5px;
+}
+
 /* realTimePopular */
 .realTimePopularCate {
     display: flex;
@@ -241,7 +282,7 @@
 }
 
 .cateWrap:hover {
-    z-index: 10; /* hover 시 최상단으로 */
+    z-index: 5;
 }
 
 .cateWrap:hover .cateImg {
