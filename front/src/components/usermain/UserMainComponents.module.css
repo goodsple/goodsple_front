@@ -47,6 +47,8 @@
     align-items: center;
     margin-left: 30px;
     transform: translateX(40%);
+    z-index: 9999;
+    position: relative;
 }
 
 .realTimePopularKeywords1 {
@@ -163,12 +165,52 @@
     text-align: center;
 }
 
+.popularKeywordsWrap {
+    display: flex;
+    flex-direction: column;
+    width: 230px;
+    height: 330px;
+    border-radius: 10px;
+    border: 1px solid #997BEB;
+    position: absolute;
+    background-color: white;
+    transform: translateY(180px) translateZ(100px);
+    padding: 10px 20px;
+    box-sizing: border-box;
+    justify-content: center;
+}
+
+.rank {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+.numBox {
+    width: 20px;
+    height: 20px;
+    background-color: #997BEB;
+    color: white;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+.keyword {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -1px;
+    margin: 5px;
+}
+
 /* realTimePopular */
 .realTimePopularCate {
     display: flex;
     flex-direction: column;
     width: 1220px;
-    height: 550px;
+    min-height: 550px;
+    max-height: 750px;
     position: relative;
     margin-top: 50px;
     border-bottom: 1px solid #997BEB;
@@ -240,7 +282,7 @@
 }
 
 .cateWrap:hover {
-    z-index: 10; /* hover 시 최상단으로 */
+    z-index: 5;
 }
 
 .cateWrap:hover .cateImg {
@@ -262,3 +304,291 @@
     font-size: 30px;
     color: #997BEB;
 }
+
+/* RealTimeEventZone */
+
+.eventZoneWrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 80px;
+}
+
+.num1Wrap {
+    display: flex;
+    flex-direction: column;
+}
+
+.eventZoneWrap1 {
+    width: 355px;
+    height: 500px;
+    border-radius: 20px;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.eventZoneWrap1 img {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+.eventZoneDesc {
+    position: relative;
+    width: 354px;
+    height: 350px;
+    border-radius: 20px;
+    border: 1px solid rgba(153, 123, 235, 0.3);
+    transform: translateY(-75%) translateX(-1px);
+}
+
+.eventZoneDesc .eTitle {
+    text-align: center;
+    margin-top: 275px;
+    color: #444444;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 5px;
+}
+
+.eventZoneDesc .eWrap1 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.eventZoneDesc .eWrap2 {
+    display: flex;
+    flex-direction: column;
+}
+
+.eventZoneDesc .eDateLoc {
+    margin: 0;
+    color: #444444;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: -1px;
+}
+
+.eventZoneDesc .eText {
+    margin: 0;
+    color: #444444;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.eventZoneWrap2 {
+    width: 225px;
+    height: 300px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 0 0 #997BEB;
+    transform: translateY(40%);
+}
+
+.eventZoneWrap2 img {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.eventZoneButton {
+    all: unset;
+    cursor: pointer;
+    transform: translateY(-20%);
+}
+
+.eventZoneChange {
+    transition: all 0.3s ease;
+}
+
+/* CurrentAuction */
+.currentAuction {
+    margin: 50px auto;
+    width:1220px;
+    height: 360px;
+    border: 1px solid #997BEB;
+    border-radius: 20px;
+    box-shadow: 4px 4px 0 0 #997BEB;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 100px;
+}
+
+.currentAuction p {
+    font-family: 'Pretendard', sans-serif;
+    color: #444444;
+    letter-spacing: -1px;
+    text-align: center;
+    margin: 0;
+}
+
+.currentAuction img {
+    width: 260px;
+    height: 260px;
+    border-radius: 20px;
+    object-fit: cover;
+    transform: translateX(-60%);
+}
+
+.currentAuctionRight {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.prTitle {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.prName {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.prTextWrap {
+    display: flex;
+    flex-direction: row;
+    text-align: right;
+    gap: 20px;
+}
+
+.prText1Wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.prText1Wrap p {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    font-size: 20px;
+}
+
+.prText2Wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.prText2Wrap p {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    font-size: 20px;
+}
+
+.currentBidBox {
+    background-color: #B1FF90;
+    transform: skewY(-8deg);
+}
+
+.currentBid {
+    text-align: left;
+    font-size: 22px;
+    font-weight: 700;
+    transform: skewY(8deg); /* 반대로 기울여서 상쇄 */
+}
+
+.auctionButton {
+    all: unset;
+    width: 455px;
+    height: 75px;
+    border-radius: 10px;
+    background-color: #4C4C4C;
+    color: white;
+    text-align: center;
+    font-size: 32px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* BestPost */
+.bestPost {
+    width: 100%;
+    height: 550px;
+    background-color: #F8FFC7;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+}
+
+.bestPostTitle {
+    display: flex;
+    flex-direction: column;
+}
+
+.bestPostTitleBox {
+    width:200px;
+    height:50px;
+    background-color: #B1FF90;
+    transform: skewY(-10deg) translateX(7%) translateY(150%);
+}
+
+.bestPostText {
+    font-size: 100px;
+    font-weight: 600;
+    letter-spacing: -8px;
+    margin: 20px 20px;
+    position:absolute;
+}
+
+.bestPostContentScroll {
+    display: flex;
+    flex-direction: row;
+    width: 980px;
+    height: 320px;
+    gap: 40px;
+    margin-top: 100px;
+    overflow-x: auto;
+    transform: scaleY(-1);
+
+}
+.bestPostContentScroll::-webkit-scrollbar {
+    height: 12px;
+}
+
+.bestPostContentScroll::-webkit-scrollbar-track {
+    background: transparent;
+    /*border-radius: 6px;*/
+}
+
+.bestPostContentScroll::-webkit-scrollbar-thumb {
+    background: #B1FF90;
+    /*border-radius: 6px;*/
+}
+
+.bestPostContentScroll img {
+    width: 270px;
+    height: 270px;
+    border-radius: 10px;
+    object-fit: cover;
+    transform: scaleY(-1);
+}
+
+.bestPostContentText {
+    display: flex;
+    flex-direction: column;
+    margin-top: 100px;
+}
+
+.bestPostContentText p {
+    font-size: 20px;
+    font-weight: 500;
+    margin: 10px 50px;
+    letter-spacing: -1px;
+    text-align: left;
+}
+
