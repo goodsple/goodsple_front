@@ -479,6 +479,9 @@
     background-color: #F8FFC7;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
 }
 
 .bestPostTitle {
@@ -490,22 +493,40 @@
     width:200px;
     height:50px;
     background-color: #B1FF90;
-    transform: skewY(-8deg) translateX(7%) translateY(200%);
+    transform: skewY(-10deg) translateX(7%) translateY(150%);
 }
 
 .bestPostText {
     font-size: 100px;
     font-weight: 600;
     letter-spacing: -8px;
-    margin: 40px 20px;
+    margin: 20px 20px;
     position:absolute;
 }
 
 .bestPostContentScroll {
     display: flex;
     flex-direction: row;
-    overflow-x: scroll;
-    scroll-
+    width: 980px;
+    height: 320px;
+    gap: 40px;
+    margin-top: 100px;
+    overflow-x: auto;
+    transform: scaleY(-1);
+
+}
+.bestPostContentScroll::-webkit-scrollbar {
+    height: 12px;
+}
+
+.bestPostContentScroll::-webkit-scrollbar-track {
+    background: transparent;
+    /*border-radius: 6px;*/
+}
+
+.bestPostContentScroll::-webkit-scrollbar-thumb {
+    background: #B1FF90;
+    /*border-radius: 6px;*/
 }
 
 .bestPostContentScroll img {
@@ -513,18 +534,20 @@
     height: 270px;
     border-radius: 10px;
     object-fit: cover;
+    transform: scaleY(-1);
 }
 
 .bestPostContentText {
     display: flex;
     flex-direction: column;
-    margin-top: 150px;
+    margin-top: 100px;
 }
 
 .bestPostContentText p {
     font-size: 20px;
     font-weight: 500;
-    margin: 10px 80px;
+    margin: 10px 50px;
+    letter-spacing: -1px;
     text-align: left;
 }
 

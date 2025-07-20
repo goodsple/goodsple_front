@@ -26,6 +26,7 @@ function BestPost()
         <img src={bag}/>
         <img src={bag}/>
         <img src={bag}/>
+        <img src={bag}/>
       </div>
     </div>
   )
