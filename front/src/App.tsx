@@ -23,6 +23,7 @@ import UserMain from "./pages/UserMain.tsx";
 // 관리자화면 컴포넌트
 import AdminMain from './pages/AdminMain.tsx';
 import axiosInstance from './api/axiosInstance.ts';
+import ExchangePostDetail from './features/exchange/ExchangePostDetail.tsx';
 
 
 // useNavigate, useLocation은 BrowserRouter 안에서만 쓸 수 있기 때문에 AppRoutes와 App으로 나눔
@@ -70,6 +71,7 @@ function AppRoutes() {
         <Route path='/editprofile' element={<EditProfile/>}/>
         <Route path='/writereview' element={<WriteReview/>}/>
         <Route path='/reviews' element={<MyReview/>}/>
+        <Route path='/exchange/postdetail' element={<ExchangePostDetail/>} />
       </Route>
 
       <Route element={<AdminLayout />}>
