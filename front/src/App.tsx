@@ -15,6 +15,7 @@ import MyReview from './features/review/components/MyReview';
 import UserMain from "./pages/UserMain.tsx";
 
 import AdminLayout from './components/common/layouts/AdminLayout.tsx';
+import BadgeGuide from './features/badge/components/BadgeGuide.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path='/editprofile' element={<EditProfile/>}/>
           {/*<Route path='/writereview' element={<WriteReview/>}/>*/}
           <Route path='/reviews' element={<MyReview/>}/>
+          <Route path='/badgeguide' element={<BadgeGuide/>} />
         </Route>
 
         <Route element={<AdminLayout />}>
