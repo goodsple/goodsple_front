@@ -14,8 +14,8 @@ function CategoryMain() {
         <p className={CSS.categoryMainFont1}>NEWJEANS</p>
         <p className={CSS.categoryMainFont2}>인기게시글</p>
         <PopularPosts/>
-        <CategoryBoard />
       </div>
+        <CategoryBoard />
     </>);
 }
 
