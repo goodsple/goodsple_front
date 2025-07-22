@@ -1,5 +1,5 @@
 import CSS from './UserMainComponents.module.css';
-import bag from '../../assets/AucImages/newJeansBag.jpg'
+import bag from '../../../assets/AucImages/newJeansBag.jpg'
 
 function CurrentAuction()
 {

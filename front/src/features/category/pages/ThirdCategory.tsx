@@ -1,4 +1,4 @@
-import CategoryMain from '../components/userCategory/CategoryMain.tsx';
+import CategoryMain from '../components/CategoryMain.tsx';
 
 function ThirdCategory()
 {

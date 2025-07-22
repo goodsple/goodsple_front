@@ -18,13 +18,13 @@ import EditProfile from './features/mypage/components/EditProfile';
 import WriteReview from './features/review/components/WriteReview.tsx';
 import MyPage from './features/mypage/components/Mypage';
 import MyReview from './features/review/components/MyReview';
-import UserMain from "./pages/UserMain.tsx";
-import ThirdCategory from "./pages/ThirdCategory.tsx";
+import UserMain from "./features/usermain/pages/UserMain.tsx";
+import ThirdCategory from "./features/category/pages/ThirdCategory.tsx";
 
 // 관리자화면 컴포넌트
 import AdminMain from './pages/AdminMain.tsx';
 import axiosInstance from './api/axiosInstance.ts';
-import CategorySelect from './pages/CategorySelect.tsx';
+import CategorySelect from './features/category/pages/CategorySelect.tsx';
 
 
 // useNavigate, useLocation은 BrowserRouter 안에서만 쓸 수 있기 때문에 AppRoutes와 App으로 나눔

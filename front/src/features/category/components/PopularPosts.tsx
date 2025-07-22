@@ -1,7 +1,7 @@
 import CSS from './userCategory.module.css';
-import exampleImg from '../../assets/AucImages/newJeansBag.jpg'
-import queue_activated from '../../assets/cateImages/queue_activated.png';
-import bookmark_activated from '../../assets/cateImages/bookmark_activated.png';
+import exampleImg from '../../../assets/AucImages/newJeansBag.jpg'
+import queue_activated from '../../../assets/cateImages/queue_activated.png';
+import bookmark_activated from '../../../assets/cateImages/bookmark_activated.png';
 
 function PopularPosts()
 {

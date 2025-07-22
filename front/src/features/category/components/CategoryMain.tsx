@@ -1,6 +1,6 @@
 import CSS from './userCategory.module.css';
-import newjeans from '../../assets/cateImages/newjeans.jpg';
-import BasicComponents from '../usermain/BasicComponents.tsx';
+import newjeans from '../../../assets/cateImages/newjeans.jpg';
+import BasicComponents from '../../usermain/components/BasicComponents.tsx';
 import PopularPosts from './PopularPosts.tsx';
 import CategoryBoard from './CategoryBoard.tsx';
 

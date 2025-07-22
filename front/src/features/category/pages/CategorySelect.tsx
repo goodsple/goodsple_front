@@ -1,6 +1,6 @@
-import CSS from '../components/userCategory/userCategory.module.css'
-import BasicComponents from '../components/usermain/BasicComponents.tsx';
-import ive from '../assets/cateImages/ive.jpg'
+import CSS from '../components/userCategory.module.css'
+import BasicComponents from '../../usermain/components/BasicComponents.tsx';
+import ive from '../../../assets/cateImages/ive.jpg'
 
 function CategorySelect()
 {

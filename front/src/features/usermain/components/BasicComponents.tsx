@@ -1,7 +1,7 @@
 import CSS from './UserMainComponents.module.css';
-import map from '../../assets/images/map.png';
-import search from '../../assets/images/search.png';
-import megaPhone from '../../assets/images/megaphone.png';
+import map from '../../../assets/images/map.png';
+import search from '../../../assets/images/search.png';
+import megaPhone from '../../../assets/images/megaphone.png';
 import { useState } from 'react';
 import PopularKeywords from './PopularKeywords.tsx';
 

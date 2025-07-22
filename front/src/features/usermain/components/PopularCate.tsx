@@ -1,5 +1,5 @@
 import CSS from './UserMainComponents.module.css';
-import ive from '../../assets/cateImages/ive.jpg';
+import ive from '../../../assets/cateImages/ive.jpg';
 
 function PopularCate() {
   return (<div className={CSS.cateWrap}>

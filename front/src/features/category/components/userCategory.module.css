@@ -78,7 +78,7 @@
     flex-direction: column;
     width: 1440px;
     height: 855px;
-    margin: 50px 0;
+    margin: 50px 0 0 0;
 }
 
 .categoryMainImg {
@@ -196,7 +196,7 @@
 .popPostContFont1 {
     margin: 0;
     font-size: 14px;
-    font-weight: 200;
+    font-weight: 300;
     color: #444444;
     letter-spacing: -1px;
 }
@@ -257,5 +257,59 @@
 }
 
 .cateTable {
+    text-align: center;
+    color: #444444;
+    font-size: 16px;
+    width: 1200px;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+
+.cateTable thead {
+    border-top: 2px solid #997BEB;
+    border-bottom: 2px solid #997BEB;
+    height: 70px;
+}
+
+.cateTable tr {
+    border-top: 1px solid RGBA(153, 123, 235, 0.5);
+}
+
+.cateTable tr:last-child {
+    border-bottom: 2px solid #997BEB;
+}
+
+.cateTable th:first-child,
+.cateTable td:first-child {
+    width: 8%;
+    height: 50px;
+}
+
+.cateTable th:nth-child(2),
+.cateTable td:nth-child(2){
+    width: 12%;
+}
+
+.cateTable th:nth-child(3),
+.cateTable td:nth-child(3){
+    width: 8%;
+}
+
+.cateTable th:nth-child(4),
+.cateTable td:nth-child(4){
+    width: 12%;
+}
+
+.cateTable th:nth-child(5),
+.cateTable td:nth-child(5){
+    width: auto;
+}
+
+.cateTable th:nth-child(6),
+.cateTable td:nth-child(6){
+    width: 8%;
+}
+
+.catePaging {
 
 }
