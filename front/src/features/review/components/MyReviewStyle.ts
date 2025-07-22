@@ -4,7 +4,7 @@ import * as wr from './WriteReviewStyle'
 export const MyReviewContainer = styled.div`
     max-width: 1200px;
     margin: 0 auto;
-    padding: 120px 20px 40px;
+    padding: 40px 20px 60px;
     box-sizing: border-box;
 `;
 export const MyReviewTitle = styled.h2`

@@ -1,10 +1,12 @@
+import { useNavigate } from 'react-router-dom';
 import logoImg from '../../../assets/images/logo.png';
 import * as S from './AdminHeaderStyle';
 
 function AdminHeader() {
+  const navigate = useNavigate(); 
   
-  const handleLogout = () => {
-    alert('로그아웃 되었습니다.');
+  const handleLogout = () => {  
+    navigate('/'); 
   };
 
   return (

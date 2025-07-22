@@ -19,7 +19,7 @@ export const NavContainer = styled.nav<{ $open: boolean }>`
 export const NavHeader = styled.div`
   position: absolute;       /* 헤더와 동일 위치에 고정 */
   top: 38px;            
-  left: 58px;           
+  left: 78px;           
   width: 40px;           
   height: 24px;         
   z-index: 1100;         /* 메뉴 컨테이너(z-index:1000)보다 위 */

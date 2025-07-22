@@ -53,8 +53,8 @@ export const LinkList = styled.div`
     display: flex;
     justify-content: space-between;
     font-size: 14px;
-    margin-bottom: 16px;
-    margin-top:5px;
+    margin-bottom: 30px;
+    margin-top: 8px;
     a {
     color: #888;
     text-decoration: none;
@@ -80,4 +80,9 @@ export const KakaoButton = styled.button`
         width: 20px;
         height: 20px;
       }
+`;
+export const ErrorText = styled.p`
+    color: #E03131;
+    font-size: 12px;
+    margin: -10px 0 6px 6px;
 `;

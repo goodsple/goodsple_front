@@ -10,14 +10,13 @@ export const HeaderContainer = styled.header`
     border-bottom: 1px solid #E5E5E5;
 `
 export const HeaderInner = styled.div`
-    max-width: 1800px;
+    max-width: 1440px;
     width: 100%;
     height: 100px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 16px;
 `;
 
 export const LeftArea = styled.div`
