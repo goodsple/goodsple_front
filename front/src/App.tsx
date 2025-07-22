@@ -1,11 +1,11 @@
 
-import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
 
 // 레이아웃(사용자,관리자)
-import Layout from "./components/common/layouts/Layout.tsx";
 import AdminLayout from './components/common/layouts/AdminLayout.tsx';
+import Layout from "./components/common/layouts/Layout.tsx";
 
 // 사용자화면 컴포넌트 
 import Error from './components/common/error/Error';
@@ -14,15 +14,16 @@ import FindPassword from './features/auth/components/FindPassword';
 import KakaoInfo from './features/auth/components/KakaoInfo';
 import Login from './features/auth/components/Login';
 import SignUp from './features/auth/components/SignUp';
+import BadgeGuide from './features/badge/components/BadgeGuide.tsx';
 import EditProfile from './features/mypage/components/EditProfile';
-import WriteReview from './features/review/components/WriteReview.tsx';
 import MyPage from './features/mypage/components/Mypage';
 import MyReview from './features/review/components/MyReview';
+import WriteReview from './features/review/components/WriteReview.tsx';
 import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
-import AdminMain from './pages/AdminMain.tsx';
 import axiosInstance from './api/axiosInstance.ts';
+import AdminMain from './pages/AdminMain.tsx';
 
 
 // useNavigate, useLocation은 BrowserRouter 안에서만 쓸 수 있기 때문에 AppRoutes와 App으로 나눔
@@ -70,6 +71,7 @@ function AppRoutes() {
         <Route path='/editprofile' element={<EditProfile/>}/>
         <Route path='/writereview' element={<WriteReview/>}/>
         <Route path='/reviews' element={<MyReview/>}/>
+        <Route path='/badgeguide' element={<BadgeGuide/>} />
       </Route>
 
       <Route element={<AdminLayout />}>
