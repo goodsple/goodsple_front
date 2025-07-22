@@ -47,21 +47,23 @@ export const profileBadge = styled.div`
         }
 `;
 
-export const ProfileImage = styled.div`
+export const ProfileImage = styled.div<{ isDefault?: boolean }>`
         width: 120px;
         height: 120px;
         border-radius: 50%;
-        background: #D9D9D9; 
+        background: ${({ isDefault }) => (isDefault ? '#D9D9D9' : 'none')}; 
         display: flex;
         justify-content: center;
         align-items: center;
+        overflow: hidden;
         margin-bottom: 20px;
         margin-top: 10px;
     
     img {
         width: 100%;
         height: 100%;
-        margin-top: 20px;
+        object-fit: cover;
+        ${({ isDefault }) => isDefault && 'margin-top: 25px;'}
     }
 `;
 
