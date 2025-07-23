@@ -9,18 +9,28 @@ interface Props {
 
 const LiveChat: React.FC<Props> = ({ chatHistory, onReport }) => {
   const [newMessage, setNewMessage] = useState('');
-  const chatEndRef = useRef<null | HTMLDivElement>(null);
+  const messageListRef = useRef<HTMLUListElement>(null); // ✨ ref 타입 ul로 변경
   
-  // 채팅 기록이 변경될 때마다 맨 아래로 스크롤
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const messageList = messageListRef.current;
+    if (!messageList) return;
+
+    // ✨ 스크롤 로직 변경
+    const scrollBottom = messageList.scrollHeight - messageList.scrollTop;
+    const shouldScroll = scrollBottom <= messageList.clientHeight + 50; // 50px 정도 여유
+
+    if (shouldScroll) {
+      setTimeout(() => {
+        messageList.scrollTop = messageList.scrollHeight;
+      }, 0);
+    }
   }, [chatHistory]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim()) return; // 빈 메시지 전송 방지
+    if (!newMessage.trim()) return;
     
-    // TODO: 실제 채팅 메시지 전송 로직 (웹소켓)
+    // TODO: 실제 채팅 메시지 전송 로직
     console.log("전송할 메시지:", newMessage);
     setNewMessage('');
   };
@@ -28,18 +38,16 @@ const LiveChat: React.FC<Props> = ({ chatHistory, onReport }) => {
   return (
     <S.Wrapper>
       <S.Title>실시간 채팅</S.Title>
-      <S.MessageList>
+      <S.MessageList ref={messageListRef}> {/* ✨ ref 연결 */}
         {chatHistory.map((chat) => (
-          <S.Message key={chat.chatId}>
+          <S.MessageItem key={chat.chatId}> {/* ✨ S.Message -> S.MessageItem */}
             <S.MessageContent>
               <S.Sender>{chat.userNickname}:</S.Sender>
               <S.Text>{chat.message}</S.Text>
             </S.MessageContent>
             <S.ReportButton onClick={() => onReport(chat.userNickname)}>🚨</S.ReportButton>
-          </S.Message>
+          </S.MessageItem>
         ))}
-        {/* 스크롤 타겟을 위한 빈 div */}
-        <div ref={chatEndRef} />
       </S.MessageList>
       <S.Form onSubmit={handleSubmit}>
         <S.Input 

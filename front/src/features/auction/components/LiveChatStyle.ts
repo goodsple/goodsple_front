@@ -17,10 +17,12 @@ export const Title = styled.h3`
   margin-bottom: 16px;
 `;
 
-export const MessageList = styled.div`
+export const MessageList = styled.ul` /* ✨ div -> ul */
   flex-grow: 1;
   overflow-y: auto;
   margin-bottom: 16px;
+  padding: 0;
+  list-style: none;
   
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -29,7 +31,7 @@ export const MessageList = styled.div`
   }
 `;
 
-export const Message = styled.div`
+export const MessageItem = styled.li` /* ✨ Message -> MessageItem, div -> li */
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
