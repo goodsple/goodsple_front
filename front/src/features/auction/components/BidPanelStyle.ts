@@ -5,18 +5,16 @@ export const Wrapper = styled.div`
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
 `;
 
 export const MyBidStatus = styled.div`
-  background-color: #F8FFC7; /* 서브 컬러 1 */
+  background-color: #B1FF90;
   color: #212529;
   padding: 12px;
   border-radius: 8px;
   text-align: center;
   font-weight: bold;
+  margin-bottom: 15px;
 `;
 
 export const Form = styled.form`
@@ -30,13 +28,12 @@ export const BidInput = styled.input`
   border: 1px solid #ced4da;
   border-radius: 8px;
   font-size: 16px;
-  text-align: right;
 `;
 
 export const BidButton = styled.button`
   padding: 12px 24px;
   border: none;
-  background-color: #997BEB; /* 메인 컬러 */
+  background-color: #997BEB;
   color: white;
   font-size: 16px;
   font-weight: bold;

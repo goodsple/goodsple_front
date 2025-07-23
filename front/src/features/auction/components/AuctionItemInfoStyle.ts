@@ -4,7 +4,7 @@ export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
-
+    
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
@@ -19,7 +19,7 @@ export const Title = styled.h1`
   flex-grow: 1;
   word-break: keep-all;
 `;
-
+    
 export const ShareButton = styled.button`
   background: none;
   border: none;
@@ -60,5 +60,4 @@ export const RulesButton = styled.button`
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  align-self: flex-start;
 `;

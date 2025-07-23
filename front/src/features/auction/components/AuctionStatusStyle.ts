@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 export const Wrapper = styled.div`
   background-color: #fff;
@@ -21,17 +21,18 @@ export const TimerTime = styled.span<{ $isUrgent: boolean }>`
   font-weight: bold;
   color: ${({ $isUrgent }) => ($isUrgent ? '#e64980' : '#495057')};
   transition: color 0.3s;
-  animation: ${({ $isUrgent }) => $isUrgent && blink} 1s step-end infinite;
+  animation: ${({ $isUrgent }) => $isUrgent && css`${blink} 1s step-end infinite`};
 `;
 
 export const PriceLabel = styled.div`
   font-size: 16px;
   color: #495057;
 `;
-
+    
 const highlight = keyframes`
   from { transform: scale(1); }
-  to { transform: scale(1.1); }
+  50% { transform: scale(1.1); }
+  to { transform: scale(1); }
 `;
 
 export const CurrentPrice = styled.div<{ $priceChanged: boolean }>`
@@ -40,7 +41,7 @@ export const CurrentPrice = styled.div<{ $priceChanged: boolean }>`
   color: #997BEB;
   margin-bottom: 8px;
   transition: all 0.2s ease-in-out;
-  animation: ${({ $priceChanged }) => $priceChanged && highlight} 0.2s ease-in-out;
+  animation: ${({ $priceChanged }) => $priceChanged && css`${highlight} 0.5s ease-in-out`};
 `;
 
 export const HighestBidder = styled.div`

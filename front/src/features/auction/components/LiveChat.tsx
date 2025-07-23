@@ -11,14 +11,17 @@ const LiveChat: React.FC<Props> = ({ chatHistory, onReport }) => {
   const [newMessage, setNewMessage] = useState('');
   const chatEndRef = useRef<null | HTMLDivElement>(null);
   
+  // 채팅 기록이 변경될 때마다 맨 아래로 스크롤
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatHistory]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: 실제 채팅 메시지 전송 로직
-    console.log(newMessage);
+    if (!newMessage.trim()) return; // 빈 메시지 전송 방지
+    
+    // TODO: 실제 채팅 메시지 전송 로직 (웹소켓)
+    console.log("전송할 메시지:", newMessage);
     setNewMessage('');
   };
 
@@ -35,6 +38,7 @@ const LiveChat: React.FC<Props> = ({ chatHistory, onReport }) => {
             <S.ReportButton onClick={() => onReport(chat.userNickname)}>🚨</S.ReportButton>
           </S.Message>
         ))}
+        {/* 스크롤 타겟을 위한 빈 div */}
         <div ref={chatEndRef} />
       </S.MessageList>
       <S.Form onSubmit={handleSubmit}>

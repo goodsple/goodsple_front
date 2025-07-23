@@ -9,7 +9,7 @@ export const Wrapper = styled.div`
   flex-direction: column;
   padding: 24px;
   min-height: 0;
-  height: 100%; /* 부모 높이를 채움 */
+  height: 100%;
 `;
 
 export const Title = styled.h3`
@@ -22,7 +22,6 @@ export const MessageList = styled.div`
   overflow-y: auto;
   margin-bottom: 16px;
   
-  /* 스크롤 바 숨기기 */
   -ms-overflow-style: none;
   scrollbar-width: none;
   &::-webkit-scrollbar {

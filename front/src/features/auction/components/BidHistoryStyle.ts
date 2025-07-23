@@ -11,8 +11,7 @@ export const Wrapper = styled.div`
 `;
 
 export const Title = styled.h3`
-  margin: 0;
-  padding: 24px 24px 10px 24px;
+  margin: 24px 24px 10px 24px;
 `;
 
 export const List = styled.ul`
@@ -23,7 +22,6 @@ export const List = styled.ul`
   font-size: 14px;
   flex-grow: 1;
   
-  /* 스크롤 바 숨기기 */
   -ms-overflow-style: none;
   scrollbar-width: none;
   &::-webkit-scrollbar {
