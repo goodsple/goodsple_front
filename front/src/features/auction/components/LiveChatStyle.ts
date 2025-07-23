@@ -1,69 +1,89 @@
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
+  width: 100%;
   background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
+  padding: 24px;
+  min-height: 0;
   height: 100%; /* 부모 높이를 채움 */
-  max-height: 700px; /* 최대 높이 제한 */
 `;
 
-export const Title = styled.div`
-  padding: 16px;
-  font-weight: 700;
-  font-size: 16px;
-  color: #444;
-  border-bottom: 1px solid #f0f0f0;
+export const Title = styled.h3`
+  margin-top: 0;
+  margin-bottom: 16px;
 `;
 
-export const MessageList = styled.ul`
+export const MessageList = styled.div`
   flex-grow: 1;
   overflow-y: auto;
-  padding: 16px;
-  margin: 0;
-  list-style: none;
+  margin-bottom: 16px;
+  
+  /* 스크롤 바 숨기기 */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
-export const MessageItem = styled.li`
-  padding: 4px 0;
+export const Message = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
   font-size: 14px;
-  line-height: 1.5;
+  gap: 5px;
+  
+  &:hover button {
+    opacity: 1;
+  }
+`;
+
+export const MessageContent = styled.div`
+  flex-grow: 1;
 `;
 
 export const Sender = styled.span`
-  font-weight: 700;
-  margin-right: 8px;
-  color: #555;
+  font-weight: bold;
+  margin-right: 5px;
 `;
 
-export const MessageText = styled.span`
-  color: #444;
+export const Text = styled.span`
+  color: #495057;
+  word-break: break-all;
 `;
 
-export const ChatInputContainer = styled.div`
-  padding: 16px;
-  border-top: 1px solid #f0f0f0;
+export const ReportButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.3;
+  padding: 0;
+  font-size: 12px;
+  transition: opacity 0.2s;
+`;
+
+export const Form = styled.form`
   display: flex;
   gap: 10px;
 `;
 
-export const ChatInput = styled.input`
-  flex: 1;
-  padding: 12px;
-  border: 1px solid #d9d9d9;
+export const Input = styled.input`
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ced4da;
   border-radius: 8px;
-  font-size: 14px;
 `;
 
-export const SendButton = styled.button`
-  background-color: #997BEB;
-  color: #fff;
+export const Button = styled.button`
+  padding: 10px 15px;
   border: none;
-  padding: 12px 16px;
+  background-color: #444444;
+  color: white;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 700;
 `;

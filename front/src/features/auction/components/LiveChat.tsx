@@ -1,33 +1,51 @@
-import { useState } from 'react';
-import type { ChatMessage } from '../types/auction.d.ts';
+import { useEffect, useRef, useState } from 'react';
+import type { ChatMessage } from '../types/auction';
 import * as S from './LiveChatStyle';
 
 interface Props {
   chatHistory: ChatMessage[];
+  onReport: (user: string) => void;
 }
 
-const LiveChat: React.FC<Props> = ({ chatHistory }) => {
-  const [message, setMessage] = useState('');
+const LiveChat: React.FC<Props> = ({ chatHistory, onReport }) => {
+  const [newMessage, setNewMessage] = useState('');
+  const chatEndRef = useRef<null | HTMLDivElement>(null);
+  
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatHistory]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: 실제 채팅 메시지 전송 로직
+    console.log(newMessage);
+    setNewMessage('');
+  };
 
   return (
     <S.Wrapper>
       <S.Title>실시간 채팅</S.Title>
       <S.MessageList>
-        {chatHistory.map((msg) => (
-          <S.MessageItem key={msg.chatId}>
-            <S.Sender>{msg.userNickname}:</S.Sender>
-            <S.MessageText>{msg.message}</S.MessageText>
-          </S.MessageItem>
+        {chatHistory.map((chat) => (
+          <S.Message key={chat.chatId}>
+            <S.MessageContent>
+              <S.Sender>{chat.userNickname}:</S.Sender>
+              <S.Text>{chat.message}</S.Text>
+            </S.MessageContent>
+            <S.ReportButton onClick={() => onReport(chat.userNickname)}>🚨</S.ReportButton>
+          </S.Message>
         ))}
+        <div ref={chatEndRef} />
       </S.MessageList>
-      <S.ChatInputContainer>
-        <S.ChatInput 
-            value={message} 
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="메시지를 입력하세요..."
+      <S.Form onSubmit={handleSubmit}>
+        <S.Input 
+          type="text" 
+          placeholder="채팅 메시지 입력..."
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
         />
-        <S.SendButton>전송</S.SendButton>
-      </S.ChatInputContainer>
+        <S.Button type="submit">전송</S.Button>
+      </S.Form>
     </S.Wrapper>
   );
 };

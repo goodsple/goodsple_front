@@ -1,32 +1,24 @@
-import type { Bid } from '../types/auction.d.ts';
+import type { Bid } from '../types/auction';
 import * as S from './BidHistoryStyle';
 
 interface Props {
   bidHistory: Bid[];
+  currentUserNickname: string;
 }
 
-const BidHistory: React.FC<Props> = ({ bidHistory }) => {
+const BidHistory: React.FC<Props> = ({ bidHistory, currentUserNickname }) => {
   return (
     <S.Wrapper>
       <S.Title>입찰 내역</S.Title>
-      <S.Table>
-        <S.Thead>
-          <S.Tr>
-            <S.Th>시간</S.Th>
-            <S.Th>입찰자</S.Th>
-            <S.Th>입찰금액</S.Th>
-          </S.Tr>
-        </S.Thead>
-        <S.Tbody>
-          {bidHistory.map((bid) => (
-            <S.Tr key={bid.bidId}>
-              <S.Td>{new Date(bid.timestamp).toLocaleTimeString()}</S.Td>
-              <S.Td>{bid.userNickname}</S.Td>
-              <S.Td>{bid.bidAmount.toLocaleString()}원</S.Td>
-            </S.Tr>
-          ))}
-        </S.Tbody>
-      </S.Table>
+      <S.List>
+        {bidHistory.map((bid) => (
+          <S.ListItem key={bid.bidId} $isMyBid={bid.userNickname === currentUserNickname}>
+            <span>{new Date(bid.timestamp).toLocaleTimeString('en-GB')}</span>
+            <span>{bid.userNickname}</span>
+            <span>{bid.bidAmount.toLocaleString()}원</span>
+          </S.ListItem>
+        ))}
+      </S.List>
     </S.Wrapper>
   );
 };

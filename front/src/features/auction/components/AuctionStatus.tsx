@@ -1,22 +1,39 @@
-import type { AuctionStatus as AuctionStatusType } from '../types/auction.d.ts';
+import { useEffect, useState } from 'react';
+import type { AuctionStatus as AuctionStatusType } from '../types/auction';
 import * as S from './AuctionStatusStyle';
 
 interface Props {
   status: AuctionStatusType;
+  timeLeft: number;
 }
 
-const AuctionStatus: React.FC<Props> = ({ status }) => {
-  // TODO: 여기에 status.endTime을 기준으로 남은 시간을 계산하는 타이머 로직 추가
+const formatTime = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+};
+
+const AuctionStatus: React.FC<Props> = ({ status, timeLeft }) => {
+    const [priceChanged, setPriceChanged] = useState(false);
+
+    useEffect(() => {
+        setPriceChanged(true);
+        const timer = setTimeout(() => setPriceChanged(false), 200);
+        return () => clearTimeout(timer);
+    }, [status.currentPrice]);
+
   return (
     <S.Wrapper>
-      <div>
-        <S.CurrentPriceLabel>현재가</S.CurrentPriceLabel>
-        <S.Price>{status.currentPrice.toLocaleString()}원</S.Price>
-      </div>
-      <div>
-        <S.TimerLabel>남은 시간</S.TimerLabel>
-        <S.Timer>00:00</S.Timer>
-      </div>
+      <S.Timer>
+        남은 시간: 
+        <S.TimerTime $isUrgent={timeLeft < 60}>{formatTime(timeLeft)}</S.TimerTime>
+      </S.Timer>
+      <S.PriceLabel>현재 최고가</S.PriceLabel>
+      <S.CurrentPrice $priceChanged={priceChanged}>
+        {status.currentPrice.toLocaleString()}원
+      </S.CurrentPrice>
+      <S.HighestBidder>최고 입찰자: {status.highestBidderNickname}</S.HighestBidder>
+      <S.StartPrice>시작가: {status.startPrice.toLocaleString()}원</S.StartPrice>
     </S.Wrapper>
   );
 };

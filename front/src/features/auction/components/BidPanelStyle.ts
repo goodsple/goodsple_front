@@ -1,72 +1,61 @@
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
-  background: #fff;
-  padding: 24px;
+  background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 15px;
 `;
 
-export const HighlightMessage = styled.div`
-  color: #B1FF90; /* 서브컬러2 - 형광연두 */
-  background-color: #444;
-  font-weight: 700;
+export const MyBidStatus = styled.div`
+  background-color: #F8FFC7; /* 서브 컬러 1 */
+  color: #212529;
   padding: 12px;
   border-radius: 8px;
   text-align: center;
-  font-size: 14px;
+  font-weight: bold;
 `;
 
-export const BidInputContainer = styled.div`
+export const Form = styled.form`
   display: flex;
   gap: 10px;
 `;
 
 export const BidInput = styled.input`
-  flex: 1;
-  padding: 14px;
-  border: 1px solid #d9d9d9;
+  flex-grow: 1;
+  padding: 12px;
+  border: 1px solid #ced4da;
   border-radius: 8px;
   font-size: 16px;
   text-align: right;
-
-  &::placeholder {
-    color: #aaa;
-  }
 `;
 
 export const BidButton = styled.button`
-  background-color: #997BEB;
-  color: #fff;
+  padding: 12px 24px;
   border: none;
-  padding: 14px 24px;
+  background-color: #997BEB; /* 메인 컬러 */
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
-  font-weight: 700;
 `;
 
 export const QuickBidButtons = styled.div`
   display: flex;
   gap: 10px;
+  margin-top: 10px;
 `;
 
 export const QuickBidButton = styled.button`
-  flex: 1;
-  background-color: #f8f9fa;
-  border: 1px solid #d9d9d9;
-  color: #666;
+  flex-grow: 1;
   padding: 10px;
+  background-color: #f1f3f5;
+  border: 1px solid #dee2e6;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: #997BEB;
-    color: #997BEB;
-  }
+  font-weight: 500;
 `;

@@ -1,66 +1,64 @@
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  padding: 24px;
   display: flex;
   flex-direction: column;
-  height: 100%; /* 컬럼 높이를 채움 */
 `;
 
-export const ImageContainer = styled.div`
-  width: 100%;
-  aspect-ratio: 1 / 1; /* 1:1 비율 유지 */
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 20px;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-`;
-
-export const InfoContainer = styled.div`
-  flex: 1;
+export const Header = styled.div`
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
+  align-items: flex-start;
 `;
 
-export const Title = styled.h2`
-  font-size: 24px;
-  font-weight: 700;
-  color: #444;
-  margin: 0 0 16px 0;
+export const Title = styled.h1`
+  font-size: 28px;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #212529;
+  flex-grow: 1;
   word-break: keep-all;
-  line-height: 1.4;
 `;
 
-export const Description = styled.p`
-  font-size: 16px;
-  color: #666;
+export const ShareButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px;
+`;
+
+export const Image = styled.img`
+  width: 100%;
+  border-radius: 12px;
+  background-color: #f1f1f1;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+`;
+
+export const DescriptionWrapper = styled.div`
+  margin-top: 20px;
+`;
+
+export const DescriptionTitle = styled.h3`
+  font-size: 20px;
+  border-bottom: 2px solid #f1f1f1;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+`;
+
+export const DescriptionText = styled.p`
   line-height: 1.6;
-  margin: 0;
+  color: #495057;
 `;
 
-export const AuctionRulesButton = styled.button`
-  background: transparent;
-  border: 1px solid #d9d9d9;
-  color: #888;
-  padding: 10px 16px;
+export const RulesButton = styled.button`
+  margin-top: 15px;
+  background: #e9ecef;
+  border: none;
+  padding: 10px 15px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  align-self: flex-start; /* 버튼을 왼쪽 정렬 */
-  margin-top: 24px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: #997BEB;
-    color: #997BEB;
-  }
+  font-weight: 500;
+  align-self: flex-start;
 `;
