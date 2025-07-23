@@ -10,7 +10,7 @@ export const PageWrapper = styled.div`
   box-sizing: border-box;
   
   /* ✨ 페이지 전체의 높이를 헤더 제외한 뷰포트 높이로 설정 */
-  height: 100vh; 
+  height: 90vh; 
 `;
 
 export const LeftColumn = styled.div`
