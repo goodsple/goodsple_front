@@ -78,7 +78,7 @@ const MyPage:React.FC = () => {
                 <s.Activity>
                     <s.ActivityHeader>내 계정 관리</s.ActivityHeader>
                     <s.StyledHr />
-                    <s.ActivityLink to="/mypage">내 등급(뱃지)</s.ActivityLink>
+                    <s.ActivityLink to="/badgeguide">내 등급(뱃지)</s.ActivityLink>
                     <s.ActivityLink to="/mypage">내 채팅목록</s.ActivityLink>
                 </s.Activity>
             </s.LinkList>

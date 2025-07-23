@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import LV1badge from '../../../assets/images/LV1.png';
 import LV2badge from '../../../assets/images/LV2.png';
 import LV3badge from '../../../assets/images/LV3.png';
@@ -9,17 +9,26 @@ import * as s from './BadgeGuideStyle';
 const BadgeGuide:React.FC = () => {
 
     const [isCalcOpen, setIsCalcOpen] = useState(false);
-    const [isFaqOpen, setIsFapOpen] = useState(false);
+    const [faqOpenStates, setFaqOpenStates] = useState<boolean[]>(Array(5).fill(false));
+    const timerRef = useRef<number | null>(null); 
+
 
     const toggleCalcInfo = () => {
         setIsCalcOpen(prev => !prev);
     };
 
-    // const toggleFaqInfo = () => {
-    //     setIsFaqOpen(prev => !prev);
-    // };
 
-    
+    const handleFaqHover = (index: number) => {
+        if (timerRef.current) clearTimeout(timerRef.current); 
+        const newStates = faqOpenStates.map((_, i) => i === index);
+        setFaqOpenStates(newStates);
+    };
+
+    const handleFaqLeave = () => {
+        timerRef.current = window.setTimeout(() => {
+            setFaqOpenStates(Array(5).fill(false)); 
+        }, 500);
+    };
 
     return (
         <s.BadgeGuideContainer> 
@@ -106,38 +115,38 @@ const BadgeGuide:React.FC = () => {
                 {isCalcOpen && (
                     <s.CalcInfo>
                         <s.CalcInfoText>
-                        굿즈플의 교환러 등급은 후기, 거래 활동, 인증 노력 등을 바탕으로 점수가 누적되며,
-                        누적된 점수에 따라 자동으로 등급이 올라갑니다.
+                            <p>굿즈플의 교환러 등급은 후기, 거래 활동, 인증 노력 등을 바탕으로 점수가 누적되며,</p>
+                            <p>누적된 점수에 따라 자동으로 등급이 올라갑니다.</p>
                         </s.CalcInfoText>
 
                         <s.CalcInfoText>
                             <b>신뢰도 점수</b>
-                            별점 평가 : 1 ~ 5점 ( 게시글 작성자에게 주는 점수 )
+                            <p>별점 평가 : 1 ~ 5점 ( 게시글 작성자에게 주는 점수 )</p>
                         </s.CalcInfoText>
 
                         <s.CalcInfoText>
                             <b>후기 점수</b>
-                            후기 텍스트 50 자 이상 : + 1점
-                            사진 첨부 1장 이상 시 추가 점수 
+                            <p>후기 텍스트 50 자 이상 : + 1점</p>
+                            <p>사진 첨부 1장 이상 시 추가 점수</p> 
                             <ul>
-                                <li>1장 : +2점</li>
-                                <li>2장 : +3점</li>
-                                <li>3장 : +4점</li>
-                                <li>4장 이상 : +5점 (최대)</li>
+                                <s.ListItem>1장 : +2점</s.ListItem>
+                                <s.ListItem>2장 : +3점</s.ListItem>
+                                <s.ListItem>3장 : +4점</s.ListItem>
+                                <s.ListItem>4장 이상 : +5점 (최대)</s.ListItem>
                             </ul>
                         </s.CalcInfoText>
 
                         <s.CalcInfoText>
                             <b>거래 활동 점수</b>
-                            거래 1건 완료 시 : + 5점
-                            한달 내 3건 이상 거래 시 : +5점
-                            응답 빠른 거래(3일 이내) : +3점
+                            <p>거래 1건 완료 시 : + 5점</p>
+                            <p>한달 내 3건 이상 거래 시 : +5점</p>
+                            <p>응답 빠른 거래(3일 이내) : +3점</p>
                         </s.CalcInfoText>
 
                         <s.CalcInfoText>
                             <b>신뢰 감점</b>
-                            운영정책 위반(후기 등) : -10점  
-                            운영정책 위반(허위 게시글) : -15점 
+                            <p>운영정책 위반(후기 등) : -10점</p>  
+                            <p>운영정책 위반(허위 게시글) : -15점</p> 
                         </s.CalcInfoText>
                     </s.CalcInfo>
                 )}
@@ -148,42 +157,32 @@ const BadgeGuide:React.FC = () => {
                         FAQ. 등급 점수 관련 자주 묻는 질문
                     </s.GradeScoreFAQTitle>
 
-                        <s.FaqItem> {/* onmouseover 로 넣기 */}
-                            Q. 후기 하나 썼는데 점수가 안올랐어요!
-                        </s.FaqItem>
-                        <s.FaqAnswer>
-                            후기를 작성 시 조건을 충족해야 점수가 반영됩니다. 
-                            등급 점수 계산 항목을 확인 부탁드려요.  
-                        </s.FaqAnswer>
-                        {/* ----- */}
-                        <s.FaqItem>
-                             Q. 별점을 남겼는데 왜 제 점수엔 반영되지 않나요?
-                        </s.FaqItem>
-                        <s.FaqAnswer>
-                            별점은 “게시글 작성자”에게 부여되는 점수입니다.
-                            후기를 남긴 사람이 아니라, 별점을 받은 상대방의 등급 점수에만 반영됩니다.
-                        </s.FaqAnswer>
-                        {/* ----- */}
-                        <s.FaqItem>
-                            Q. 등급 점수는 언제 반영되나요?
-                        </s.FaqItem>
-                        <s.FaqAnswer>
-                            거래가 “완료 처리된 후” 후기 작성되면 실시간으로 점수가 반영됩니다.
-                        </s.FaqAnswer>
-                        {/* ----- */}
-                        <s.FaqItem>
-                            Q. 작성한 후기나 거래 이력이 사라졌어요. 등급 점수도 사라지나요?
-                        </s.FaqItem>
-                        <s.FaqAnswer>    
-                            네. 후기 삭제, 거래 취소, 신고 반려 등의 사유가 있을 경우 관련 점수는 회수됩니다.
-                        </s.FaqAnswer>
-                        {/* ----- */}
-                        <s.FaqItem>
-                            Q. 등급이 내려갈 수도 있나요?
-                        </s.FaqItem>
-                        <s.FaqAnswer> 
-                            네. 신고/반려가 누적되면 점수가 차감되어 등급이 하락할 수 있어요.
-                        </s.FaqAnswer>
+                         {[
+                            "Q. 후기 하나 썼는데 점수가 안올랐어요!",
+                            "Q. 별점을 남겼는데 왜 제 점수엔 반영되지 않나요?",
+                            "Q. 등급 점수는 언제 반영되나요?",
+                            "Q. 작성한 후기나 거래 이력이 사라졌어요. 등급 점수도 사라지나요?",
+                            "Q. 등급이 내려갈 수도 있나요?"
+                        ].map((question, idx) => (
+                            <div key={idx}>
+                                <s.FaqItem onMouseOver={() => handleFaqHover(idx)}
+                                           onMouseLeave={handleFaqLeave}
+                                >
+                                    {question}
+                                </s.FaqItem>
+                                {faqOpenStates[idx] && (
+                                    <s.FaqAnswer>
+                                        {[
+                                            "후기를 작성 시 조건을 충족해야 점수가 반영됩니다. \n등급 점수 계산 항목을 확인 부탁드려요.",
+                                            "별점은 “게시글 작성자”에게 부여되는 점수입니다. \n후기를 남긴 사람이 아니라, 별점을 받은 상대방의 등급 점수에만 반영됩니다.",
+                                            "거래가 “완료 처리된 후” 후기 작성되면 실시간으로 점수가 반영됩니다.",
+                                            "네. 후기 삭제, 거래 취소, 신고 반려 등의 사유가 있을 경우 관련 점수는 회수됩니다.",
+                                            "네. 신고/반려가 누적되면 점수가 차감되어 등급이 하락할 수 있습니다."
+                                        ][idx]}
+                                    </s.FaqAnswer>
+                                )}
+                            </div>
+                        ))}
 
                 </s.GradeScoreFAQ>
             </s.BadgeGuideWrap>

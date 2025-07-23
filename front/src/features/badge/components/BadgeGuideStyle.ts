@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 export const BadgeGuideContainer = styled.div`
     width: 100vw;
+    // height: 100vw;
     min-height: 100vh;
 
     display: flex;
@@ -14,7 +15,7 @@ export const BadgeGuideContainer = styled.div`
 
 export const BadgeGuideWrap = styled.div`
     width: 600px;
-    padding-top : 100px;
+    padding: 70px 0;
 `;
 
 // 내 뱃지 정보 
@@ -37,7 +38,7 @@ export const MyBadgeInfoBox = styled.div`
 
 export const BadgeName = styled.div`
     font-size: 24px;
-    font-weight: 500;
+    font-weight: 600;
 
     b { 
         font-size: 24px;
@@ -48,7 +49,7 @@ export const BadgeName = styled.div`
 export const BadgeScore = styled.div`
     margin-top: 15px;
     font-size: 20px;
-    font-weight: 400;
+    font-weight: 500;
 
     b { 
         font-size: 24px;
@@ -77,11 +78,10 @@ export const GaugeBar = styled.div`
 `;
 
 export const GaugeFill = styled.div<{percent : number}> `
-        width: ${({ percent }) => percent}%;
-        height: 100%;
-        background-color: #997BEB;
-        border-radius: 10px;
-        // transition: width 0.3s ease;
+    width: ${({ percent }) => percent}%;
+    height: 100%;
+    background-color: #997BEB;
+    border-radius: 10px;
 `;
 
 export const NextBadgeGap = styled.div`
@@ -138,7 +138,7 @@ export const StyledHr = styled.hr`
 
 // 등급 점수는 어떻게 계산되나요? 
 export const GradeScoreCalc = styled.button`
-    margin-bottom: 30px;
+    margin-bottom: -20px;
     line-height: 4rem;
     width: 600px;
     border: 1px solid #9A9A9A;
@@ -148,10 +148,13 @@ export const GradeScoreCalc = styled.button`
     text-align: center;
     color: #ffffffff;
     background: #997BEB;
+
+    &:hover {
+        background: #856ec3ff;
+    }
 `;
 
 export const CalcInfo = styled.div`
-    height: 500px;
     border: 1px solid #9A9A9A;
     border-top: none;
     border-radius: 0 0 15px 15px;
@@ -160,20 +163,31 @@ export const CalcInfo = styled.div`
 `;
 
 export const CalcInfoText = styled.div`
-    margin-top: 30px;
-    line-height: 25px;
+    margin-top: 40px;
+    font-size: 16px;
+    line-height: 23px;
 
     b{
         font-weight: 800;
     }
+    
+    p{
+        line-height: 13px;
+    }
+
+`;
+
+export const ListItem = styled.li`
+    list-style-type: disc;
+    line-height: 28px;
+    margin-left: -10px;
 `;
 
 // 등급 점수 관련 자주 묻는 질문 
 export const GradeScoreFAQ = styled.div`
-    margin-bottom: 30px;
-    padding-top: 20px;
-    padding-left: 20px;
-    height: 300px;
+    
+    margin: 40px 0;
+    padding: 30px 20px;
     border: 1px solid #9A9A9A;
     border-radius: 10px;
     background: #ffffffff;
@@ -187,7 +201,7 @@ export const GradeScoreFAQTitle = styled.div`
 export const FaqItem = styled.div`
     font-size: 16px;
     font-weight: 500;
-    margin-top: 27px;
+    margin-top: 30px;
 `;
 
 export const FaqAnswer = styled.div`
@@ -200,4 +214,5 @@ export const FaqAnswer = styled.div`
     background: #dededeff;
     color: #6f6f6fff;
     font-size: 16px;
+    white-space: pre-line;
 `;
