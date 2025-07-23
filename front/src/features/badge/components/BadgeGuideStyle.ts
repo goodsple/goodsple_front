@@ -17,6 +17,7 @@ export const BadgeGuideWrap = styled.div`
     padding-top : 100px;
 `;
 
+// 내 뱃지 정보 
 export const MyBadgeInfoBox = styled.div`
     height: 200px;
     margin-bottom: 30px;
@@ -90,9 +91,11 @@ export const NextBadgeGap = styled.div`
     margin-top: 8px;
 `;
 
+
+// 뱃지 가이드 박스
 export const BadgeGuideBox = styled.div`
     margin-bottom: 30px;
-    padding: 30px 0;
+    padding: 20px 0;
     height: 700px;
     border: 1px solid #9A9A9A;
     border-radius: 10px;
@@ -101,7 +104,11 @@ export const BadgeGuideBox = styled.div`
 `;
 
 export const BadgeInfo = styled.div`
+    height: 125px;
+    margin-left: 42px;
     display: flex;
+    flex-directions: column;
+    align-items: center;
 
     img{
         width: 110px;
@@ -109,15 +116,18 @@ export const BadgeInfo = styled.div`
 `;
 
 export const BadgeInfoGuide = styled.div`
-    
+    align-items: center;
 `;
 
 export const ScoreRange = styled.div`
-    
+    font-weight: 500;
+    font-size: 16px;
+    margin-top: 7px;
 `;
 
 export const BadgeInfoText = styled.div`
     font-weight: 200;
+    margin-top: 3px;
 `;
 
 export const StyledHr = styled.hr`
@@ -125,6 +135,8 @@ export const StyledHr = styled.hr`
     border: 1px solid #dededeff;
 `;
 
+
+// 등급 점수는 어떻게 계산되나요? 
 export const GradeScoreCalc = styled.button`
     margin-bottom: 30px;
     line-height: 4rem;
@@ -138,6 +150,25 @@ export const GradeScoreCalc = styled.button`
     background: #997BEB;
 `;
 
+export const CalcInfo = styled.div`
+    height: 500px;
+    border: 1px solid #9A9A9A;
+    border-top: none;
+    border-radius: 0 0 15px 15px;
+    background: #ffffffff;
+    padding: 20px;
+`;
+
+export const CalcInfoText = styled.div`
+    margin-top: 30px;
+    line-height: 25px;
+
+    b{
+        font-weight: 800;
+    }
+`;
+
+// 등급 점수 관련 자주 묻는 질문 
 export const GradeScoreFAQ = styled.div`
     margin-bottom: 30px;
     padding-top: 20px;
@@ -157,4 +188,16 @@ export const FaqItem = styled.div`
     font-size: 16px;
     font-weight: 500;
     margin-top: 27px;
+`;
+
+export const FaqAnswer = styled.div`
+    width: 33rem;
+    align-items: center;
+    line-height: 30px;
+    margin-top: 5px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: #dededeff;
+    color: #6f6f6fff;
+    font-size: 16px;
 `;
