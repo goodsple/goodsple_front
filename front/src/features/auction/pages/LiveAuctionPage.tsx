@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 // 컴포넌트 임포트
 import ConfirmModal from '../../../components/common/modal/ConfirmModal'; // 범용 모달 경로 확인 필요
+import ReportModal from '../../../components/common/modal/ReportModal'; // ReportModal 경로 확인 필요
 import AuctionItemInfo from '../components/AuctionItemInfo';
 import AuctionStatus from '../components/AuctionStatus';
 import BidHistory from '../components/BidHistory';
@@ -26,6 +27,8 @@ const LiveAuctionPage = () => {
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
   const [isPausedModalOpen, setIsPausedModalOpen] = useState(false);
   const [isPenaltyModalOpen, setIsPenaltyModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportingUser, setReportingUser] = useState<string | null>(null);
 
   // --- useEffect 훅 ---
   // 패널티 유저 확인
@@ -80,18 +83,28 @@ const LiveAuctionPage = () => {
         bidHistory: [newBid, ...prev.bidHistory]
       }));
 
-      // 경매 시간 연장
       if (timeLeft < AUCTION_EXTEND_THRESHOLD) {
         setTimeLeft(AUCTION_EXTEND_TIME);
       }
-      return true; // 입찰 성공
+      return true;
     }
     alert('현재가보다 높은 금액을 입력해야 합니다.');
-    return false; // 입찰 실패
+    return false;
   };
   
   const handleShare = () => alert('경매 링크가 복사되었습니다! (기능 구현 필요)');
-  const handleReport = (user: string) => alert(`${user}님을 신고했습니다. (기능 구현 필요)`);
+  
+  const handleReport = (user: string) => {
+    setReportingUser(user);
+    setIsReportModalOpen(true);
+  };
+
+  const handleConfirmReport = (selectedReasons: string[], detailText: string) => {
+    console.log(`${reportingUser}님을 다음 사유로 신고:`, selectedReasons, detailText);
+    alert(`${reportingUser}님을 신고했습니다.`);
+    setIsReportModalOpen(false);
+    setReportingUser(null);
+  };
 
   return (
     <>
@@ -136,18 +149,25 @@ const LiveAuctionPage = () => {
       <ConfirmModal
         isOpen={isPausedModalOpen}
         title="경매 일시 중지"
-        content="관리자에 의해 경매가 잠시 중지되었습니다. 잠시 후 다시 시작될 예정입니다."
-        confirmText="메인으로" // 버튼 텍스트 변경
-        onConfirm={() => navigate('/')} // ✨ 메인 페이지로 이동하도록 수정
+        content="관리자에 의해 경매가 잠시 중지되었습니다."
+        confirmText="메인으로"
+        onConfirm={() => navigate('/')}
       />
 
       <ConfirmModal
         isOpen={isPenaltyModalOpen}
         title="경매 참여 불가"
-        content="회원님은 현재 경매 참여가 제한된 상태입니다. 자세한 내용은 고객센터로 문의해주세요."
+        content="회원님은 현재 경매 참여가 제한된 상태입니다."
         confirmText="메인으로"
         onConfirm={() => navigate('/')}
       />
+
+      {isReportModalOpen && (
+        <ReportModal
+          onConfirm={handleConfirmReport}
+          onCancel={() => setIsReportModalOpen(false)}
+        />
+      )}
     </>
   );
 };
