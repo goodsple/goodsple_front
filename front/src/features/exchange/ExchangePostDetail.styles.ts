@@ -118,7 +118,7 @@ export const TagWrapper = styled.div`
   display: flex;
   gap: 10px;
   margin-top: 4px;
-
+  align-items: center;
 `;
 
 export const Tag = styled.span`
@@ -280,5 +280,55 @@ export const BoxContent = styled.div`
   line-height: 1.4;
 `;
 
+export const StatusDropdownWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+  margin-left: 8px;  // 택배거래 태그와 간격
+`;
 
+export const StatusButton = styled.button<{ selected?: string }>`
+  margin-left: 8px;
+  padding: 4px 10px;
+  font-size: 14px;
+  border: 2px solid #997BEB;
+  background-color: white;
+  color: #444
+  cursor: pointer;
+  user-select: none;
+  font-weight: ${({ selected }) => (selected ? 'bold' : 'normal')};
+`;
 
+export const StatusOptions = styled.ul`
+  position: absolute;
+  top: 30px;
+  left: 8px;
+  background: white;
+  border: 1px solid #D9D9D9;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100px;
+  z-index: 10;
+`;
+
+export const StatusOption = styled.li<{ selected?: boolean }>`
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  color: #000000;
+  cursor: pointer;
+  user-select: none;
+  font-weight: ${({ selected }) => (selected ? 'bold' : 'normal')};
+
+  &:hover {
+    background-color: #997BEB;
+    color: white;
+  }
+`;
+
+export const DropdownIcon = styled.img`
+  width: 15px;
+  height: 15px;
+  margin-left: 5px;
+  object-fit: contain;
+  vertical-align: middle;
+`;

@@ -8,11 +8,13 @@ import lineIcon from '../../assets/images/line_purple.png';
 import sample1 from '../../assets/images/sample1.png';
 import sample2 from '../../assets/images/sample2.png';
 import sample3 from '../../assets/images/sample3.png';
+import dropdownArrow from '../../assets/images/dropdownArrow.png';
 
 const loginUserId = 1;  // 로그인 사용자 ID (임시)
-const postWriterId = 0; // 게시글 작성자 ID (임시)
+const postWriterId = 0; // 게시글 작성자 ID (임시) 1은 작성자, 0은 작성자 X
 
 const mockImages = [sample1, sample2, sample3];
+
 
 const ExchangePostDetail = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -34,6 +36,20 @@ const ExchangePostDetail = () => {
             });
             setCurrentIndex(index);
         }
+    };
+
+    // 거래상태 드롭다운
+    const [showStatusOptions, setShowStatusOptions] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState("거래가능");
+
+    const toggleStatusOptions = () => {
+        setShowStatusOptions((prev) => !prev);
+    };
+
+    const handleStatusSelect = (status: string) => {
+        setSelectedStatus(status);
+        setShowStatusOptions(false);
+        // TODO: 서버 API 호출로 거래상태 업데이트 구현
     };
 
     return (
@@ -72,6 +88,28 @@ const ExchangePostDetail = () => {
                     <S.TagWrapper>
                         <S.Tag>직거래</S.Tag>
                         <S.Tag>택배거래</S.Tag>
+
+                        {loginUserId === postWriterId && (
+                            <S.StatusDropdownWrapper>
+                                <S.StatusButton selected={selectedStatus} onClick={toggleStatusOptions}>
+                                    {selectedStatus}
+                                <S.DropdownIcon src={dropdownArrow} alt="드롭다운 화살표" />
+                                </S.StatusButton>
+                                {showStatusOptions && (
+                                    <S.StatusOptions>
+                                        {["거래가능", "거래중", "거래완료"].map((status) => (
+                                            <S.StatusOption
+                                                key={status}
+                                                selected={selectedStatus === status}
+                                                onClick={() => handleStatusSelect(status)}
+                                            >
+                                                {status}
+                                            </S.StatusOption>
+                                        ))}
+                                    </S.StatusOptions>
+                                )}
+                            </S.StatusDropdownWrapper>
+                        )}
                     </S.TagWrapper>
 
                     {/* 직거래 / 배송비 */}
