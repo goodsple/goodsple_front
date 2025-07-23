@@ -9,6 +9,7 @@ import sample1 from '../../assets/images/sample1.png';
 import sample2 from '../../assets/images/sample2.png';
 import sample3 from '../../assets/images/sample3.png';
 import dropdownArrow from '../../assets/images/dropdownArrow.png';
+import clockIcon from '../../assets/images/clock.png';
 
 const loginUserId = 1;  // 로그인 사용자 ID (임시)
 const postWriterId = 0; // 게시글 작성자 ID (임시) 1은 작성자, 0은 작성자 X
@@ -82,7 +83,12 @@ const ExchangePostDetail = () => {
                         <S.Category>카테고리명</S.Category>
                         <S.Title>상품명</S.Title>
                         <S.StatusRow>
-                            <S.StatusInfo>찜 0 · 조회수 0 · 줄서기 0 · 5분 전</S.StatusInfo>
+                            <S.StatusInfo>찜 0   조회수 0   줄서기 0
+                                <S.TimeWrapper>
+                                    <S.StatusIcon src={clockIcon} alt="시계 아이콘" />
+                                    5분 전
+                                </S.TimeWrapper>
+                            </S.StatusInfo>
                             {loginUserId !== postWriterId && (
                                 <S.ReportButton>신고하기</S.ReportButton>
                             )}

@@ -47,7 +47,7 @@ export const ImageSliderWrapper = styled.div`
   max-width: 350px;
 //   overflow: hidden;
 
- &::-webkit-scrollbar {
+  &::-webkit-scrollbar {
     display: none;
   }
 `;
@@ -107,11 +107,31 @@ export const Title = styled.h2`
 `;
 
 export const StatusInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 13px;
   color: #666;
 //   margin-left: auto;
 //   text-align: right;
   white-space: nowrap;
+`;
+
+export const TimeWrapper = styled.span`
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px; // 필요시 값 조절
+  color: #666666;
+  font-size: 14px;
+  // gap: 4px;
+
+`;
+
+export const StatusIcon = styled.img`
+  width: 13px;
+  height: 13px;
+  margin-right: 4px;
+  vertical-align: middle;
 `;
 
 export const TagWrapper = styled.div`
