@@ -332,3 +332,19 @@ export const DropdownIcon = styled.img`
   object-fit: contain;
   vertical-align: middle;
 `;
+
+export const StatusRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const ReportButton = styled.button`
+  background: none;
+  border: none;
+  color: #9A9A9A;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 12px;
+  text-decoration: underline;
+`;

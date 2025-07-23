@@ -81,7 +81,12 @@ const ExchangePostDetail = () => {
                     <S.TitleRow>
                         <S.Category>카테고리명</S.Category>
                         <S.Title>상품명</S.Title>
-                        <S.StatusInfo>찜 0 · 조회수 0 · 줄서기 0 · 5분 전</S.StatusInfo>
+                        <S.StatusRow>
+                            <S.StatusInfo>찜 0 · 조회수 0 · 줄서기 0 · 5분 전</S.StatusInfo>
+                            {loginUserId !== postWriterId && (
+                                <S.ReportButton>신고하기</S.ReportButton>
+                            )}
+                        </S.StatusRow>
                     </S.TitleRow>
 
                     {/* 태그 */}
@@ -93,7 +98,7 @@ const ExchangePostDetail = () => {
                             <S.StatusDropdownWrapper>
                                 <S.StatusButton selected={selectedStatus} onClick={toggleStatusOptions}>
                                     {selectedStatus}
-                                <S.DropdownIcon src={dropdownArrow} alt="드롭다운 화살표" />
+                                    <S.DropdownIcon src={dropdownArrow} alt="드롭다운 화살표" />
                                 </S.StatusButton>
                                 {showStatusOptions && (
                                     <S.StatusOptions>
