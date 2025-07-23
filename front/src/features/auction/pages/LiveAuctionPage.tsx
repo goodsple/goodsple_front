@@ -1,6 +1,7 @@
 // src/features/auction/pages/LiveAuctionPage.tsx
 import { useState } from 'react';
 import { mockAuctionPageData } from '../mock/auctionPageData';
+import * as S from './LiveAuctionPageStyle';
 
 // ✨ 아래 5개의 컴포넌트를 import하는 코드를 추가해주세요.
 import AuctionItemInfo from '../components/AuctionItemInfo';
@@ -13,14 +14,22 @@ const LiveAuctionPage = () => {
   const [auctionData, setAuctionData] = useState(mockAuctionPageData);
 
   return (
-    <div>
-      {/* 하위 컴포넌트들이 여기에 위치합니다. */}
-      <AuctionItemInfo itemInfo={auctionData.itemInfo} />
+    // ✨ 2. 기존 div를 PageWrapper로 변경하고 컬럼으로 묶기
+    <S.PageWrapper>
+      <S.LeftColumn>
+        <AuctionItemInfo itemInfo={auctionData.itemInfo} />
+      </S.LeftColumn>
+      
+      <S.CenterColumn>
         <AuctionStatus status={auctionData.status} />
         <BidPanel status={auctionData.status} currentUser={auctionData.currentUser} />
-        <LiveChat chatHistory={auctionData.chatHistory} />
         <BidHistory bidHistory={auctionData.bidHistory} />
-    </div>
+      </S.CenterColumn>
+      
+      <S.RightColumn>
+        <LiveChat chatHistory={auctionData.chatHistory} />
+      </S.RightColumn>
+    </S.PageWrapper>
   );
 };
 

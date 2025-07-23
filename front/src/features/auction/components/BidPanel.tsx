@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { AuctionStatus, CurrentUser } from '../types/auction';
+import type { AuctionStatus, CurrentUser } from '../types/auction.d.ts';
 import * as S from './BidPanelStyle';
 
 interface Props {
@@ -16,14 +16,20 @@ const BidPanel: React.FC<Props> = ({ status, currentUser }) => {
       {isHighestBidder && (
         <S.HighlightMessage>회원님이 현재 최고 입찰자입니다!</S.HighlightMessage>
       )}
-      <input
-        type="number"
-        value={bidAmount}
-        onChange={(e) => setBidAmount(e.target.value)}
-        placeholder={`${(status.currentPrice + status.minBidUnit).toLocaleString()}원 이상`}
-      />
-      <button>입찰하기</button>
-      {/* TODO: 빠른 입찰 버튼들 추가 */}
+      <S.BidInputContainer>
+        <S.BidInput
+          type="number"
+          value={bidAmount}
+          onChange={(e) => setBidAmount(e.target.value)}
+          placeholder={`${(status.currentPrice + status.minBidUnit).toLocaleString()}원 이상`}
+        />
+        <S.BidButton>입찰하기</S.BidButton>
+      </S.BidInputContainer>
+      <S.QuickBidButtons>
+        <S.QuickBidButton>+1,000</S.QuickBidButton>
+        <S.QuickBidButton>+5,000</S.QuickBidButton>
+        <S.QuickBidButton>+10,000</S.QuickBidButton>
+      </S.QuickBidButtons>
     </S.Wrapper>
   );
 };
