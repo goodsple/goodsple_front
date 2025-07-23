@@ -9,6 +9,7 @@ import Layout from "./components/common/layouts/Layout.tsx";
 
 // 사용자화면 컴포넌트 
 import Error from './components/common/error/Error';
+import LiveAuctionPage from './features/auction/pages/LiveAuctionPage.tsx';
 import FindId from './features/auth/components/FindId';
 import FindPassword from './features/auth/components/FindPassword';
 import KakaoInfo from './features/auth/components/KakaoInfo';
@@ -72,6 +73,8 @@ function AppRoutes() {
         <Route path='/writereview' element={<WriteReview/>}/>
         <Route path='/reviews' element={<MyReview/>}/>
         <Route path='/badgeguide' element={<BadgeGuide/>} />
+
+        <Route path='/auction/live/:auctionId' element={<LiveAuctionPage />} />
       </Route>
 
       <Route element={<AdminLayout />}>
