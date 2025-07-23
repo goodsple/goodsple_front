@@ -9,6 +9,9 @@ import sample1 from '../../assets/images/sample1.png';
 import sample2 from '../../assets/images/sample2.png';
 import sample3 from '../../assets/images/sample3.png';
 
+const loginUserId = 1;  // 로그인 사용자 ID (임시)
+const postWriterId = 0; // 게시글 작성자 ID (임시)
+
 const mockImages = [sample1, sample2, sample3];
 
 const ExchangePostDetail = () => {
@@ -91,20 +94,26 @@ const ExchangePostDetail = () => {
                         </S.DetailBox>
                     </S.DetailBoxWrapper>
 
-                    <S.ButtonGroup>
-                        <S.ActionButton>
-                            <img src={bookmarkIcon} alt="찜하기 아이콘" />
-                            찜하기
-                        </S.ActionButton>
-                        <S.ActionButton $main>
-                            <img src={chatIcon} alt="채팅하기 아이콘" />
-                            채팅하기
-                        </S.ActionButton>
-                        <S.ActionButton>
-                            <img src={lineIcon} alt="줄서기 아이콘" />
-                            줄서기
-                        </S.ActionButton>
-                    </S.ButtonGroup>
+                    {/* 버튼 */}
+                    {loginUserId === postWriterId ? (
+                        <S.ManageButton>내 거래글 관리</S.ManageButton>
+                    ) : (
+                        <S.ButtonGroup>
+                            <S.ActionButton>
+                                <img src={bookmarkIcon} alt="찜하기 아이콘" />
+                                찜하기
+                            </S.ActionButton>
+                            <S.ActionButton $main>
+                                <img src={chatIcon} alt="채팅하기 아이콘" />
+                                채팅하기
+                            </S.ActionButton>
+                            <S.ActionButton>
+                                <img src={lineIcon} alt="줄서기 아이콘" />
+                                줄서기
+                            </S.ActionButton>
+                        </S.ButtonGroup>
+                    )}
+
                 </S.RightInfoSection>
             </S.TopSection>
 

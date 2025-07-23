@@ -162,7 +162,7 @@ export const ActionButton = styled.button<{ $main?: boolean }>`
   border: 1px solid #D9D9D9;
   border-radius: 6px;
   font-weight: bold;
-  background-color: ${({ $main }) => ($main ? '#997BEB' : '#f5f5f5')};
+  background-color: ${({ $main }) => ($main ? '#997BEB' : '#fff')};
   color: ${({ $main }) => ($main ? '#fff' : '#333')};
   cursor: pointer;
   font-size: 16px;
@@ -180,6 +180,25 @@ export const ActionButton = styled.button<{ $main?: boolean }>`
 
   &:hover {
     background-color: ${({ $main }) => ($main ? '#7b65cc' : '#eaeaea')};
+  }
+`;
+
+export const ManageButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  margin-top: 20px;
+  background-color: #997BEB;
+  color: #FFFFFF;
+  border: 1px solid #9A9A9A;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.9;
   }
 `;
 
