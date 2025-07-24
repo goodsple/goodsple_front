@@ -5,25 +5,26 @@ import './App.css';
 import KakaoCallback from './features/auth/components/KakaoCallback.tsx';
 
 // 레이아웃(사용자,관리자)
-import Layout from "./components/common/layouts/Layout.tsx";
 import AdminLayout from './components/common/layouts/AdminLayout.tsx';
+import Layout from "./components/common/layouts/Layout.tsx";
 
 // 사용자화면 컴포넌트 
 import Error from './components/common/error/Error';
+import LiveAuctionPage from './features/auction/pages/LiveAuctionPage.tsx';
 import FindId from './features/auth/components/FindId';
 import FindPassword from './features/auth/components/FindPassword';
 import KakaoInfo from './features/auth/components/KakaoInfo';
 import Login from './features/auth/components/Login';
 import SignUp from './features/auth/components/SignUp';
+import BadgeGuide from './features/badge/components/BadgeGuide.tsx';
 import EditProfile from './features/mypage/components/EditProfile';
-import WriteReview from './features/review/components/WriteReview.tsx';
 import MyPage from './features/mypage/components/Mypage';
 import MyReview from './features/review/components/MyReview';
+import WriteReview from './features/review/components/WriteReview.tsx';
 import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
 import AdminMain from './pages/AdminMain.tsx';
-
 
 
 function App() {
@@ -45,7 +46,6 @@ function App() {
           <Route path='/admin' element={<AdminMain/>} />
         </Route>
 
-        
         {/* Layout 없이 단독 페이지 */}
         <Route path='/login' element={<Login/>}/>
         <Route path='/signup' element={<SignUp/>}/>

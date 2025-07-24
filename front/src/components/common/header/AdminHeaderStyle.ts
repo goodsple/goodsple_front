@@ -37,10 +37,20 @@ export const LogoutButton = styled.button`
   }
 `;
 
+// export const MainContent = styled.main`
+//   padding-top: 100px; 
+//   width: 100%;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+// `;
+
 export const MainContent = styled.main`
   padding-top: 100px; 
+  padding-left: 40px;
+  padding-right: 40px;
+  background-color: #FFFDFA;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  min-height: calc(100vh - 100px);
+  box-sizing: border-box;
 `;
