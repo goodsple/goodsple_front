@@ -40,6 +40,8 @@ function App() {
           <Route path='/editprofile' element={<EditProfile/>}/>
           <Route path='/writereview' element={<WriteReview/>}/>
           <Route path='/reviews' element={<MyReview/>}/>
+          <Route path='/badgeguide' element={<BadgeGuide/>} />
+         <Route path='/auction/live/:auctionId' element={<LiveAuctionPage />} />
         </Route>
 
         <Route element={<AdminLayout />}>
