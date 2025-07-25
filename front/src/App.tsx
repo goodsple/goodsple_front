@@ -24,6 +24,7 @@ import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
 import axiosInstance from './api/axiosInstance.ts';
+import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
 
@@ -73,6 +74,7 @@ function AppRoutes() {
         <Route path='/writereview' element={<WriteReview/>}/>
         <Route path='/reviews' element={<MyReview/>}/>
         <Route path='/badgeguide' element={<BadgeGuide/>} />
+        <Route path='/bookmarkPage' element={<BookmarkPage />} />
 
         <Route path='/auction/live/:auctionId' element={<LiveAuctionPage />} />
       </Route>
