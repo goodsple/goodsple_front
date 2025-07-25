@@ -7,7 +7,7 @@ import axiosInstance from '../../../api/axiosInstance'
 import type {LoginFormType} from '../types/login'
         
 import { useAuth } from '../contexts/AuthContext'; 
-import type { UserProfile } from '../types/\bauth'
+import type { UserProfile } from '../types/auth'
 
 
 const Login:React.FC = () => {

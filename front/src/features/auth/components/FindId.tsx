@@ -1,58 +1,209 @@
 import * as s from './SignUpStyle';
 import * as f from './FindIdStyle';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {maskUserId} from './Mask';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../../api/axiosInstance';
 
 const FindId:React.FC = () => {
 
-    const [isFound, setIsFound] = useState(true);  // 아이디 찾았는지 여부
-    const [foundId, setFoundId] = useState("asdfasdf");  // 아이디 값
-    const [isCounting, setIsCounting] = useState(true);
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
+
+    const [isFound, setIsFound] = useState(false);  // 아이디 찾았는지 여부
+    const [foundId, setFoundId] = useState("");  // 아이디 값
+    const [isCounting, setIsCounting] = useState(false);  // 타이머 상태
+    const [email, setEmail] = useState("");  // 입력받은 이메일
+    const [name, setName] = useState("");  // 입력받은 이름
+    const [authnumber, setAuthnumber] = useState("");  // 입력받은 인증번호
+    const [timeLeft, setTimeLeft] = useState(180); // 3분 (180초)
+    const [canResend, setCanResend] = useState(false); // 인증번호 재요청 가능 여부
+
+    const [errors, setErrors] = useState({
+        email: '',
+        name: '',
+        authnumber: ''
+    });
+
+    // const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);  // 버튼 활성화 상태
+    const [authTimeExpired, setAuthTimeExpired] = useState(false);  // 인증 시간 만료 여부
+    
+     // 인증번호 받기 클릭 시
+     const handleGetCode = async() => {
+        // 빈값 체크
+        if (!email.trim()) {
+            setErrors(prev => ({ ...prev, email: '❗이메일을 입력해 주세요.' }));
+            return;
+        }
+        // 이메일 형식 체크
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setErrors(prev => ({ ...prev, email: '❗올바른 이메일 형식이 아닙니다.' }));
+            return;
+        }
+        try {
+
+            alert("인증번호 전송을 시작합니다. 잠시만 기다려 주세요.");
+
+            setIsCounting(true); // 타이머 시작
+            setTimeLeft(180); // 타이머 초기화 (3분)
+            setAuthTimeExpired(false);             // ← 만료 플래그 초기화
+            setErrors(prev => ({                   // ← 인증번호 관련 에러 초기화
+            ...prev,
+            authnumber: '',
+            }));
+             // 인증번호 요청 API 호출
+            await axiosInstance.post('/auth/find-id/request', { email });
+           
+            //alert("인증번호가 이메일로 전송되었습니다.");
+          } catch (err: any) {
+            if (err.response?.status === 400) {
+              // 가입되지 않은 이메일
+              setErrors(prev => ({ ...prev, email: "❗가입되지 않은 이메일입니다." }));
+            } else {
+              alert("인증번호 요청에 실패했습니다. 다시 시도해주세요.");
+            }
+          }
+    }
+
+    // 타이머 업데이트
+    useEffect(() => {
+        let timer: number; // NodeJS.Timeout -> number로 변경
+        if (isCounting && timeLeft > 0) {
+            timer = setInterval(() => {
+                setTimeLeft(prev => prev - 1);
+            }, 1000);
+        } else if (timeLeft === 0) {
+            setAuthTimeExpired(true); // 타이머 종료 시 인증시간 만료
+            setIsCounting(false);
+            setCanResend(true); // 타이머 끝나면 재전송 가능 표시
+            clearInterval(timer); // 타이머 종료
+        }
+    
+        return () => clearInterval(timer); // 컴포넌트 unmount 시 타이머 정리
+    }, [isCounting, timeLeft]);
+
+    // 아이디 찾기 클릭 시 
+    const handleFindId = async () => {
+        if (!name.trim()) {
+            setErrors(prev => ({ ...prev, name: '❗이름을 입력해 주세요.' }));
+            return;
+        }
+
+        // 이름이 한글 또는 영문으로만, 최소 2글자~최대20글자 입력되도록 정규식 검증
+        const nameRegex = /^[a-zA-Z가-힣]{2,20}$/;
+        if (!nameRegex.test(name)) {
+            setErrors(prev => ({ ...prev, name: '❗이름은 2자 이상 한글 또는 영문으로 입력해주세요.' }));
+            return;
+        }
+
+        if (!authnumber.trim()) {
+            setErrors(prev => ({ ...prev, authnumber: '❗인증번호를 입력해 주세요.' }));
+            return;
+        }
+
+        // 인증번호가 만료되었는지 확인
+        if (authTimeExpired) {
+            setErrors(prev => ({ ...prev, authnumber: '❗인증 시간이 만료되었습니다. 다시 인증번호를 요청해주세요.' }));
+            return;
+        }
+
+        try {
+            // 아이디 찾기 API 호출
+            const response = await axiosInstance.post('/auth/find-id', {
+                name,
+                email,
+                code: authnumber,
+            });
+
+            // 반환된 아이디를 화면에 표시
+            const loginId = response.data.split(':')[1]?.trim();
+            setFoundId(loginId);   // 암호화된 아이디 반환
+            setIsFound(true);  // 아이디를 찾았음을 표시
+        } catch (error) {
+            console.error("아이디 찾기 실패", error);
+            setErrors(prev => ({ ...prev, authnumber: '❗인증번호가 일치하지 않습니다. 다시 확인해 주세요.' }));
+        }
+    };
+
+    // 입력 필드 값 변화 처리
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setErrors(prev => ({ ...prev, [name]: '' }));  // 필드 변경 시 에러 메시지 초기화
+        if (name === 'email') setEmail(value);
+        if (name === 'name') setName(value);
+        if (name === 'authnumber') setAuthnumber(value);
+    };
+
+    // useEffect 대신 useMemo 로 간단하게
+    const isSubmitDisabled = useMemo(() => {
+        return !name.trim() || !email.trim() || !authnumber.trim();
+    }, [name, email, authnumber]);
 
     return(
         <f.FindIdContainer>
             <s.SignUpWrap>
              <s.SignUpTitle>아이디 찾기</s.SignUpTitle>
-                <s.SignUpForm>
+                <s.SignUpForm onSubmit={e => e.preventDefault()}>
                 <s.SignUpLi>이름</s.SignUpLi>
                     <s.InputRow>
                         <s.SignUpInput
                         type='text'
                         name='name'
+                        value={name}
+                        onChange={handleChange}
                         placeholder='이름을 입력해주세요.'/>
                     </s.InputRow>
+                    {errors.name && <s.ErrorMessage>{errors.name}</s.ErrorMessage>}
+
                 <s.SignUpLi>이메일</s.SignUpLi>
                 <f.EmailInputRow>
                     <s.SignUpInput
                         type="text"
                         name="email"
+                        value={email}
+                        onChange={handleChange}
                         placeholder="이메일을 입력해주세요."
                     />
                     <f.ButtonTimerBox>
-                        <s.SignUpDupli>인증번호 받기</s.SignUpDupli>
-                        {isCounting && <f.TimerText>03:00</f.TimerText>}
+                        <s.SignUpDupli  
+                            type="button" 
+                            onClick={handleGetCode}
+                            disabled={isCounting}
+                            className={canResend ? 'active' : ''} >
+                            {canResend ? '다시 받기' : '인증번호 받기'}
+                        </s.SignUpDupli>
+                        {isCounting && <f.TimerText>{`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}</f.TimerText>}
                     </f.ButtonTimerBox>
                 </f.EmailInputRow>
-                        
+                {errors.email && <s.ErrorMessage>{errors.email}</s.ErrorMessage>}
+
                 <s.SignUpLi>인증번호 입력</s.SignUpLi>
                     <s.InputRow>
                         <s.SignUpInput
                         type='text'
                         name='authnumber'
+                        value={authnumber}
+                        onChange={handleChange}
                         placeholder='인증번호를 입력해주세요.'/>
                     </s.InputRow>
+                    {errors.authnumber && <s.ErrorMessage>{errors.authnumber}</s.ErrorMessage>}
 
-                    <s.SignUpButton>아이디 찾기</s.SignUpButton>
+                    <s.SignUpButton 
+                        type='button'
+                        onClick={handleFindId} 
+                        disabled={isSubmitDisabled} 
+                        className={isSubmitDisabled ? '' : 'active'}>아이디 찾기
+                    </s.SignUpButton>
                     {isFound && (
                         <>
                             <f.FoundIdBox>회원님의 아이디는 <strong>{maskUserId(foundId)}</strong> 입니다!</f.FoundIdBox>
-                            <f.LoginButton>로그인하러가기</f.LoginButton>
-                            {/* onClick={() => navigate("/login")} */}
+                            <f.LoginButton 
+                                onClick={() => navigate("/login")}
+                                disabled={isSubmitDisabled}
+                            >로그인하러가기</f.LoginButton>
                         </>
-                        )}
+                    )}
                 </s.SignUpForm>
              </s.SignUpWrap>
         </f.FindIdContainer>

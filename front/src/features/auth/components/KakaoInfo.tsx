@@ -13,7 +13,7 @@ import LocationTerms from './LocationTerms';
 import MarketingTerms from './MarketingTerms';
 import ConfirmModal from '../../../components/common/modal/ConfirmModal';
 import { useAuth } from '../contexts/AuthContext';
-import type { UserProfile } from '../types/\bauth';
+import type { UserProfile } from '../types/auth';
 
 
 const KakaoInfo:React.FC = () => {
