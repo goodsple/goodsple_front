@@ -1,7 +1,7 @@
 import * as s from './SignUpStyle';
 import * as f from './FindIdStyle';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {maskUserId} from './Mask';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../api/axiosInstance';
@@ -25,7 +25,7 @@ const FindId:React.FC = () => {
         authnumber: ''
     });
 
-    // const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);  // 버튼 활성화 상태
+    const timerRef = useRef<number | null>(null);
     const [authTimeExpired, setAuthTimeExpired] = useState(false);  // 인증 시간 만료 여부
     
      // 인증번호 받기 클릭 시
@@ -68,19 +68,27 @@ const FindId:React.FC = () => {
 
     // 타이머 업데이트
     useEffect(() => {
-        let timer: number; // NodeJS.Timeout -> number로 변경
         if (isCounting && timeLeft > 0) {
-            timer = setInterval(() => {
+            timerRef.current = window.setInterval(() => {
                 setTimeLeft(prev => prev - 1);
             }, 1000);
         } else if (timeLeft === 0) {
             setAuthTimeExpired(true); // 타이머 종료 시 인증시간 만료
             setIsCounting(false);
             setCanResend(true); // 타이머 끝나면 재전송 가능 표시
-            clearInterval(timer); // 타이머 종료
+            if (timerRef.current !== null) {
+                clearInterval(timerRef.current); // 타이머 종료
+                timerRef.current = null;
+            }
         }
     
-        return () => clearInterval(timer); // 컴포넌트 unmount 시 타이머 정리
+        return () => {
+            if (timerRef.current !== null) {
+                clearInterval(timerRef.current); // 컴포넌트 unmount 시 타이머 정리
+                timerRef.current = null;
+            }
+        };
+
     }, [isCounting, timeLeft]);
 
     // 아이디 찾기 클릭 시 
@@ -129,10 +137,17 @@ const FindId:React.FC = () => {
     // 입력 필드 값 변화 처리
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setErrors(prev => ({ ...prev, [name]: '' }));  // 필드 변경 시 에러 메시지 초기화
+
+         // 값 업데이트
         if (name === 'email') setEmail(value);
         if (name === 'name') setName(value);
         if (name === 'authnumber') setAuthnumber(value);
+
+        // 에러 메시지 갱신
+        setErrors(prev => ({
+            ...prev,
+            [name]: value.trim() === '' ? `❗${e.target.placeholder}` : ''
+        }));
     };
 
     // useEffect 대신 useMemo 로 간단하게
