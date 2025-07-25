@@ -24,6 +24,7 @@ export const TimerText = styled.p`
     font-weight : bold;
     color: #997BEB;
     margin-left: 12px;
+    margin-bottom: -20px;
 `;
 
 export const FoundIdBox = styled.div`
