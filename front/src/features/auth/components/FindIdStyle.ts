@@ -50,4 +50,5 @@ export const LoginButton = styled.button`
     border-radius: 10px;
     margin : 60px auto;
     font-size: 16px;
+    cursor: pointer;
 `;
