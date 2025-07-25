@@ -17,7 +17,8 @@ const FindPassword:React.FC = () => {
 
     const [isCounting, setIsCounting] = useState(false);  // 타이머 상태
     const [authnumber, setAuthnumber] = useState("");  // 입력받은 인증번호
-    const [timeLeft, setTimeLeft] = useState(180); // 3분 (180초)
+    const [timeLeft, setTimeLeft] = useState(0); 
+    const [displayTimeLeft, setDisplayTimeLeft] = useState("");
     const [canResend, setCanResend] = useState(false); // 인증번호 재요청 가능 여부
     const [isVerified, setIsVerified] = useState(false); // 인증번호 검증 완료 여부
   
@@ -63,6 +64,15 @@ const FindPassword:React.FC = () => {
     
      // 인증번호 받기 클릭 시
      const handleGetCode = async () => {
+       
+        // 이전 에러 초기화
+        setErrors(prev => ({
+            ...prev,
+            loginId: '',
+            email: '',
+            authnumber: '',
+        }));
+
         // 빈값 체크
         if (!loginId.trim()) {
             setErrors(prev => ({ ...prev, loginId: '❗아이디를 입력해 주세요.' }));
@@ -81,31 +91,69 @@ const FindPassword:React.FC = () => {
         }
     
         try {
-    
-            // 타이머 및 상태 초기화
-            setIsCounting(true); 
-            setTimeLeft(180);
+          
+            // 클릭 즉시 타이머 세팅
+            const initial = 180;
+            setDisplayTimeLeft(`${Math.floor(initial/60)}:${String(initial%60).padStart(2, '0')}`);
+            setTimeLeft(initial);
+            setIsCounting(true);
             setAuthTimeExpired(false);
+            setCanResend(false);
+            setErrors(prev => ({ ...prev, authnumber: '' }));
 
             // 인증번호 요청
             await axiosInstance.post('/auth/find-password/request', { loginId,  email });
     
-            // setSuccess(prev => ({
-            //     ...prev,
-            //     authnumber: '인증번호가 전송되었습니다. 이메일을 확인해 주세요.',
-            // }));
-
         } catch (err: any) {
-            setIsCounting(false);  // 실패 시 타이머 중단
-            setTimeLeft(0);        // 시간 초기화
-    
+          // 실패 시 타이머 완전 리셋
+            if (timerRef.current !== null) {
+                clearInterval(timerRef.current);
+                timerRef.current = null;
+            }
+            setIsCounting(false);
+            setTimeLeft(0);
+            setDisplayTimeLeft('');
+            setCanResend(false);
+
+            // 에러 메시지 표시
             setErrors(prev => ({
                 ...prev,
                 email: '❗인증번호 요청 중 오류가 발생했습니다. 아이디와 이메일을 확인해 주세요.'
             }));
         }
     };
+
+    // 타이머 업데이트
+    useEffect(() => {
+        if (isCounting && timeLeft > 0) {
+            timerRef.current = window.setInterval(() => {
+                setTimeLeft(prev => prev - 1);
+            }, 1000);
+        } else if (timeLeft === 0 && isCounting) {
+            setAuthTimeExpired(true); // 타이머 종료 시 인증시간 만료
+            setIsCounting(false);
+            setCanResend(true); // 타이머 끝나면 재전송 가능 표시
+            if (timerRef.current !== null) {
+                clearInterval(timerRef.current); // 타이머 종료
+                timerRef.current = null;
+            }
+        }
     
+        return () => {
+            if (timerRef.current !== null) {
+                clearInterval(timerRef.current); // 컴포넌트 unmount 시 타이머 정리
+                timerRef.current = null;
+            }
+        };
+
+    }, [isCounting, timeLeft]);
+    
+    // 타이머 숫자 갱신
+    useEffect(() => {
+        if (timeLeft > 0) {
+            setDisplayTimeLeft(`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`);
+        }
+    }, [timeLeft]);
 
     const handleVerifyCode = async () => {
         if (!loginId.trim()) {
@@ -233,30 +281,6 @@ const FindPassword:React.FC = () => {
         }));
     }, [newPassword, confirmPassword, isVerified, touched]);
 
-    
-    // 타이머 업데이트
-    useEffect(() => {
-        if (isCounting && timeLeft > 0) {
-            timerRef.current = window.setInterval(() => {
-                setTimeLeft(prev => prev - 1);
-            }, 1000);
-        } else if (timeLeft === 0) {
-            setAuthTimeExpired(true); // 타이머 종료 시 인증시간 만료
-            setIsCounting(false);
-            setCanResend(true); // 타이머 끝나면 재전송 가능 표시
-            if (timerRef.current !== null) {
-                clearInterval(timerRef.current); // 타이머 종료
-                timerRef.current = null;
-            }
-        }
-    
-        return () => {
-            if (timerRef.current !== null) {
-                clearInterval(timerRef.current); // 컴포넌트 unmount 시 타이머 정리
-                timerRef.current = null;
-            }
-        };
-    }, [isCounting, timeLeft]);
 
     const isSubmitDisabled = useMemo(() => {
     return (
@@ -315,7 +339,9 @@ const FindPassword:React.FC = () => {
                             className={canResend ? 'active' : ''} >
                             {canResend ? '다시 받기' : '인증번호 받기'}
                         </s.SignUpDupli>
-                        {isCounting && <f.TimerText>{`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}</f.TimerText>}
+                        {timeLeft > 0 && (
+                            <f.TimerText>{displayTimeLeft}</f.TimerText>
+                        )}
                     </f.ButtonTimerBox>
                 </f.EmailInputRow>
                 {errors.email && <s.ErrorMessage>{errors.email}</s.ErrorMessage>}
