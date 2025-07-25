@@ -106,8 +106,26 @@ const KakaoInfo:React.FC = () => {
         // 빈값 체크 후 에러 업데이트
         setErrors(prev => {
             const newErr = { ...prev };
+
+            if (name === 'birthDate') {
+                const inputDate = new Date(value);
+                const today = new Date();
+            
+                if (!value) {
+                    newErr.birthDate = '❗생년월일을 선택해 주세요.';
+                } else if (inputDate > today) {
+                    newErr.birthDate = '❗미래 날짜는 입력할 수 없습니다.';
+                } else if (inputDate.getFullYear() < 1920) {
+                    newErr.birthDate = '❗1920년 이후의 날짜만 입력할 수 있습니다.';
+                } else {
+                    newErr.birthDate = '';
+                }
+                return newErr;
+            }
+
+             // 생년월일이 아닌 항목에 대해 placeholder 빈값 검사
             if (value.trim() === '') {
-              newErr[name as keyof KakaoErrorType] = `❗${e.target.placeholder}을 입력해 주세요.`;
+              newErr[name as keyof KakaoErrorType] = `❗${e.target.placeholder}`;
             } else {
               newErr[name as keyof KakaoErrorType] = '';
             }
@@ -306,7 +324,8 @@ const KakaoInfo:React.FC = () => {
                         name='nickname'
                         value={formData.nickname}
                         onChange={handleChange}
-                        placeholder={formData.nickname || '닉네임을 입력해주세요.'}
+                        placeholder='닉네임을 입력해주세요.'
+                        // placeholder={formData.nickname || '닉네임을 입력해주세요.'}
                        />
                         <s.SignUpDupli
                             type="button"
@@ -337,7 +356,7 @@ const KakaoInfo:React.FC = () => {
                         type='text'
                         name='email'
                         value={formData.email}
-                        placeholder={formData.email || '이메일'}
+                        placeholder='이메일을 입력해주세요.'
                         readOnly
                         />
                     </s.InputRow>
@@ -370,6 +389,7 @@ const KakaoInfo:React.FC = () => {
                         name='birthDate'
                         value={formData.birthDate}
                         onChange={handleChange}
+                        placeholder='생년월일을 입력해주세요.'
                     />
                     </s.InputRow>
                     {errors.birthDate && <s.ErrorMessage>{errors.birthDate}</s.ErrorMessage>}
