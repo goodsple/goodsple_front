@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import axiosInstance from "../../../api/axiosInstance";
-import type { UserProfile } from "../types/\bauth";
+import type { UserProfile } from "../types/auth";
 
 /**
  * 카카오 OAuth 콜백을 처리하는 전용 컴포넌트

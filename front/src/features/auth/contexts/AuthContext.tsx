@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import type { UserProfile } from "../types/\bauth";
+import type { UserProfile } from "../types/auth";
 import axiosInstance from "../../../api/axiosInstance";
 
 // AuthContext에 저장할 값들의 타입 정의
