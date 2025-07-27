@@ -1,8 +1,8 @@
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { AuthProvider } from './features/auth/contexts/AuthContext.tsx';
 import './App.css';
 import KakaoCallback from './features/auth/components/KakaoCallback.tsx';
+import { AuthProvider } from './features/auth/contexts/AuthContext.tsx';
 
 // 레이아웃(사용자,관리자)
 import AdminLayout from './components/common/layouts/AdminLayout.tsx';
@@ -24,6 +24,7 @@ import WriteReview from './features/review/components/WriteReview.tsx';
 import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
+import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
 
@@ -41,6 +42,7 @@ function App() {
           <Route path='/writereview' element={<WriteReview/>}/>
           <Route path='/reviews' element={<MyReview/>}/>
           <Route path='/badgeguide' element={<BadgeGuide/>} />
+          <Route path='/bookmarkPage' element={<BookmarkPage />} />
           <Route path='/auction/live/:auctionId' element={<LiveAuctionPage />} />
         </Route>
 
