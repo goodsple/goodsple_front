@@ -1,5 +1,13 @@
 import styled from "styled-components";
 
+interface IconBoxProps {
+  $iconType: 'chat' | 'alarm';
+}
+
+interface ProfileWrapperProps {
+  $isDefault: boolean;
+}
+
 export const HeaderContainer = styled.header`
     width: 100%;
     background: #FFFDFA;
@@ -94,7 +102,7 @@ export const LoginButton = styled.button`
   cursor: pointer;
 `;
 
-export const IconBox = styled.div<{ iconType?: string }>`
+export const IconBox = styled.div<IconBoxProps>`
   width:28px;
   height:28px;
   cursor: pointer;
@@ -109,23 +117,23 @@ export const IconBox = styled.div<{ iconType?: string }>`
     cursor: pointer;
   }
 
-    ${({ iconType }) =>
-    iconType === 'chat' &&
+    ${({ $iconType }) =>
+    $iconType === 'chat' &&
     `
         margin-top: 2px;
     `}
-    ${({ iconType }) =>
-    iconType === 'alarm' &&
+    ${({ $iconType }) =>
+    $iconType === 'alarm' &&
     `
     margin-left:15px;
     `}
 `;
 
-export const ProfileWrapper = styled.div<{ isDefault?: boolean }>`
+export const ProfileWrapper = styled.div<ProfileWrapperProps>`
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    background: ${({ isDefault }) => (isDefault ? '#D9D9D9' : 'transparent')};
+    background: ${({ $isDefault }) => ($isDefault ? '#D9D9D9' : 'transparent')};
     display: flex;
     justify-content: center;
     align-items: center;
@@ -134,14 +142,15 @@ export const ProfileWrapper = styled.div<{ isDefault?: boolean }>`
     cursor: pointer;
 `;
 
-export const ProfileIcon = styled.img<{ isDefault?: boolean }>`
+export const ProfileIcon = styled.img<{ $isDefault?: boolean }>`
     width: 90%;
     height: 90%;
     object-fit: contain;
-    ${({ isDefault }) => isDefault && `
+    ${({ $isDefault }) => $isDefault && `
     transform: translateY(16%);
     opacity: 0.8;
   `}
+}
 `;
 
 export const LogoutButton = styled.button`

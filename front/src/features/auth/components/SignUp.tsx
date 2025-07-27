@@ -75,7 +75,8 @@ const SignUp:React.FC = () => {
 
     // input, radio,checkbox 등 변경 시 
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        const name = e.target.name as keyof ErrorType; 
+        const value = e.target.value;
 
         if (name === 'gender') {
             setFormData((prev) => ({
@@ -213,6 +214,10 @@ const SignUp:React.FC = () => {
         const nicknameRegex = /^[a-zA-Z0-9가-힣]{2,20}$/;
         const nameRegex = /^[가-힣a-zA-Z]{2,20}$/;
 
+        // 생년월일 유효성 검사 추가
+        const today = new Date();
+        const birthDate = new Date(formData.birthDate);
+
         const newErrors = {
             ...errors,
             loginId: formData.loginId.match(loginIdRegex) ? '' : '❗아이디는 영문 + 숫자 조합으로 5~20자 이내로 입력해 주세요.',
@@ -229,6 +234,35 @@ const SignUp:React.FC = () => {
                 ? ''
                 : '❗필수 약관(이용약관, 개인정보 수집 및 이용)에 모두 동의해주세요.',
         };
+        if (formData.birthDate) {
+            if (birthDate > today) {
+              newErrors.birthDate = '❗미래 날짜는 입력할 수 없습니다.';
+            } else if (birthDate.getFullYear() < 1920) {
+              newErrors.birthDate = '❗1920년 이후의 날짜만 입력할 수 있습니다.';
+            }
+        }
+
+        // 유효성 검사 후
+        const newCheckResult = { ...checkResult };
+
+        if (!formData.loginId.match(loginIdRegex)) {
+        newCheckResult.loginId = '';
+        newCheckResult.loginIdValue = '';
+        }
+        if (!formData.nickname.match(nicknameRegex)) {
+        newCheckResult.nickname = '';
+        newCheckResult.nicknameValue = '';
+        }
+        if (!formData.email.match(emailRegex)) {
+        newCheckResult.email = '';
+        newCheckResult.emailValue = '';
+        }
+        if (!formData.phoneNumber.match(phoneRegex)) {
+        newCheckResult.phoneNumber = '';
+        newCheckResult.phoneNumberValue = '';
+        }
+        setCheckResult(newCheckResult);
+
         setErrors(newErrors);
 
         if (!isCheckResultValid) {
@@ -259,8 +293,11 @@ const SignUp:React.FC = () => {
         const hasEmpty = Object.values(formData).some(value => value.trim() === "");
         // 에러 체크
         const hasError = Object.entries(errors).some(([key, msg]) => key !== "agreements" && msg !== '');
-        return hasEmpty || hasError || errors.agreements !== "";
-    }, [formData, errors]);
+        
+        const isRequiredAgreementsChecked = agreements.service && agreements.privacy;
+
+        return hasEmpty || hasError || !isRequiredAgreementsChecked;
+    }, [formData, errors, agreements.service, agreements.privacy]);
 
     // 결과 모달
     const handleResultConfirm = () => {
@@ -406,6 +443,8 @@ const SignUp:React.FC = () => {
                         placeholder='생년월일을 입력해 주세요.'
                         value={formData.birthDate}
                         onChange={handleChange} 
+                        min="1920-01-01"
+                        max={new Date().toISOString().split("T")[0]}  // 오늘 날짜까지만 선택 가능
                     />
                     </s.InputRow>
                     {errors.birthDate && <s.ErrorMessage>{errors.birthDate}</s.ErrorMessage>}

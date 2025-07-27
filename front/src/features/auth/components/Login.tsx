@@ -5,6 +5,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import axiosInstance from '../../../api/axiosInstance'
 import type {LoginFormType} from '../types/login'
+        
+import { useAuth } from '../contexts/AuthContext'; 
+import type { UserProfile } from '../types/auth'
+
 
 const Login:React.FC = () => {
 
@@ -15,6 +19,7 @@ const Login:React.FC = () => {
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     const navigate = useNavigate();
+    const { setUserProfile } = useAuth();  
 
     const handleLogin = async() => {
 
@@ -24,16 +29,24 @@ const Login:React.FC = () => {
         }
 
         try{
+             // 1) 로컬 로그인 요청
             const res = await axiosInstance.post("/auth/login",{
                 loginId : formData.loginId,
                 password : formData.password
             });
 
+            // 2) 받은 토큰을 저장
             localStorage.setItem("accessToken", res.data.accessToken);
             localStorage.setItem("refreshToken", res.data.refreshToken);
 
+            // 3) 로그인 직후 프로필 정보 가져오기
+            const profileRes = await axiosInstance.get<UserProfile>('/auth/me');
+            setUserProfile(profileRes.data);                     // 4) Context 업데이트
+
+            // 5) 홈으로 이동
             navigate("/");
         }catch (err: any) {
+            // 에러 처리
             if (err.response?.status === 401) {
               setErrorMessage(err.response?.data?.message || "❗아이디 또는 비밀번호가 일치하지 않습니다.");
             } else if (err.response?.status === 403) {
@@ -52,7 +65,6 @@ const Login:React.FC = () => {
     };
 
     const handleKakaoLogin = async() => {
-        
         try{
             const res = await axiosInstance.get("/auth/kakao/url");
             window.location.href = res.data.url;
@@ -87,7 +99,7 @@ const Login:React.FC = () => {
                     />
                     {errorMessage && <s.ErrorText>{errorMessage}</s.ErrorText>}
                    <s.LoginButton 
-                    type="submit" onClick={handleLogin}>로그인</s.LoginButton>
+                    type="submit">로그인</s.LoginButton>
                      
                 </s.Form>
                 <s.LinkList>
