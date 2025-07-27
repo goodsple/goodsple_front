@@ -5,25 +5,25 @@ import styled from "styled-components";
 // `;
 
 export const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.3);
+      position: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
 `;
 
 export const ModalContainer = styled.div`
-  width: 400px;
-  height: 335px;
-  background: white;
-  padding: 10px 30px;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      width: 400px;
+      height: 335px;
+      padding: 10px 30px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 `;
 
 
@@ -38,10 +38,10 @@ export const FolderTitleBox = styled.div`
 export const FolderNameInputBox = styled.input`
       width: 98%;
       height: 30px;
-      font-size: 16px;
       margin-top: 10px;
       border: none;
       border-bottom: 1px solid #444444;;
+      font-size: 16px;
       align-items: center;
 `;
 
@@ -65,42 +65,42 @@ export const ColorOptions = styled.div`
 export const ColorDot = styled.div<{ color : string; selected : boolean, checkImg : string}>`
       width: ${({ selected }) => (selected ? '35px' : '30px')};
       height: ${({ selected }) => (selected ? '35px' : '30px')};
-      border-radius: 50%;
       background: ${({ color }) => color};
-      cursor: pointer;
+      border-radius: 50%;
       position: relative;
+      cursor: pointer;
 
-       &::after {
-          content: '';
-          display: ${({ selected }) => (selected ? 'block' : 'none')};
+      &::after {
           width: 29px;
           height: 29px;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          content: '';
+          display: ${({ selected }) => (selected ? 'block' : 'none')};
           background-image: ${({ checkImg }) => `url(${checkImg})`};
           background-size: contain;
           background-repeat: no-repeat;
           background-position: center;
           position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
       }
 `;
 
 // 취소/확인 버튼 그룹
 export const FolderBtnGroup = styled.div`
+      margin-top: 35px;
       display: flex;
       justify-content: space-between;
-      margin-top: 35px;
 `;
 
 // 취소버튼
 export const CancelBtn = styled.button`
       width: 45%;
       height: 48px;
-      font-size: 16px;
-      font-weight: 500;
       color: #997BEB;
       background: #ffffff;
+      font-size: 16px;
+      font-weight: 500;
       border: 1px solid #997BEB;
       border-radius: 10px;
       cursor: pointer;
@@ -110,10 +110,10 @@ export const CancelBtn = styled.button`
 export const ConfirmBtn = styled.button`
       width: 45%;
       height: 48px;
-      font-size: 16px;
-      font-weight: 500;
       color: #ffffff;
       background: #997BEB;
+      font-size: 16px;
+      font-weight: 500;
       border: none;
       border-radius: 10px;
       cursor: pointer;
