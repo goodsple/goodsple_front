@@ -20,6 +20,7 @@ import MyPage from './features/mypage/components/Mypage';
 import MyReview from './features/review/components/MyReview';
 import UserMain from "./features/usermain/pages/UserMain.tsx";
 import ThirdCategory from "./features/category/pages/ThirdCategory.tsx";
+import Notification from './features/notification/pages/Notification.tsx';
 
 // 관리자화면 컴포넌트
 import AdminMain from './pages/AdminMain.tsx';
@@ -71,6 +72,7 @@ function AppRoutes() {
         <Route path='/mypage' element={<MyPage />} />
         <Route path='/categories' element={<CategorySelect />} />
         <Route path='/category' element={<ThirdCategory />} />
+        <Route path='/notification' element={<Notification />} />
         <Route path='/editprofile' element={<EditProfile/>}/>
         <Route path='/writereview' element={<WriteReview/>}/>
         <Route path='/reviews' element={<MyReview/>}/>
