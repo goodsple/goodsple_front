@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import profileImg from '../../../assets/images/default_profile.png';
 import badge from '../../../assets/images/LV1.png';
@@ -6,6 +7,8 @@ import * as s from './MyPageStyle';
 const MyPage:React.FC = () => {
 
     const navigate = useNavigate();
+
+    const [userProfileImg, setUserProfileImg] = useState<string | null>(null);
 
 
     const handleEditProfile = () => {
@@ -17,8 +20,12 @@ const MyPage:React.FC = () => {
             <s.ProfileSection> {/* 위 사용자 정보 박스 / 게시글? 갯수 표시 박스 */}
                 <s.MyProfile>
                     {/* 프로필 사진 / 닉네임 / 등급, 뱃지 / 내 정보 수정 버튼 */}
-                    <s.ProfileImage>
-                        <img src={profileImg} alt="프로필기본이미지" />
+                    <s.ProfileImage isDefault={!userProfileImg}>
+                        {userProfileImg ?(
+                            <img src={userProfileImg} alt="업로드된 프로필 이미지" />
+                        ):(
+                            <img src={profileImg} alt="기본 프로필 이미지" />
+                        )}
                     </s.ProfileImage>
                     굿또
                     <s.profileBadge>
@@ -71,7 +78,7 @@ const MyPage:React.FC = () => {
                 <s.Activity>
                     <s.ActivityHeader>내 계정 관리</s.ActivityHeader>
                     <s.StyledHr />
-                    <s.ActivityLink to="/mypage">내 등급(뱃지)</s.ActivityLink>
+                    <s.ActivityLink to="/badgeguide">내 등급(뱃지)</s.ActivityLink>
                     <s.ActivityLink to="/mypage">내 채팅목록</s.ActivityLink>
                 </s.Activity>
             </s.LinkList>

@@ -12,7 +12,13 @@ const MENU_ITEMS = [
     { label: "카테고리 관리", path: "/admin" },
     { label: "금칙어 필터링 관리", path: "/admin" },
     { label: "커뮤니티 관리", path: "/admin" },
-    { label: "챗봇 관리", path: "/admin" },
+    {
+        label: "챗봇 관리",
+        children: [
+            { label: "챗봇 대화 로그 관리", path: "/admin" },
+            { label: "챗봇 지식 베이스 관리", path: "/admin" },
+        ]
+    },
     { label: "실시간 검색어 관리", path: "/admin" },
     { label: "공지사항 관리", path: "/admin" },
 ];
@@ -20,27 +26,55 @@ const MENU_ITEMS = [
 const AdminNav = () => {
     const navigate = useNavigate();
     const [activeMenu, setActiveMenu] = useState<string>("대시보드");
+    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-    const handleMenuClick = (label: string, path: string) => {
-        setActiveMenu(label);
-        navigate(path);
+    const handleMenuClick = (label: string, path?: string) => {
+        if (!path && openDropdown === label) {
+            setOpenDropdown(null); // 토글 닫기
+            return;
+        }
+
+        if (!path) {
+            setOpenDropdown(label);
+        } else {
+            setActiveMenu(label);
+            navigate(path);
+        }
     };
 
     return (
-        <S.SidebarContainer>
+        <S.NavContainer>
             <S.MenuList>
-                {MENU_ITEMS.map(({ label, path }) => (
-                    <S.MenuItem
-                        key={label}
-                        $active={activeMenu === label}
-                        $isDashboard={label === "대시보드"}
-                        onClick={() => handleMenuClick(label, path)}
-                    >
-                        {label}
-                    </S.MenuItem>
+                {MENU_ITEMS.map((item) => (
+                    <div key={item.label}>
+                        <S.MenuItem
+                            $active={activeMenu === item.label}
+                            $isDashboard={item.label === "대시보드"}
+                            onClick={() => handleMenuClick(item.label, item.path)}
+                        >
+                            {item.label}
+                            {item.children && (
+                                <S.DropdownArrow $open={openDropdown === item.label} />
+                            )}
+                        </S.MenuItem>
+                        {/* 드롭다운 하위 메뉴 렌더링 */}
+                        {item.children && openDropdown === item.label && (
+                            <S.SubMenuList>
+                                {item.children.map((child) => (
+                                    <S.SubMenuItem
+                                        key={child.label}
+                                        onClick={() => handleMenuClick(child.label, child.path)}
+                                        $active={activeMenu === child.label}
+                                    >
+                                        {child.label}
+                                    </S.SubMenuItem>
+                                ))}
+                            </S.SubMenuList>
+                        )}
+                    </div>
                 ))}
             </S.MenuList>
-        </S.SidebarContainer >
+        </S.NavContainer>
     );
 };
 
