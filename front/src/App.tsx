@@ -25,6 +25,7 @@ import UserMain from "./features/usermain/pages/UserMain.tsx";
 import ThirdCategory from "./features/category/pages/ThirdCategory.tsx";
 import Notification from './features/notification/pages/Notification.tsx';
 import CategorySelect from './features/category/pages/CategorySelect.tsx';
+import EventZoneMain from './features/eventzone/pages/EventZoneMain.tsx';
 
 // 관리자화면 컴포넌트
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
@@ -49,6 +50,7 @@ function App() {
           <Route path='/categories' element={<CategorySelect />} />
           <Route path='/category' element={<ThirdCategory />} />
           <Route path='/notification' element={<Notification />} />
+          <Route path='/eventZone' element={<EventZoneMain />} />
         </Route>
 
         <Route element={<AdminLayout />}>
