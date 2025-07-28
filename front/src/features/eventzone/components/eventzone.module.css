@@ -347,8 +347,21 @@
 
 /* EventZoneView */
 
+.viewCont {
+    width: 1200px;
+    min-height: 600px;
+    display:flex;
+    flex-direction: column;
+    border: 1px solid #997BEB;
+    border-radius: 10px;
+    padding: 5px 10px 0 10px;
+    box-sizing: border-box;
+    margin: 50px auto;
+}
+
 .viewTitle {
     height: 85px;
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -358,6 +371,7 @@
 
 .eventName {
     height: 30px;
+    min-width: 200px;
     border-radius: 5px;
     background-color: #997BEB;
     color: white;
@@ -365,8 +379,36 @@
     letter-spacing: -1px;
     padding: 0 5px;
     box-sizing: border-box;
-    text-align: center;
     display: flex;
     align-items: center;
-    /*justify-content: center;*/
+    justify-content: center;
 }
+
+.nickName {
+    min-width: 12%;
+    color: #444444;
+    font-size: 20px;
+    font-weight: 300;
+    letter-spacing: -1px;
+}
+
+.vTitle {
+    min-width: 55%;
+    color: #444444;
+    font-size: 20px;
+    letter-spacing: -1px;
+}
+
+.vEtc {
+    min-width: 15%;
+    color: #444444;
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: -1px;
+}
+
+.vEtc img {
+    width: 100%;
+    height: 100%;
+}
+
