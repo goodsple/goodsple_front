@@ -31,7 +31,7 @@ const GoodsMap: React.FC<Props> = ({
           <CustomOverlayMap position={selectedMarker.position} yAnchor={1.1}>
             {selectedMarker.items.length === 1 ? (
               // 단일 아이템 정보창
-              <S.InfoWindow>
+              <S.InfoWindow onWheel={(e) => e.stopPropagation()}> {/* ✨ 이벤트 전파 막기 */}
                 <S.InfoHeader>
                   <S.InfoClose onClick={() => setSelectedMarker(null)}>X</S.InfoClose>
                 </S.InfoHeader>
@@ -46,7 +46,7 @@ const GoodsMap: React.FC<Props> = ({
               </S.InfoWindow>
             ) : (
               // 여러 아이템 정보창
-              <S.MultiInfoWindow>
+              <S.MultiInfoWindow onWheel={(e) => e.stopPropagation()}> {/* ✨ 이벤트 전파 막기 */}
                 <S.MultiInfoHeader>
                   이 위치의 굿즈 ({selectedMarker.items.length}개)
                   <S.InfoClose onClick={() => setSelectedMarker(null)}>X</S.InfoClose>
