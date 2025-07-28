@@ -17,6 +17,7 @@ import KakaoInfo from './features/auth/components/KakaoInfo';
 import Login from './features/auth/components/Login';
 import SignUp from './features/auth/components/SignUp';
 import BadgeGuide from './features/badge/components/BadgeGuide.tsx';
+import MyBidsPage from './features/mybids/pages/MyBidsPage'; // ✨ 1. import 추가
 import EditProfile from './features/mypage/components/EditProfile';
 import MyPage from './features/mypage/components/Mypage';
 import MyReview from './features/review/components/MyReview';
@@ -44,6 +45,7 @@ function App() {
           <Route path='/badgeguide' element={<BadgeGuide/>} />
           <Route path='/bookmarkPage' element={<BookmarkPage />} />
           <Route path='/auction/live/:auctionId' element={<LiveAuctionPage />} />
+          <Route path='/mypage/bids' element={<MyBidsPage />} />
         </Route>
 
         <Route element={<AdminLayout />}>
