@@ -5,6 +5,8 @@ export const PageWrapper = styled.div`
   margin: 0 auto;
   padding: 40px;
   padding-top: 120px;
+  
+  width: 100%; /* ✨ 이 한 줄을 추가합니다. */
 `;
 
 export const Title = styled.h1`
@@ -16,6 +18,6 @@ export const Title = styled.h1`
 
 export const AuctionList = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
   gap: 30px;
 `;
