@@ -32,19 +32,25 @@ const FolderCreationModal:React.FC<FolderCreationModalProps> = ({
 
         const [folderName, setFolderName] = useState(initialFolderName);
         const [selectedColor, setSelectedColor] = useState(initialColor);
+        const [errorMessage, setErrorMessage] = useState('');
 
         // 모달이 열릴 때 초기값 설정 
         useEffect(() => {
             if (isOpen) {
                 setFolderName(initialFolderName);
                 setSelectedColor(initialColor);
+                setErrorMessage('');
             }
         }, [isOpen, initialFolderName, initialColor]);
 
         if(!isOpen) return null;
 
         const handleConfirm = () => {
-            if(!folderName.trim()) return; 
+            if(!folderName.trim()) {
+                setErrorMessage('폴더 이름을 입력해주세요.');    
+                return;
+            } 
+            setErrorMessage('');
             onSubmit(folderName.trim(), selectedColor);
             onClose();
         };
@@ -59,9 +65,13 @@ const FolderCreationModal:React.FC<FolderCreationModalProps> = ({
                     <s.FolderNameInputBox
                             type="text"
                             value={folderName}
-                            onChange={(e) => setFolderName(e.target.value)}
+                            onChange={(e) => {
+                                setFolderName(e.target.value);
+                                setErrorMessage('');
+                            }}
                             placeholder="폴더 명을 입력해주세요."
                     />
+                    <s.ErrorText>{errorMessage || '⠀'}</s.ErrorText>
 
                     {/* 폴더 색상 선택 */}
                     <s.FolderColorSelector>
