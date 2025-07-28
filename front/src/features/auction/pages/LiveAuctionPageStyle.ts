@@ -4,7 +4,7 @@ export const PageWrapper = styled.div`
   display: flex; /* ✨ Grid 대신 Flexbox 사용 (초안과 동일) */
   gap: 30px;
   padding: 40px;
-  padding-top: 100px; /* 헤더 높이를 고려 */
+  // padding-top: 100px; /* 헤더 높이를 고려 */
   max-width: 1600px;
   margin: 0 auto;
   box-sizing: border-box;

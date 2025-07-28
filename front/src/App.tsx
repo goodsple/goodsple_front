@@ -17,6 +17,7 @@ import KakaoInfo from './features/auth/components/KakaoInfo';
 import Login from './features/auth/components/Login';
 import SignUp from './features/auth/components/SignUp';
 import BadgeGuide from './features/badge/components/BadgeGuide.tsx';
+import MapViewPage from './features/map/pages/MapViewPage';
 import MyBidsPage from './features/mybids/pages/MyBidsPage';
 import EditProfile from './features/mypage/components/EditProfile';
 import MyPage from './features/mypage/components/Mypage';
@@ -52,6 +53,7 @@ function App() {
           <Route path='/payment' element={<PaymentPage />} />
           <Route path='/payment/success' element={<PaymentSuccessPage />} />
           <Route path='/payment/failure' element={<PaymentFailurePage />} />
+          <Route path='/map' element={<MapViewPage />} />
           
         </Route>
 
