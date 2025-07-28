@@ -1,9 +1,5 @@
 import styled from "styled-components";
 
-// export const FolderCreationContainer = styled.div`
-
-// `;
-
 export const Overlay = styled.div`
       width: 100vw;
       height: 100vh;
@@ -19,7 +15,7 @@ export const Overlay = styled.div`
 
 export const ModalContainer = styled.div`
       width: 400px;
-      height: 335px;
+      height: 338px;
       padding: 10px 30px;
       background: white;
       border-radius: 15px;
@@ -43,6 +39,13 @@ export const FolderNameInputBox = styled.input`
       border-bottom: 1px solid #444444;;
       font-size: 16px;
       align-items: center;
+`;
+
+export const ErrorText = styled.p`
+      margin-top: 5px;
+      font-size: 13px;
+      font-weight: 300;
+      color: red;
 `;
 
 // 폴더 색상 선택 (전체 div)
