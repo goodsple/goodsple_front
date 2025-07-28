@@ -4,7 +4,7 @@ export const PageWrapper = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px;
-  padding-top: 120px;
+//   padding-top: 120px;
   
   width: 100%; /* ✨ 이 한 줄을 추가합니다. */
 `;
