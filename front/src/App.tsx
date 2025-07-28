@@ -20,7 +20,9 @@ import BadgeGuide from './features/badge/components/BadgeGuide.tsx';
 import MyBidsPage from './features/mybids/pages/MyBidsPage';
 import EditProfile from './features/mypage/components/EditProfile';
 import MyPage from './features/mypage/components/Mypage';
+import PaymentFailurePage from './features/payment/pages/PaymentFailurePage';
 import PaymentPage from './features/payment/pages/PaymentPage';
+import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
 import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview.tsx';
 import UserMain from "./pages/UserMain.tsx";
@@ -48,6 +50,9 @@ function App() {
           <Route path='/auction/live/:auctionId' element={<LiveAuctionPage />} />
           <Route path='/mypage/bids' element={<MyBidsPage />} />
           <Route path='/payment' element={<PaymentPage />} />
+          <Route path='/payment/success' element={<PaymentSuccessPage />} />
+          <Route path='/payment/failure' element={<PaymentFailurePage />} />
+          
         </Route>
 
         <Route element={<AdminLayout />}>
