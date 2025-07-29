@@ -122,8 +122,8 @@ export const StyledHr = styled.hr`
 
 
 
-// 북마크 추가 ? 폴더 이동할 때 사용할 모달창
-export const AddBookmark = styled.button`s
+// 북마크 추가 => 사용할 모달창
+export const AddBookmark = styled.button`
         width: 100px;
         height: 100px;
 `;
