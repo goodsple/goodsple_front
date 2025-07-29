@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { colorToImageMap } from '../utils/folderImageMap';
+import BookmarkFolderSelector from './BookmarkFolderSelector';
 import * as s from './BookmarkPageStyle';
 import FolderCreationModal from './FolderCreationModal';
 
@@ -12,12 +13,29 @@ interface Folder {
 const BookmarkPage:React.FC = () => {
 
     const [isOpen, setIsOpen] = useState(false);
-    const [folders, setFolders] = useState<Folder[]>([]);
+    const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+    const [folders, setFolders] = useState<Folder[]>([
+        { name: '굿즈나라', color: '#997BEB' },
+        { name: '교환', color: '#FFC72E' },
+        { name: '게임나라', color: '#7D93CC' },
+        { name: '거래', color: '#75E87B' },
+        { name: '굿즈나라', color: '#997BEB' },
+        { name: '교환', color: '#FFC72E' },
+        { name: '게임나라', color: '#7D93CC' },
+        { name: '거래', color: '#75E87B' }
+    ]);
     const [dropdownOpenIndex, setDropdownOpenIndex] = useState<number | null>(null);
     const [editIndex, setEditIndex] = useState<number | null>(null);
     const [editFolder, setEditFolder] = useState<Folder | null>(null);
 
-
+const colorOptions = ['#FF4B4B'
+                    , '#F3A14A'
+                    , '#FFC72E'
+                    , '#75E87B'
+                    , '#5BA86F'
+                    , '#7D93CC'
+                    , '#997BEB'
+                    , '#FA7DDF']
 
     return(
         <s.BookmarkPageContainer>
@@ -90,8 +108,19 @@ const BookmarkPage:React.FC = () => {
                         />
 
 
+                <s.AddBookmark onClick={() => setIsSelectorOpen(true)}>
+                    북마크 추가
+                </s.AddBookmark>
 
-                <s.AddBookmark>북마크 추가 또는 폴더이동 모달창 시험</s.AddBookmark>
+                <BookmarkFolderSelector
+                        isOpen={isSelectorOpen}
+                        onClose={() => setIsSelectorOpen(false)}
+                        folders={folders}
+                        onSelect={(folderName) => {
+                            alert(`'${folderName}' 폴더에 북마크를 저장합니다.`);
+                            setIsSelectorOpen(false);
+                        }}
+                />
 
             </s.BookmarkPageSection>
         </s.BookmarkPageContainer>
