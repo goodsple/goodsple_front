@@ -28,7 +28,7 @@ export default function KakaoCallback() {
         localStorage.setItem('accessToken', at);
         localStorage.setItem('refreshToken', rt);
           // 프로필 fetch 후 Context에 저장
-        axiosInstance.get<UserProfile>('/auth/me')
+        axiosInstance.get<UserProfile>('/users/me')
             .then(res => setUserProfile(res.data))
             .finally(() => navigate('/', { replace: true }));
       } else {

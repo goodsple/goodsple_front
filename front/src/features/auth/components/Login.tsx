@@ -34,13 +34,19 @@ const Login:React.FC = () => {
                 loginId : formData.loginId,
                 password : formData.password
             });
+            const { accessToken, refreshToken } = res.data;
+            
+            // 2) 토큰 저장
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
 
-            // 2) 받은 토큰을 저장
-            localStorage.setItem("accessToken", res.data.accessToken);
-            localStorage.setItem("refreshToken", res.data.refreshToken);
+           // 3) Axios 전역 헤더에 붙여두기
+            axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
 
-            // 3) 로그인 직후 프로필 정보 가져오기
-            const profileRes = await axiosInstance.get<UserProfile>('/auth/me');
+            // 4) 로그인 직후 프로필 정보 가져오기
+            const profileRes = await axiosInstance.get<UserProfile>('/users/me');
+            console.log('내 프로필:', profileRes.data);
+           
             setUserProfile(profileRes.data);                     // 4) Context 업데이트
 
             // 5) 홈으로 이동

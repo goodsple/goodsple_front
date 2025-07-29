@@ -143,8 +143,9 @@ export const ProfileWrapper = styled.div<ProfileWrapperProps>`
 `;
 
 export const ProfileIcon = styled.img<{ $isDefault?: boolean }>`
-    width: 90%;
-    height: 90%;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
     object-fit: contain;
     ${({ $isDefault }) => $isDefault && `
     transform: translateY(16%);
