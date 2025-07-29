@@ -23,7 +23,7 @@ useEffect(() => {
     if (!token) return; // 토큰 없으면 아무 것도 안 함
 // 토큰이 있으면 백엔드에서 내 프로필을 한 번만 가져와서 Context에 저장
 axiosInstance
-    .get<UserProfile>("/auth/me")
+    .get<UserProfile>("/users/me")
     .then(res => {
     setUserProfile(res.data);
     })

@@ -3,7 +3,8 @@ import * as c from './ConfirmStyle'
 type ConfirmModalProps = {
     isOpen: boolean;  // true면 모달 열리고, 아니면 모달 안열리고
     title?: string;  // 제목 있으면 보여지고, 아니면 생략
-    content: string; // 모달 내용
+    /** string 뿐 아니라 JSX도 받을 수 있도록 ReactNode 로 변경 */
+    content: React.ReactNode; // 모달 내용
     showCancel?: boolean; // true면 취소 버튼 표시, false면 확인 버튼만
     confirmText?: string; // 확인버튼 텍스트
     cancelText?: string;  // 취소버튼 텍스트
