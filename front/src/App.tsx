@@ -21,12 +21,12 @@ import MapViewPage from './features/map/pages/MapViewPage';
 import MyBidsPage from './features/mybids/pages/MyBidsPage';
 import EditProfile from './features/mypage/components/EditProfile';
 import MyPage from './features/mypage/components/Mypage';
+import NoticeList from './features/notice/NoticeList.tsx';
 import PaymentFailurePage from './features/payment/pages/PaymentFailurePage';
 import PaymentPage from './features/payment/pages/PaymentPage';
 import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
 import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview.tsx';
-import NoticeList from './features/notice/NoticeList.tsx';
 import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
@@ -34,6 +34,7 @@ import AdminAuctionCreatePage from './features/admin/pages/AdminAuctionCreatePag
 import AdminAuctionEditPage from './features/admin/pages/AdminAuctionEditPage';
 import AdminAuctionPage from './features/admin/pages/AdminAuctionPage';
 import AdminAuctionResultPage from './features/admin/pages/AdminAuctionResultPage';
+import AdminChatLogPage from './features/admin/pages/AdminChatLogPage';
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
@@ -70,6 +71,7 @@ function App() {
           <Route path='/admin/auctions/create' element={<AdminAuctionCreatePage />} />
           <Route path='/admin/auctions/edit/:auctionId' element={<AdminAuctionEditPage />} />
           <Route path='/admin/auctions/result/:auctionId' element={<AdminAuctionResultPage />} />
+          <Route path='/admin/chatbot/logs' element={<AdminChatLogPage />} />
         </Route>
 
         {/* Layout 없이 단독 페이지 */}
