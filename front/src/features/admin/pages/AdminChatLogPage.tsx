@@ -1,16 +1,27 @@
-import { Table, Tbody, Td, Th, Thead, Tr } from '../components/AuctionTableStyle'; // 테이블 스타일 재사용
+import { useEffect, useState } from 'react';
+import { Table, Tbody, Td, Th, Thead, Tr } from '../components/AuctionTableStyle';
 import ChatLogControls from '../components/ChatLogControls';
+import type { ChatLog } from '../mock/chatLogData';
 import { mockChatLogData } from '../mock/chatLogData';
-import * as S from './AdminAuctionPageStyle'; // 페이지 레이아웃 스타일 재사용
+import * as S from './AdminAuctionPageStyle';
 
 const AdminChatLogPage = () => {
-  // TODO: 필터링 된 로그를 상태로 관리
-  const logs = mockChatLogData;
+  const [logs] = useState(mockChatLogData);
+  const [filteredLogs, setFilteredLogs] = useState<ChatLog[]>(logs);
+  const [activeTab, setActiveTab] = useState<'FAQ' | 'QNA'>('QNA');
+
+  useEffect(() => {
+    const result = logs.filter(log => log.type === activeTab);
+    setFilteredLogs(result);
+  }, [activeTab, logs]);
 
   return (
     <S.PageContainer>
       <S.ContentCard>
-        <ChatLogControls />
+        <ChatLogControls 
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
         <Table>
           <Thead>
             <Tr>
@@ -22,7 +33,7 @@ const AdminChatLogPage = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {logs.map(log => (
+            {filteredLogs.map(log => (
               <Tr key={log.id}>
                 <Td>{log.userId}</Td>
                 <Td style={{textAlign: 'left'}}>{log.question}</Td>
@@ -33,7 +44,6 @@ const AdminChatLogPage = () => {
             ))}
           </Tbody>
         </Table>
-        {/* TODO: 페이지네이션 컴포넌트 추가 */}
       </S.ContentCard>
     </S.PageContainer>
   );
