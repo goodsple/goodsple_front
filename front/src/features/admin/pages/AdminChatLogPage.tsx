@@ -3,7 +3,8 @@ import { Table, Tbody, Td, Th, Thead, Tr } from '../components/AuctionTableStyle
 import ChatLogControls from '../components/ChatLogControls';
 import type { ChatLog } from '../mock/chatLogData';
 import { mockChatLogData } from '../mock/chatLogData';
-import * as S from './AdminAuctionPageStyle';
+import * as PageStyle from './AdminAuctionPageStyle'; // 페이지 레이아웃 스타일 재사용
+import * as S from './AdminChatLogPageStyle'; // 탭 스타일 import
 
 const AdminChatLogPage = () => {
   const [logs] = useState(mockChatLogData);
@@ -11,17 +12,31 @@ const AdminChatLogPage = () => {
   const [activeTab, setActiveTab] = useState<'FAQ' | 'QNA'>('QNA');
 
   useEffect(() => {
+    // TODO: 실제 필터링 로직 구현
     const result = logs.filter(log => log.type === activeTab);
     setFilteredLogs(result);
   }, [activeTab, logs]);
 
   return (
-    <S.PageContainer>
-      <S.ContentCard>
-        <ChatLogControls 
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+    <PageStyle.PageContainer>
+      <PageStyle.ContentCard>
+        <ChatLogControls />
+        
+        <S.TabGroup>
+          <S.TabButton 
+            $isActive={activeTab === 'FAQ'}
+            onClick={() => setActiveTab('FAQ')}
+          >
+            FAQ
+          </S.TabButton>
+          <S.TabButton 
+            $isActive={activeTab === 'QNA'}
+            onClick={() => setActiveTab('QNA')}
+          >
+            QNA
+          </S.TabButton>
+        </S.TabGroup>
+
         <Table>
           <Thead>
             <Tr>
@@ -44,8 +59,8 @@ const AdminChatLogPage = () => {
             ))}
           </Tbody>
         </Table>
-      </S.ContentCard>
-    </S.PageContainer>
+      </PageStyle.ContentCard>
+    </PageStyle.PageContainer>
   );
 };
 
