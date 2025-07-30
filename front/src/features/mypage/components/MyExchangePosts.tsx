@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as S from './MyExchangePosts.styles';
 import dropdownArrow from '../../../assets/images/dropdownArrow.png';
 import sampleImage1 from '../../../assets/images/sample1.png';
 import sampleImage2 from '../../../assets/images/sample2.png';
 import sampleImage3 from '../../../assets/images/sample3.png';
+import Pagination from '../../../components/common/pagination/Pagination';
+import * as PC from '../../../components/common/pagination/PaginationStyle.ts';
 
 const statusOptions = ['거래가능', '거래중', '거래완료'];
 const FILTERS = ['전체', ...statusOptions] as const;
 type FilterType = typeof FILTERS[number];
 
+
 const MyExchangePosts = () => {
     const [activeTab, setActiveTab] = useState<'myPosts' | 'history'>('myPosts');
     const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
     const [activeFilter, setActiveFilter] = useState<FilterType>('전체');
+    const [currentPage, setCurrentPage] = useState(1);
 
     const [data, setData] = useState([
         {
@@ -42,7 +46,49 @@ const MyExchangePosts = () => {
             likedCount: 5,
             updatedAt: '2025.07.25 11:30',
         },
+        {
+            id: 4,
+            imageUrl: sampleImage1,
+            title: '테스트글입니다 포카4번',
+            status: '거래가능',
+            method: '택배거래',
+            likedCount: 5,
+            updatedAt: '2025.07.25 11:30',
+        },
+        {
+            id: 5,
+            imageUrl: sampleImage1,
+            title: '테스트글입니다 포카4번',
+            status: '거래가능',
+            method: '택배거래',
+            likedCount: 5,
+            updatedAt: '2025.07.25 11:30',
+        },
+        {
+            id: 6,
+            imageUrl: sampleImage1,
+            title: '테스트글입니다 포카4번',
+            status: '거래가능',
+            method: '택배거래',
+            likedCount: 5,
+            updatedAt: '2025.07.25 11:30',
+        },
     ]);
+
+    const itemsPerPage = 5;
+
+    const filteredData =
+        activeFilter === '전체' ? data : data.filter(d => d.status === activeFilter);
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [activeFilter]);
+
 
     const toggleDropdown = (id: number) => {
         setOpenDropdownId(prev => (prev === id ? null : id));
@@ -61,8 +107,6 @@ const MyExchangePosts = () => {
         setActiveFilter(filter);
     };
 
-    const filteredData =
-        activeFilter === '전체' ? data : data.filter(d => d.status === activeFilter);
 
     return (
         <S.Container>
@@ -102,7 +146,7 @@ const MyExchangePosts = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredData.map(item => (
+                    {paginatedData.map(item => (
                         <tr key={item.id}>
                             <td><S.Thumbnail src={item.imageUrl} alt="상품 이미지" /></td>
                             <td>{item.title}</td>
@@ -140,6 +184,16 @@ const MyExchangePosts = () => {
                     ))}
                 </tbody>
             </S.Table>
+
+            {totalPages > 1 && (
+                <PC.PaginationContainer>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                    />
+                </PC.PaginationContainer>
+            )}
         </S.Container>
     );
 };
