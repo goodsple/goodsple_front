@@ -1,5 +1,6 @@
 // 회원정보 타입
 export interface UserProfile {
+    userId: number;   
     loginId: string;
     nickname: string;
     name: string;
