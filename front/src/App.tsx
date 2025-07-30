@@ -29,6 +29,7 @@ import WriteReview from './features/review/components/WriteReview.tsx';
 import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
+import AdminAuctionPage from './features/admin/pages/AdminAuctionPage';
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
@@ -61,6 +62,7 @@ function App() {
 
         <Route element={<AdminLayout />}>
           <Route path='/admin' element={<AdminMain/>} />
+          <Route path='/admin/auctions' element={<AdminAuctionPage />} />
         </Route>
 
         {/* Layout 없이 단독 페이지 */}
