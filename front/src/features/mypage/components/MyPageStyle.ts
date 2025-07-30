@@ -171,3 +171,12 @@ export const ActivityLink = styled(Link)`
             color: #997BEB;          
         }
 `;
+
+export const NonData = styled.div`
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #444;
+`;
