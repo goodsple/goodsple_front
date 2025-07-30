@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react'; // ✨ useRef 추가
 import { useNavigate } from 'react-router-dom';
 import * as S from './AdminAuctionCreatePageStyle';
 
@@ -12,6 +12,7 @@ const AdminAuctionCreatePage = () => {
     endTime: '',
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null); // ✨ 파일 input 참조를 위한 ref
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -28,6 +29,15 @@ const AdminAuctionCreatePage = () => {
       reader.readAsDataURL(file);
     }
   };
+
+  // ✨ 이미지 취소 핸들러 추가
+  const handleCancelImage = () => {
+    setImagePreview(null);
+    // 파일 input의 값을 초기화하여 같은 파일을 다시 선택할 수 있도록 함
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +48,7 @@ const AdminAuctionCreatePage = () => {
 
   return (
     <S.PageContainer>
-      <S.Title>새 경매 등록</S.Title>
+      {/* ✨ Title 컴포넌트 삭제 */}
       <S.ContentCard>
         <S.Form onSubmit={handleSubmit}>
           <S.FormGroup>
@@ -53,8 +63,15 @@ const AdminAuctionCreatePage = () => {
 
           <S.FormGroup>
             <S.Label htmlFor="image">상품 이미지</S.Label>
-            <S.Input type="file" id="image" name="image" accept="image/*" onChange={handleImageChange} />
-            {imagePreview && <S.ImagePreview src={imagePreview} alt="미리보기" />}
+            <S.Input type="file" id="image" name="image" accept="image/*" onChange={handleImageChange} ref={fileInputRef} />
+            
+            {/* ✨ 이미지 미리보기와 취소 버튼 UI 변경 */}
+            {imagePreview && (
+              <S.ImagePreviewWrapper>
+                <S.ImagePreview src={imagePreview} alt="미리보기" />
+                <S.ImageCancelButton type="button" onClick={handleCancelImage}>X</S.ImageCancelButton>
+              </S.ImagePreviewWrapper>
+            )}
           </S.FormGroup>
           
           <S.FormGrid>
@@ -74,7 +91,7 @@ const AdminAuctionCreatePage = () => {
           
           <S.FormActions>
             <S.ActionLink to="/admin/auctions">취소</S.ActionLink>
-            <S.ActionButton type="submit">경매 등록하기</S.ActionButton>
+            <S.ActionButton type="submit">경매 등록</S.ActionButton>
           </S.FormActions>
         </S.Form>
       </S.ContentCard>

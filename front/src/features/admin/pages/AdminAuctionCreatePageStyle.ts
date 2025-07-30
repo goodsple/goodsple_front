@@ -3,15 +3,11 @@ import styled from 'styled-components';
 
 export const PageContainer = styled.div`
   padding: 40px;
-  background-color: #f8f9fa;
+  /* background-color: #f8f9fa; ✨ 회색 배경 제거 */
   min-height: calc(100vh - 70px);
 `;
 
-export const Title = styled.h1`
-  font-size: 28px;
-  font-weight: 900;
-  margin: 0 0 20px 0;
-`;
+// ✨ Title 컴포넌트는 더 이상 사용하지 않으므로 삭제합니다.
 
 export const ContentCard = styled.div`
   background-color: #ffffff;
@@ -43,6 +39,12 @@ export const Input = styled.input`
   border-radius: 6px;
   font-size: 15px;
   font-family: 'pretendard', sans-serif;
+
+  /* ✨ 파일 선택 input의 테두리만 투명하게 처리 */
+  &[type="file"] {
+    border-color: transparent;
+    padding-left: 0;
+  }
 `;
 
 export const Textarea = styled.textarea`
@@ -54,14 +56,40 @@ export const Textarea = styled.textarea`
   resize: vertical;
 `;
 
-export const ImagePreview = styled.img`
+// ✨ 이미지 미리보기와 취소 버튼을 감싸는 Wrapper 추가
+export const ImagePreviewWrapper = styled.div`
+  position: relative;
+  width: fit-content; /* 내용물 크기에 맞게 조절 */
   margin-top: 15px;
+`;
+
+export const ImagePreview = styled.img`
   max-width: 200px;
   max-height: 200px;
   border-radius: 8px;
   border: 1px solid #e9ecef;
   object-fit: cover;
 `;
+
+// ✨ 이미지 취소 버튼 스타일 추가
+export const ImageCancelButton = styled.button`
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 
 export const FormGrid = styled.div`
   display: grid;
@@ -99,4 +127,5 @@ export const ActionLink = styled(Link)`
   background-color: #868e96;
   color: white;
   text-decoration: none;
+  text-align: center;
 `;
