@@ -24,43 +24,60 @@ export const Table = styled.table`
   td[colspan] {
     text-align: center;
     padding: 50px;
-    color: #868e96;
   }
 `;
 
-export const StatusBadge = styled.span<{status: string}>`
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-weight: bold;
+// ✨ '경매 상태' 배지: 색상 통일
+export const StatusBadge = styled.span`
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 500;
   font-size: 12px;
-  color: white;
-  background-color: ${({status}) => 
-    status === '예정' ? '#adb5bd' : 
-    status === '진행중' ? '#228be6' :
-    '#495057'
-  };
+  color: #fff;
+  background-color: #997BEB; /* 연보라 */
+  
+  display: inline-block;
+  min-width: 50px;
+  text-align: center;
+  box-sizing: border-box;
 `;
-export const PaymentStatusBadge = styled.span<{status: string}>`
-  padding: 5px 10px;
-  border-radius: 20px;
+
+// ✨ '결제 상태' 배지: 타입 수정
+export const PaymentStatusBadge = styled.span<{ status: '결제 완료' | '결제대기' | '기한초과' }>`
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 500;
   font-size: 12px;
-  font-weight: bold;
-  color: white;
-  background-color: ${({status}) =>
-    status === '결제 완료' ? '#20c997' :
-    status === '미결제' ? '#fd7e14' :
-    '#e03131' // 미결제(기한초과)
-  };
+  display: inline-block;
+  min-width: 50px;
+  text-align: center;
+  box-sizing: border-box;
+
+  color: ${({ status }) => (status === '결제대기' ? '#444' : '#fff')};
+  background-color: ${({ status }) => {
+    switch(status) {
+      case '결제 완료': return '#B1FF90'; // 연두
+      case '결제대기': return '#F8FFC7'; // 노랑
+      case '기한초과': return '#FA5252'; // 빨강
+      default: return '#ced4da';
+    }
+  }};
 `;
-export const ActionButton = styled.button`
-  padding: 6px 10px;
+
+export const ActionButtonGroup = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+`;
+
+export const ActionButton = styled.button<{ variant: string }>`
+  padding: 6px 12px;
   border: none;
   border-radius: 6px;
   color: white;
   cursor: pointer;
   font-size: 12px;
-  margin: 0 4px;
-  &.view { background-color: #12b886; }
-  &.edit { background-color: #f59f00; }
-  &.stop { background-color: #fa5252; }
+  background-color: ${({ variant }) => 
+    variant === '수정' || variant === '결과' ? '#997BEB' : '#444444'
+  };
 `;
