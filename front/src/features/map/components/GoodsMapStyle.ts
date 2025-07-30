@@ -46,19 +46,45 @@ export const InfoClose = styled.span`
 export const InfoBody = styled.div`
   display: flex;
   align-items: center;
+
   img {
     width: 80px;
     height: 100px;
     object-fit: cover;
     border-radius: 6px;
     margin-right: 12px;
+    flex-shrink: 0;
   }
 `;
 
 export const InfoContent = styled.div`
-  .info-title { font-size: 16px; font-weight: bold; color: #444; margin-bottom: 4px; }
-  .info-price { font-size: 14px; color: #997BEB; font-weight: 500; margin-bottom: 10px; }
-  a { font-size: 13px; color: #666; text-decoration: underline; }
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+`;
+
+export const InfoTitle = styled.div`
+  font-size: 16px; 
+  font-weight: bold; 
+  color: #444; 
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+export const InfoPrice = styled.div`
+  font-size: 14px;
+  color: #997BEB;
+  font-weight: 500;
+  margin-bottom: 10px;
+`;
+
+export const InfoLink = styled.a`
+  font-size: 13px;
+  color: #666;
+  text-decoration: underline;
 `;
 
 export const MultiInfoWindow = styled.div`
@@ -91,5 +117,16 @@ export const MultiItemList = styled.ul`
     &:last-child { border-bottom: none; }
     &:hover { background-color: #f8f9fa; }
     img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; margin-right: 12px; }
+    
+    .multi-item-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 180px;
+    }
+    .multi-item-price {
+        font-size: 13px;
+        color: #868e96;
+    }
   }
 `;
