@@ -3,29 +3,33 @@ import styled from 'styled-components';
 
 export const PageContainer = styled.div`
   padding: 40px;
-  background-color: #f8f9fa;
+  /* background-color: #f8f9fa; ✨ 회색 배경 제거 */
   min-height: calc(100vh - 70px);
 `;
 
 export const Header = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end; /* ✨ 오른쪽 정렬로 변경 */
   align-items: center;
   margin-bottom: 20px;
 `;
 
-export const PageTitle = styled.h1`
-  font-size: 28px;
-  font-weight: 900;
-  margin: 0;
-`;
+/* ✨ PageTitle은 더 이상 사용하지 않으므로 삭제 */
 
 export const BackLink = styled(Link)`
-  font-size: 16px;
-  color: #997BEB;
+  /* ✨ 새로운 버튼 디자인 */
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 10px 25px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
   text-decoration: none;
-  font-weight: 600;
-  &:hover { text-decoration: underline; }
+  border: 1px solid #dee2e6;
+  
+  &:hover {
+    background-color: #dee2e6;
+  }
 `;
 
 export const SummaryBox = styled.div`

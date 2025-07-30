@@ -21,9 +21,8 @@ const AdminChatLogDetailPage = () => {
   return (
     <S.PageContainer>
       <S.Header>
-        <S.PageTitle>대화 로그 상세 보기</S.PageTitle>
         <S.BackLink to="/admin/chatbot/logs">
-          &larr; 목록으로 돌아가기
+         목록으로 
         </S.BackLink>
       </S.Header>
 
