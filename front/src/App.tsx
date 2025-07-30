@@ -32,6 +32,7 @@ import UserMain from "./pages/UserMain.tsx";
 import AdminAuctionCreatePage from './features/admin/pages/AdminAuctionCreatePage';
 import AdminAuctionEditPage from './features/admin/pages/AdminAuctionEditPage';
 import AdminAuctionPage from './features/admin/pages/AdminAuctionPage';
+import AdminAuctionResultPage from './features/admin/pages/AdminAuctionResultPage';
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
@@ -67,6 +68,7 @@ function App() {
           <Route path='/admin/auctions' element={<AdminAuctionPage />} />
           <Route path='/admin/auctions/create' element={<AdminAuctionCreatePage />} />
           <Route path='/admin/auctions/edit/:auctionId' element={<AdminAuctionEditPage />} />
+          <Route path='/admin/auctions/result/:auctionId' element={<AdminAuctionResultPage />} />
         </Route>
 
         {/* Layout 없이 단독 페이지 */}

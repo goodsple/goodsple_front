@@ -47,7 +47,7 @@ const AuctionTable: React.FC<Props> = ({ auctions }) => {
               <td><S.StatusBadge>{auction.status}</S.StatusBadge></td>
               <td>
                 {auction.paymentStatus ? (
-                  <S.PaymentStatusBadge status={auction.paymentStatus}>
+                  <S.PaymentStatusBadge $status={auction.paymentStatus}>
                     {auction.paymentStatus}
                   </S.PaymentStatusBadge>
                 ) : '-'}
