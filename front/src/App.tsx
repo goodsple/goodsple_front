@@ -26,6 +26,7 @@ import PaymentPage from './features/payment/pages/PaymentPage';
 import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
 import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview.tsx';
+import NoticeList from './features/notice/NoticeList.tsx';
 import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
@@ -56,7 +57,7 @@ function App() {
           <Route path='/payment/success' element={<PaymentSuccessPage />} />
           <Route path='/payment/failure' element={<PaymentFailurePage />} />
           <Route path='/map' element={<MapViewPage />} />
-          
+          <Route path='/notice' element={<NoticeList />} />
         </Route>
 
         <Route element={<AdminLayout />}>
