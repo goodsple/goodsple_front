@@ -11,10 +11,11 @@ interface Reason {
 
 interface Props {
     onConfirm: (selectedIds: number[], detailText: string) => void
-    onCancel: () => void
+    onCancel: () => void;
 }
 
 const ReportModal: React.FC<Props> = ({ onConfirm, onCancel }) => {
+
     // 백엔드에서 불러올 옵션
     const [reasonOptions, setReasonOptions] = useState<Reason[]>([]);
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -44,24 +45,23 @@ const ReportModal: React.FC<Props> = ({ onConfirm, onCancel }) => {
         )
     }
 
-    // 신고하기 버튼 클릭 시
-    const submitReport = () => {
+    // 신고하기 클릭 → 확인 모달 오픈
+    const handleSubmit = () => {
         if (!isSubmitEnabled) return;    // disabled 상태에서의 클릭 무시
-        // onConfirm(selectedIds, detailText); 
         setIsConfirmOpen(true);
     };
 
-    // 확인 모달 
-   // 실제 신고 API 호출
-   const handleConfirm = () => {
-    axiosInstance
-        .post(
+    // 확인 모달에서 확인 클릭 → 상위로 선택된 사유·설명 전달
+    const handleConfirm = () => {
+    
+        axiosInstance.post(
             `/reports?${selectedIds.map(id => `reasonIds=${id}`).join('&')}`,
             { reportDescription: detailText }
         )
         .then(() => {
             setIsConfirmOpen(false);
             setIsResultOpen(true);
+            onConfirm(selectedIds, detailText)
         })
         .catch(err => {
             console.error(err);
@@ -69,7 +69,7 @@ const ReportModal: React.FC<Props> = ({ onConfirm, onCancel }) => {
         });
     };
     
-    // 결과 모달
+    // 결과 모달 확인 → 모달 닫고 부모 onCancel 호출
     const handleResultConfirm = () => {
          // 1) 결과 모달 닫기
         setIsResultOpen(false);
@@ -105,7 +105,7 @@ const ReportModal: React.FC<Props> = ({ onConfirm, onCancel }) => {
                     <rm.CancelButton onClick={onCancel}>취소</rm.CancelButton>
                     <rm.ReportButton 
                         disabled={!isSubmitEnabled}
-                        onClick={submitReport} 
+                        onClick={handleSubmit} 
                         >
                         신고하기
                     </rm.ReportButton>
