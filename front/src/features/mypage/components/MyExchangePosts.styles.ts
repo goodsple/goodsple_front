@@ -2,20 +2,22 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   width: 100%;
-  padding: 2rem;
+  max-width: 1200px; /* 원하는 최대 너비 */
+  margin: 0 auto;     /* 중앙 정렬 */
+  padding: 0 20px;    /* 양쪽 여백 */
 `;
 
 export const TabWrapper = styled.div`
   display: flex;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
   border-bottom: 2px solid #ccc;
 `;
 
 export const Tab = styled.button<{ $active: boolean }>`
-  padding: 1rem 2rem;
+  padding: 16px 32px;
   background: none;
   border: none;
-  border-bottom: 3px solid ${({ $active }) => ($active ? '#000' : 'transparent')};
+  border-bottom: 3px solid ${({ $active }) => ($active ? '#997BEB' : 'transparent')};
   font-weight: ${({ $active }) => ($active ? 'bold' : 'normal')};
   color: ${({ $active }) => ($active ? '#000' : '#999')};
   cursor: pointer;
@@ -26,7 +28,7 @@ export const Table = styled.table`
   border-collapse: collapse;
 
   th, td {
-    padding: 1rem;
+    padding: 16px;
     text-align: center;
     border-bottom: 1px solid #eee;
   }
