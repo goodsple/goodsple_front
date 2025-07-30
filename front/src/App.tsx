@@ -31,6 +31,7 @@ import UserMain from "./pages/UserMain.tsx";
 // 관리자화면 컴포넌트
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
 import AdminMain from './pages/AdminMain.tsx';
+import MyExchangePosts from './features/mypage/components/MyExchangePosts.tsx';
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
           <Route path='/editprofile' element={<EditProfile/>}/>
           <Route path='/writereview' element={<WriteReview/>}/>
           <Route path='/reviews' element={<MyReview/>}/>
+          <Route path='/exchangeposts' element={<MyExchangePosts/>} />
           <Route path='/badgeguide' element={<BadgeGuide/>} />
           <Route path='/bookmarkPage' element={<BookmarkPage />} />
           <Route path='/auction/live/:auctionId' element={<LiveAuctionPage />} />
