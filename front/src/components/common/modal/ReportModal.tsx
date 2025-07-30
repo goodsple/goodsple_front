@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import * as rm from './ReportStyle'
 import ConfirmModal from './ConfirmModal';
 import axiosInstance from '../../../api/axiosInstance';
+import type { ReportErrorType } from '../../../features/report/types/report';
 
 
 interface Reason {
@@ -28,6 +29,11 @@ const ReportModal: React.FC<Props> = ({ onConfirm, onCancel }) => {
     const [isConfirmOpen, setIsConfirmOpen] = useState(false)
     const [isResultOpen, setIsResultOpen] = useState(false)
 
+    const [errors, setErrors] = useState<ReportErrorType>({
+        reason: '',
+        detail: '',
+    });
+
     // 신고사유 리스트 가져오기 
     useEffect(() => {
         axiosInstance
@@ -38,28 +44,45 @@ const ReportModal: React.FC<Props> = ({ onConfirm, onCancel }) => {
 
      // 이유 토글: 선택된 ID 리스트에 개별 ID 추가/제거
     const toggleReason = (id: number) => {
-        setSelectedIds(prev =>
-        prev.includes(id)
-            ? prev.filter(x => x !== id)
-            : [...prev, id]
-        )
+        setSelectedIds(prev => {
+            const updated = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+            setErrors(prevErr => ({ ...prevErr, reason: updated.length === 0 ? '❗신고 사유를 한 가지 이상 선택해주세요.' : '' }))
+            return updated
+        })
+    }
+
+    // 신고사유 텍스트 변경 시
+    const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const value = e.target.value
+        setDetailText(value)
+        setErrors(prevErr => ({ ...prevErr, detail: value.trim() === '' ? '❗신고 내용을 작성해주셔야 신고가 완료돼요.' : '' }))
     }
 
     // 신고하기 클릭 → 확인 모달 오픈
     const handleSubmit = () => {
-        if (!isSubmitEnabled) return;    // disabled 상태에서의 클릭 무시
-        setIsConfirmOpen(true);
-    };
+        const newErrors: ReportErrorType = { reason: '', detail: '' }
+        let valid = true
+        if (selectedIds.length === 0) {
+          newErrors.reason = '❗신고 사유를 한 가지 이상 선택해주세요.'
+          valid = false
+        }
+        if (detailText.trim() === '') {
+          newErrors.detail = '❗신고 내용을 작성해주셔야 신고가 완료돼요.'
+          valid = false
+        }
+        setErrors(newErrors)
+        if (!valid) return
+        setIsConfirmOpen(true)
+    }
 
     // 확인 모달에서 확인 클릭 → 상위로 선택된 사유·설명 전달
     const handleConfirm = () => {
-    
+        setIsConfirmOpen(false)
         axiosInstance.post(
             `/reports?${selectedIds.map(id => `reasonIds=${id}`).join('&')}`,
             { reportDescription: detailText }
         )
         .then(() => {
-            setIsConfirmOpen(false);
             setIsResultOpen(true);
             onConfirm(selectedIds, detailText)
         })
@@ -96,19 +119,23 @@ const ReportModal: React.FC<Props> = ({ onConfirm, onCancel }) => {
                     )
                     })}
                 </rm.ReportList>
+                {errors.reason && <rm.ErrorMessage>{errors.reason}</rm.ErrorMessage>}
                 <rm.ReportTextArea 
                     value={detailText}
-                    onChange={e => setDetailText(e.target.value)}
+                    onChange={handleTextChange}
                     placeholder='신고 사유에 대한 상세 설명을 적어주세요.'
+                    rows={4}
                 />
+               
+                {errors.detail && <rm.ErrorMessage>{errors.detail}</rm.ErrorMessage>} 
                 <rm.ButtonRow>
-                    <rm.CancelButton onClick={onCancel}>취소</rm.CancelButton>
-                    <rm.ReportButton 
-                        disabled={!isSubmitEnabled}
-                        onClick={handleSubmit} 
-                        >
-                        신고하기
-                    </rm.ReportButton>
+                <rm.CancelButton onClick={onCancel}>취소</rm.CancelButton>
+                <rm.ReportButton 
+                    disabled={!isSubmitEnabled}
+                    onClick={handleSubmit} 
+                    >
+                    신고하기
+                </rm.ReportButton>
                     {/* 확인 모달 */}
                     {isConfirmOpen && (
                         <ConfirmModal
@@ -126,7 +153,7 @@ const ReportModal: React.FC<Props> = ({ onConfirm, onCancel }) => {
                     {isResultOpen && (
                         <ConfirmModal
                         isOpen={isResultOpen}
-                        content="신고되었습니다."
+                        content="신고가 접수되었습니다."
                         showCancel={false}
                         confirmText="확인"
                         onConfirm={handleResultConfirm}
