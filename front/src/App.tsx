@@ -32,6 +32,8 @@ import UserMain from "./pages/UserMain.tsx";
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
+import ReportWrapper from './features/report/ReportWrapper.tsx';
+
 
 function App() {
   return(
@@ -67,6 +69,9 @@ function App() {
         <Route path='/signup/kakao' element={<KakaoInfo/>}/>
         <Route path='/findid' element={<FindId/>}/>
         <Route path='/findpwd' element={<FindPassword/>}/>
+        
+        {/* 신고 들어가는 컴포넌트 준비되면 ReportWrapper 없앨 예정 test로 만듬 */}
+        <Route path='/reports' element={<ReportWrapper/>}/> 
 
         {/* 에러 페이지 */}
         <Route path='*' element={<Error/>}/>
