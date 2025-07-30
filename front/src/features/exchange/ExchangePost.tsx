@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import * as S from './ExchangePost.styles';
+import deleteButton from '../../assets/images/delete-button.png'; // 이미지 삭제 버튼 아이콘
 
 const ExchangePost = () => {
     const [deliveryMethods, setDeliveryMethods] = useState<string[]>([]);
@@ -38,6 +39,10 @@ const ExchangePost = () => {
 
         const newImageUrls = files.map(file => URL.createObjectURL(file));
         setSelectedImages(prev => [...prev, ...newImageUrls]);
+    };
+
+    const handleRemoveImage = (indexToRemove: number) => {
+        setSelectedImages(prev => prev.filter((_, index) => index !== indexToRemove));
     };
 
     return (
@@ -90,6 +95,10 @@ const ExchangePost = () => {
                     {selectedImages.map((img, index) => (
                         <S.ImageBox key={index}>
                             <img src={img} alt={`preview-${index}`} />
+                            <S.DeleteButton
+                                type="button"
+                                onClick={() => handleRemoveImage(index)}>
+                                ×</S.DeleteButton>
                         </S.ImageBox>
                     ))}
                     <S.Input type="file" accept="image/*" multiple onChange={handleImageChange} />

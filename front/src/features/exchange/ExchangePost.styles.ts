@@ -291,6 +291,7 @@ export const ImagePreviewWrapper = styled.div`
 `;
 
 export const ImageBox = styled.div`
+ position: relative;
   width: 100px;
   height: 100px;
   border: 1px solid #ddd;
@@ -304,3 +305,35 @@ export const ImageBox = styled.div`
     object-fit: cover;
   }
 `;
+
+export const DeleteButton = styled.button`
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+  line-height: ;
+  cursor: pointer;
+`;
+
+
+// export const DeleteButton = styled.button`
+//   position: absolute;
+//   top: 4px;
+//   right: 4px;
+//   background: transparent;
+//   border: none;
+//   padding: 0;
+//   cursor: pointer;
+
+//   img {
+//     width: 18px;
+//     height: 18px;
+//     display: block;
+//   }
+// `;
