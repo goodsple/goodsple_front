@@ -62,10 +62,21 @@ export const CategoryGrid = styled.div`
 `;
 
 export const Select = styled.select`
-   width: 150px;
+  width: 150px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+`;
+
+export const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 글자수와 입력창 간격 */
+  width: 100%;
+
+  & > span {
+    margin-right: 14px;
+    }
 `;
 
 export const Input = styled.input`
@@ -74,11 +85,17 @@ export const Input = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   color: #444;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
 
   &::placeholder {
     color: #9A9A9A;
   }
+`;
+
+export const CharCount = styled.span`
+  font-size: 14px;
+  color: #888;
+  white-space: nowrap;
 `;
 
 export const AmountInputWrapper = styled.div`
@@ -120,6 +137,13 @@ export const AutoFilledInput = styled(Input)`
   background-color: #F5F5F5;
 `;
 
+export const TextAreaWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px; /* 글자수와 입력창 간격 */
+`;
+
 export const TextArea = styled.textarea`
   width: 100%;
   height: 120px;
@@ -127,6 +151,7 @@ export const TextArea = styled.textarea`
   border: 1px solid #ccc;
   border-radius: 4px;
   color: #444;
+  resize: none;
 
   &::placeholder {
     color: #9A9A9A;
@@ -217,14 +242,6 @@ export const ParcelRow = styled.div`
   align-items: center;
   gap: 20px;
   margin-bottom: 12px;
-
-  //     & > span {
-  //   display: inline-block;
-  //   width: 140px;
-  //   font-weight: 500;
-  //   margin-top: 10px;
-  //   white-space: nowrap;   
-  // }
 
     & > span {
     width: 200px; // 텍스트 칸 고정

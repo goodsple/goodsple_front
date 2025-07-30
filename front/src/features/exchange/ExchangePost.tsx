@@ -4,6 +4,8 @@ import * as S from './ExchangePost.styles';
 
 const ExchangePost = () => {
     const [deliveryMethods, setDeliveryMethods] = useState<string[]>([]);
+    const [productName, setProductName] = useState('');
+    const [productDescription, setProductDescription] = useState('');
     const [parcelOptions, setParcelOptions] = useState({
         normal: false,
         half: false,
@@ -40,16 +42,31 @@ const ExchangePost = () => {
 
             <S.SectionRow>
                 <S.Label>상품명</S.Label>
-                <S.Input placeholder="상품명을 입력해 주세요." />
+                <S.InputWrapper>
+                    <S.Input
+                        placeholder="상품명을 입력해 주세요."
+                        value={productName}
+                        onChange={(e) => setProductName(e.target.value)}
+                        maxLength={40}
+                    />
+                    <S.CharCount>{productName.length}/40</S.CharCount>
+                    </S.InputWrapper>
             </S.SectionRow>
 
             <S.SectionRow>
                 <S.Label>상품 설명</S.Label>
-                <S.TextArea placeholder="- 상품상태, 구성품, 특이사항 등을 상세하게 작성해 주세요.
+                <S.TextAreaWrapper>
+                <S.TextArea 
+                placeholder="- 상품상태, 구성품, 특이사항 등을 상세하게 작성해 주세요.
 • K-POP: 포토카드 포함 여부, 초회판/통상판 구분, 개봉 여부
 • 애니메이션/게임/영화: 정품 여부, 패키지 구성, 기스/오염 유무
 
-정확한 정보는 원활한 교환에 도움이 됩니다. 😊" />
+정확한 정보는 원활한 교환에 도움이 됩니다. 😊"
+value={productDescription}
+onChange={(e) => setProductDescription(e.target.value)}
+maxLength={2000} />
+<S.CharCount>{productDescription.length}/2000</S.CharCount>
+                </S.TextAreaWrapper>
             </S.SectionRow>
 
             <S.SectionRow>
@@ -116,8 +133,8 @@ const ExchangePost = () => {
                                     onChange={e =>
                                         setParcelOptions(prev => ({ ...prev, normalFee: e.target.value }))
                                     }
-                                    />
-                                    <span>원</span>
+                                />
+                                <span>원</span>
                             </S.ParcelRow>
 
                             <S.ParcelRow>
