@@ -30,6 +30,7 @@ import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
 import AdminAuctionCreatePage from './features/admin/pages/AdminAuctionCreatePage';
+import AdminAuctionEditPage from './features/admin/pages/AdminAuctionEditPage';
 import AdminAuctionPage from './features/admin/pages/AdminAuctionPage';
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
 import AdminMain from './pages/AdminMain.tsx';
@@ -65,6 +66,7 @@ function App() {
           <Route path='/admin' element={<AdminMain/>} />
           <Route path='/admin/auctions' element={<AdminAuctionPage />} />
           <Route path='/admin/auctions/create' element={<AdminAuctionCreatePage />} />
+          <Route path='/admin/auctions/edit/:auctionId' element={<AdminAuctionEditPage />} />
         </Route>
 
         {/* Layout 없이 단독 페이지 */}
