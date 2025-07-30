@@ -25,6 +25,21 @@ const ExchangePost = () => {
         );
     };
 
+    const [selectedImages, setSelectedImages] = useState<string[]>([]);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        const totalSelected = selectedImages.length + files.length;
+
+        if (totalSelected > 5) {
+            alert('이미지는 최대 5개까지 등록할 수 있습니다.');
+            return;
+        }
+
+        const newImageUrls = files.map(file => URL.createObjectURL(file));
+        setSelectedImages(prev => [...prev, ...newImageUrls]);
+    };
+
     return (
         <S.Container>
             <S.Title>상품등록</S.Title>
@@ -50,28 +65,35 @@ const ExchangePost = () => {
                         maxLength={40}
                     />
                     <S.CharCount>{productName.length}/40</S.CharCount>
-                    </S.InputWrapper>
+                </S.InputWrapper>
             </S.SectionRow>
 
             <S.SectionRow>
                 <S.Label>상품 설명</S.Label>
                 <S.TextAreaWrapper>
-                <S.TextArea 
-                placeholder="- 상품상태, 구성품, 특이사항 등을 상세하게 작성해 주세요.
+                    <S.TextArea
+                        placeholder="- 상품상태, 구성품, 특이사항 등을 상세하게 작성해 주세요.
 • K-POP: 포토카드 포함 여부, 초회판/통상판 구분, 개봉 여부
 • 애니메이션/게임/영화: 정품 여부, 패키지 구성, 기스/오염 유무
 
 정확한 정보는 원활한 교환에 도움이 됩니다. 😊"
-value={productDescription}
-onChange={(e) => setProductDescription(e.target.value)}
-maxLength={2000} />
-<S.CharCount>{productDescription.length}/2000</S.CharCount>
+                        value={productDescription}
+                        onChange={(e) => setProductDescription(e.target.value)}
+                        maxLength={2000} />
+                    <S.CharCount>{productDescription.length}/2000</S.CharCount>
                 </S.TextAreaWrapper>
             </S.SectionRow>
 
             <S.SectionRow>
                 <S.Label>이미지 등록 (필수)</S.Label>
-                <S.Input type="file" accept="image/*" multiple />
+                <S.ImagePreviewWrapper>
+                    {selectedImages.map((img, index) => (
+                        <S.ImageBox key={index}>
+                            <img src={img} alt={`preview-${index}`} />
+                        </S.ImageBox>
+                    ))}
+                    <S.Input type="file" accept="image/*" multiple onChange={handleImageChange} />
+                </S.ImagePreviewWrapper>
             </S.SectionRow>
 
             <S.LocationSectionRow>
@@ -84,8 +106,6 @@ maxLength={2000} />
             <S.LocationInputWrapper>
                 <S.AutoFilledInput placeholder="지역을 설정해 주세요." readOnly />
             </S.LocationInputWrapper>
-
-
 
             <S.SectionRow>
                 <S.Label>거래 방식</S.Label>

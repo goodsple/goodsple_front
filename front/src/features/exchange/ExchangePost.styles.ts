@@ -281,3 +281,26 @@ export const ConditionalOptions = styled.div`
   margin-left: 220px;
   margin-top: 10px;
 `;
+
+export const ImagePreviewWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  align-items: center;
+`;
+
+export const ImageBox = styled.div`
+  width: 100px;
+  height: 100px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #f9f9f9;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
