@@ -35,7 +35,7 @@ export const Th = styled.th``;
 export const Td = styled.td``;
 
 // ✨ '경매 상태' 배지: 색상 통일
-export const StatusBadge = styled.span<{ $status: '결제 완료' | '결제대기' | '기한초과' }>`
+export const StatusBadge = styled.span`
   padding: 6px 12px;
   border-radius: 6px;
   font-weight: 500;
