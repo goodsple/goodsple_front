@@ -56,7 +56,7 @@ const AdminAuctionResultPage = () => {
               </S.InfoRow>
               <S.InfoRow>
                 <S.InfoLabel>경매 상태</S.InfoLabel>
-                <S.InfoValue><StatusBadge $status={resultData.status}>{resultData.status}</StatusBadge></S.InfoValue>
+                <S.InfoValue><StatusBadge>{resultData.status}</StatusBadge></S.InfoValue>
               </S.InfoRow>
               <S.InfoRow>
                 <S.InfoLabel>결제 상태</S.InfoLabel>
