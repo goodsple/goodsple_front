@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import * as S from './MyExchangePosts.styles';
-import dropdownArrow from '../../../assets/images/dropdownArrow.png'
+import dropdownArrow from '../../../assets/images/dropdownArrow.png';
 import sampleImage1 from '../../../assets/images/sample1.png';
 import sampleImage2 from '../../../assets/images/sample2.png';
 import sampleImage3 from '../../../assets/images/sample3.png';
 
 const statusOptions = ['거래가능', '거래중', '거래완료'];
+const FILTERS = ['전체', ...statusOptions] as const;
+type FilterType = typeof FILTERS[number];
 
 const MyExchangePosts = () => {
     const [activeTab, setActiveTab] = useState<'myPosts' | 'history'>('myPosts');
     const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+    const [activeFilter, setActiveFilter] = useState<FilterType>('전체');
 
     const [data, setData] = useState([
         {
@@ -30,7 +33,7 @@ const MyExchangePosts = () => {
             likedCount: 5,
             updatedAt: '2025.07.25 11:30',
         },
-                {
+        {
             id: 3,
             imageUrl: sampleImage3,
             title: '테스트글입니다 포카4번',
@@ -54,16 +57,37 @@ const MyExchangePosts = () => {
         setOpenDropdownId(null);
     };
 
+    const handleFilterClick = (filter: FilterType) => {
+        setActiveFilter(filter);
+    };
+
+    const filteredData =
+        activeFilter === '전체' ? data : data.filter(d => d.status === activeFilter);
+
     return (
         <S.Container>
-            <S.TabWrapper>
-                <S.Tab $active={activeTab === 'myPosts'} onClick={() => setActiveTab('myPosts')}>
-                    내 거래글
-                </S.Tab>
-                <S.Tab $active={activeTab === 'history'} onClick={() => setActiveTab('history')}>
-                    거래내역
-                </S.Tab>
-            </S.TabWrapper>
+            <S.TabFilterWrapper>
+                <S.TabWrapper>
+                    <S.Tab $active={activeTab === 'myPosts'} onClick={() => setActiveTab('myPosts')}>
+                        내 거래글
+                    </S.Tab>
+                    <S.Tab $active={activeTab === 'history'} onClick={() => setActiveTab('history')}>
+                        거래내역
+                    </S.Tab>
+                </S.TabWrapper>
+
+                <S.FilterGroup>
+                    {FILTERS.map(filter => (
+                        <S.FilterButton
+                            key={filter}
+                            $active={filter === activeFilter}
+                            onClick={() => handleFilterClick(filter)}
+                        >
+                            {filter}
+                        </S.FilterButton>
+                    ))}
+                </S.FilterGroup>
+            </S.TabFilterWrapper>
 
             <S.Table>
                 <thead>
@@ -78,11 +102,10 @@ const MyExchangePosts = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map(item => (
+                    {filteredData.map(item => (
                         <tr key={item.id}>
                             <td><S.Thumbnail src={item.imageUrl} alt="상품 이미지" /></td>
                             <td>{item.title}</td>
-
                             <td>
                                 <S.StatusDropdownWrapper>
                                     <S.StatusButton onClick={() => toggleDropdown(item.id)} selected={item.status}>
@@ -104,7 +127,6 @@ const MyExchangePosts = () => {
                                     )}
                                 </S.StatusDropdownWrapper>
                             </td>
-
                             <td>{item.method}</td>
                             <td>{item.likedCount}</td>
                             <td>{item.updatedAt}</td>

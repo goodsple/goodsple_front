@@ -120,3 +120,30 @@ export const DropdownIcon = styled.img`
   object-fit: contain;
   padding-left: 10px;
 `;
+
+
+export const TabFilterWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+export const FilterGroup = styled.div`
+  display: flex;
+  gap: 12px;
+`;
+
+export const FilterButton = styled.button<{ $active: boolean }>`
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: ${({ $active }) => ($active ? 'bold' : 'normal')};
+  color: ${({ $active }) => ($active ? '#000' : '#999')};
+//   border-bottom: ${({ $active }) => ($active ? '2px solid #000' : 'none')};
+  padding-bottom: 4px;
+  cursor: pointer;
+
+  &:hover {
+    color: #000;
+  }
+`;
