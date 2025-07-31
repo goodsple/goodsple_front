@@ -26,6 +26,7 @@ export const Title = styled.h2`
   font-size: 24px;
   font-weight: 700;
   margin: 0 0 30px 0;
+  text-align: center;
 `;
 
 export const Form = styled.form`
