@@ -24,6 +24,7 @@ import MyBidsPage from './features/mybids/pages/MyBidsPage';
 import EditProfile from './features/mypage/components/EditProfile';
 import MyPage from './features/mypage/components/Mypage';
 import NoticeList from './features/notice/NoticeList.tsx';
+import NoticeDetail from './features/notice/NoticeDetail.tsx';
 import PaymentFailurePage from './features/payment/pages/PaymentFailurePage';
 import PaymentPage from './features/payment/pages/PaymentPage';
 import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
@@ -68,6 +69,7 @@ function App() {
             <Route path='/payment/failure' element={<PaymentFailurePage />} />
             <Route path='/map' element={<MapViewPage />} />
             <Route path='/notice' element={<NoticeList />} />
+            <Route path='/notice/detail' element={<NoticeDetail />} />
             <Route path='/exchange/new' element={<ExchangePost />} />
             <Route path='/exchange/detail' element={<ExchangePostDetail />} />
             <Route path='/community' element={<Community />} />
