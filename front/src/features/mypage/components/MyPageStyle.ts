@@ -4,7 +4,8 @@ import styled from "styled-components";
 export const MyPageContainer = styled.div`
         width: 100vw;
         min-height: 100vh;
-        padding-top : 130px;
+        padding-top : 80px;
+        padding-bottom: 80px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -47,21 +48,23 @@ export const profileBadge = styled.div`
         }
 `;
 
-export const ProfileImage = styled.div`
+export const ProfileImage = styled.div<{ isDefault?: boolean }>`
         width: 120px;
         height: 120px;
         border-radius: 50%;
-        background: #D9D9D9; 
+        background: ${({ isDefault }) => (isDefault ? '#D9D9D9' : 'none')}; 
         display: flex;
         justify-content: center;
         align-items: center;
+        overflow: hidden;
         margin-bottom: 20px;
         margin-top: 10px;
     
     img {
         width: 100%;
         height: 100%;
-        margin-top: 20px;
+        object-fit: cover;
+        ${({ isDefault }) => isDefault && 'margin-top: 25px;'}
     }
 `;
 
@@ -75,6 +78,7 @@ export const EditProfileButton = styled.button`
         margin-top: 35px;
         border: 2px solid #997BEB;
         border-radius: 10px;
+        cursor: pointer;
 `;
 
 // 게시글 / 북마크 / 후기  => 정보 나타내는 박스 
@@ -166,4 +170,13 @@ export const ActivityLink = styled(Link)`
         &:hover {
             color: #997BEB;          
         }
+`;
+
+export const NonData = styled.div`
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #444;
 `;

@@ -1,3 +1,7 @@
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import UserNav from '../nav/UserNav';
+import { useAuth } from '../../../features/auth/contexts/AuthContext';
 
 import * as style from './HeaderStyle';
 import logoImg from '../../../assets/images/logo.png';
@@ -5,19 +9,36 @@ import chatImg from '../../../assets/images/chat.png';
 import alarmImg from '../../../assets/images/alarm.png';
 import profileImg from '../../../assets/images/default_profile.png';
 
-import UserNav from '../nav/UserNav';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 
 function Header() {
+  const navigate = useNavigate();
+
+  // 햄버거 메뉴 & 로그인 여부
   const [isOpen, setIsOpen] = useState(false); // 햄버거 버튼용
   const [menuOpen, setMenuOpen] = useState(false);  // 메뉴바 전용
 
-  const [isLoggedIn, setIsLoggedin] = useState(false);
-  const [userProfileImg, setUserProfileImg] = useState<string | null>(null);
+  // Context에서 가져온 userProfile
+  const { userProfile, setUserProfile } = useAuth();
+  const isLoggedIn = Boolean(userProfile);
 
-  const navigate = useNavigate();
+  // 로그아웃: Context만 초기화
+  const handleLogout = useCallback(() => {
+    //  토큰 제거
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+
+    // 2) 카카오 SDK 세션 로그아웃
+    if (window.Kakao && window.Kakao.Auth) {
+      window.Kakao.Auth.logout(() => {
+        console.log('카카오 SDK 세션 해제 완료');
+      });
+    }
+
+     // 3) Context 초기화, 화면 이동
+    setUserProfile(null);
+    navigate('/login');
+  }, [navigate, setUserProfile]);
+
 
   return (
     <>
@@ -36,29 +57,33 @@ function Header() {
           </style.CenterArea>
 
           <style.RightArea>
-            {isLoggedIn ? (
+            {isLoggedIn && userProfile ? (
               <>
-                <style.IconBox iconType="chat">
+                <style.IconBox $iconType="chat">
                   <img src={chatImg} alt="채팅" />
                 </style.IconBox>
 
-                <style.IconBox iconType="alarm">
-                  <img src={alarmImg} alt="알림" />
+                <style.IconBox $iconType="alarm">
                   <img src={alarmImg} alt="알림" />
                 </style.IconBox>
 
 
-                <style.ProfileWrapper isDefault={!userProfileImg} onClick={()=> navigate('/mypage')}>
-                  {userProfileImg ? (
-                    <style.ProfileIcon src={userProfileImg} alt="업로드된 프로필 이미지" />
-                  ):(
-                    <style.ProfileIcon src={profileImg} alt="기본 프로필 이미지" isDefault />
-                  )}
+                <style.ProfileWrapper 
+                  $isDefault={!userProfile?.profileImageUrl}
+                  onClick={()=> navigate('/mypage')}
+                >
+                {userProfile?.profileImageUrl ? (
+                    <style.ProfileIcon 
+                      src={userProfile.profileImageUrl} 
+                      alt="업로드된 프로필 이미지" />
+                ):(
+                    <style.ProfileIcon 
+                      src={profileImg} 
+                      alt="기본 프로필 이미지" $isDefault
+                    />
+                )}
                 </style.ProfileWrapper>
-                <style.LogoutButton onClick={()=>{
-                  setIsLoggedin(false)
-                  navigate('/');
-                  }}>로그아웃</style.LogoutButton>
+                <style.LogoutButton onClick={handleLogout}>로그아웃</style.LogoutButton>
               </>
             ) : (
               <>

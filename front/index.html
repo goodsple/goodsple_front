@@ -5,9 +5,14 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React + TS</title>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=61cb00ede38165048cae5b791e4961f0&libraries=services,clusterer,drawing"
+    ></script><!-- 완수 카카오 지도 키 -->
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="text/javascript" src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+    <div id="modal-root"></div> <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
