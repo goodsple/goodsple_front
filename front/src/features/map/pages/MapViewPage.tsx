@@ -10,7 +10,7 @@ const MapViewPage = () => {
   const [visibleGoods, setVisibleGoods] = useState<MapGood[]>(mockMapGoodsData);
   const [selectedMarker, setSelectedMarker] = useState<{ items: MapGood[], position: { lat: number, lng: number } } | null>(null);
   
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimer = useRef<number | null>(null);
 
   const handleMapIdle = (map: kakao.maps.Map) => {
     if (debounceTimer.current) { clearTimeout(debounceTimer.current); }

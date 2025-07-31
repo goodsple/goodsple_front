@@ -17,10 +17,12 @@ import KakaoInfo from './features/auth/components/KakaoInfo';
 import Login from './features/auth/components/Login';
 import SignUp from './features/auth/components/SignUp';
 import BadgeGuide from './features/badge/components/BadgeGuide.tsx';
+import ExchangePost from './features/exchange/ExchangePost.tsx';
 import MapViewPage from './features/map/pages/MapViewPage';
 import MyBidsPage from './features/mybids/pages/MyBidsPage';
 import EditProfile from './features/mypage/components/EditProfile';
 import MyPage from './features/mypage/components/Mypage';
+import NoticeList from './features/notice/NoticeList.tsx';
 import PaymentFailurePage from './features/payment/pages/PaymentFailurePage';
 import PaymentPage from './features/payment/pages/PaymentPage';
 import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
@@ -29,9 +31,18 @@ import WriteReview from './features/review/components/WriteReview.tsx';
 import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
+import AdminAuctionCreatePage from './features/admin/pages/AdminAuctionCreatePage';
+import AdminAuctionEditPage from './features/admin/pages/AdminAuctionEditPage';
+import AdminAuctionPage from './features/admin/pages/AdminAuctionPage';
+import AdminAuctionResultPage from './features/admin/pages/AdminAuctionResultPage';
+import AdminChatLogDetailPage from './features/admin/pages/AdminChatLogDetailPage';
+import AdminChatLogPage from './features/admin/pages/AdminChatLogPage';
+import AdminKnowledgeBasePage from './features/admin/pages/AdminKnowledgeBasePage';
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
 import Community from './features/community/components/Community.tsx';
 import AdminMain from './pages/AdminMain.tsx';
+
+import ReportWrapper from './features/report/ReportWrapper.tsx';
 
 
 function App() {
@@ -55,11 +66,20 @@ function App() {
           <Route path='/payment/success' element={<PaymentSuccessPage />} />
           <Route path='/payment/failure' element={<PaymentFailurePage />} />
           <Route path='/map' element={<MapViewPage />} />
+          <Route path='/notice' element={<NoticeList />} />
+          <Route path='/exchange/new' element={<ExchangePost />} />
           <Route path='/community' element={<Community />} />
         </Route>
 
         <Route element={<AdminLayout />}>
           <Route path='/admin' element={<AdminMain/>} />
+          <Route path='/admin/auctions' element={<AdminAuctionPage />} />
+          <Route path='/admin/auctions/create' element={<AdminAuctionCreatePage />} />
+          <Route path='/admin/auctions/edit/:auctionId' element={<AdminAuctionEditPage />} />
+          <Route path='/admin/auctions/result/:auctionId' element={<AdminAuctionResultPage />} />
+          <Route path='/admin/chatbot/logs' element={<AdminChatLogPage />} />
+          <Route path='/admin/chatbot/logs/:logId' element={<AdminChatLogDetailPage />} />
+          <Route path='/admin/chatbot/knowledge' element={<AdminKnowledgeBasePage />} />
         </Route>
 
         {/* Layout 없이 단독 페이지 */}
@@ -68,6 +88,9 @@ function App() {
         <Route path='/signup/kakao' element={<KakaoInfo/>}/>
         <Route path='/findid' element={<FindId/>}/>
         <Route path='/findpwd' element={<FindPassword/>}/>
+        
+        {/* 신고 들어가는 컴포넌트 준비되면 ReportWrapper 없앨 예정 test로 만듬 */}
+        <Route path='/reports' element={<ReportWrapper/>}/> 
 
         {/* 에러 페이지 */}
         <Route path='*' element={<Error/>}/>

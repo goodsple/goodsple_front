@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import * as s from "../../../features/auth/components/SignUpStyle";
 
 export const ReportContainer = styled.div`
     position: fixed;
@@ -81,3 +82,7 @@ export const ReportButton = styled.button<{ disabled?: boolean }>`
     border-radius: 10px;
     cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
 `;
+
+export const ErrorMessage = styled(s.ErrorMessage)`
+    margin: -10px 0 8px 8px;
+`

@@ -31,12 +31,12 @@ const MyPage:React.FC = () => {
         fetchUser();
       }, []);
 
-    if (loading) {
-    return <div>로딩 중…</div>;
+    if (loading) {   
+     return <s.NonData>로딩 중…</s.NonData>;
     }
 
     if (!userInfo) {
-    return <div>사용자 정보를 불러올 수 없습니다.</div>;
+     return <s.NonData>사용자 정보를 불러올 수 없습니다.</s.NonData>;
     }
     const { nickname, profileImageUrl } = userInfo;
 
