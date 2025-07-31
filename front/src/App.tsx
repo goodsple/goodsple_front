@@ -27,6 +27,7 @@ import PaymentPage from './features/payment/pages/PaymentPage';
 import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
 import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview.tsx';
+import ExchangePost from './features/exchange/ExchangePost.tsx';
 import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
@@ -38,7 +39,6 @@ import AdminChatLogDetailPage from './features/admin/pages/AdminChatLogDetailPag
 import AdminChatLogPage from './features/admin/pages/AdminChatLogPage';
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
 import AdminMain from './pages/AdminMain.tsx';
-import ExchangePost from './features/exchange/ExchangePost.tsx';
 
 import ReportWrapper from './features/report/ReportWrapper.tsx';
 
@@ -56,9 +56,6 @@ function App() {
           <Route path='/editprofile' element={<EditProfile/>}/>
           <Route path='/writereview' element={<WriteReview/>}/>
           <Route path='/reviews' element={<MyReview/>}/>
-<<<<<<< HEAD
-          <Route path='/exchange/post' element={<ExchangePost/>}/>
-=======
           <Route path='/badgeguide' element={<BadgeGuide/>} />
           <Route path='/bookmarkPage' element={<BookmarkPage />} />
           <Route path='/auction/live/:auctionId' element={<LiveAuctionPage />} />
@@ -68,7 +65,7 @@ function App() {
           <Route path='/payment/failure' element={<PaymentFailurePage />} />
           <Route path='/map' element={<MapViewPage />} />
           <Route path='/notice' element={<NoticeList />} />
->>>>>>> e60cf12b22cddffbe8d767edd23157a30facefc4
+          <Route path='/exchange/new' element={<ExchangePost />} />
         </Route>
 
         <Route element={<AdminLayout />}>

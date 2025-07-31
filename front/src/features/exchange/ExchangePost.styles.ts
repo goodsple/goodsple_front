@@ -291,7 +291,7 @@ export const ImagePreviewWrapper = styled.div`
 `;
 
 export const ImageBox = styled.div`
- position: relative;
+  position: relative;
   width: 100px;
   height: 100px;
   border: 1px solid #ddd;
