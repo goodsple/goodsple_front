@@ -17,6 +17,7 @@ import KakaoInfo from './features/auth/components/KakaoInfo';
 import Login from './features/auth/components/Login';
 import SignUp from './features/auth/components/SignUp';
 import BadgeGuide from './features/badge/components/BadgeGuide.tsx';
+import ExchangePost from './features/exchange/ExchangePost.tsx';
 import MapViewPage from './features/map/pages/MapViewPage';
 import MyBidsPage from './features/mybids/pages/MyBidsPage';
 import EditProfile from './features/mypage/components/EditProfile';
@@ -27,7 +28,6 @@ import PaymentPage from './features/payment/pages/PaymentPage';
 import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
 import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview.tsx';
-import ExchangePost from './features/exchange/ExchangePost.tsx';
 import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
@@ -39,6 +39,7 @@ import AdminChatLogDetailPage from './features/admin/pages/AdminChatLogDetailPag
 import AdminChatLogPage from './features/admin/pages/AdminChatLogPage';
 import AdminKnowledgeBasePage from './features/admin/pages/AdminKnowledgeBasePage';
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
+import Community from './features/community/components/Community.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
 import ReportWrapper from './features/report/ReportWrapper.tsx';
@@ -67,6 +68,7 @@ function App() {
           <Route path='/map' element={<MapViewPage />} />
           <Route path='/notice' element={<NoticeList />} />
           <Route path='/exchange/new' element={<ExchangePost />} />
+          <Route path='/community' element={<Community />} />
         </Route>
 
         <Route element={<AdminLayout />}>
