@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const PageContainer = styled.div`
   padding: 40px;
-  background-color: #f8f9fa;
+  /* ✨ 회색 배경 제거 */
   min-height: calc(100vh - 70px);
 `;
 
@@ -17,9 +17,7 @@ export const ControlsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #e9ecef;
-  margin-bottom: 24px;
+  /* ✨ 선(border) 관련 스타일 제거 */
 `;
 
 export const ControlRow = styled.div`
@@ -47,6 +45,9 @@ export const TabGroup = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  /* ✨ 탭 그룹 밑으로 선 이동 */
+  border-bottom: 2px solid #f1f3f5;
+  margin-top: 24px;
   margin-bottom: 24px;
 `;
 
@@ -63,6 +64,7 @@ export const StatusTab = styled.button<{ $isActive: boolean }>`
   border-bottom: 2px solid ${({ $isActive }) => $isActive ? '#997BEB' : 'transparent'};
   color: ${({ $isActive }) => $isActive ? '#997BEB' : '#868e96'};
   cursor: pointer;
+  margin-bottom: -2px;
 `;
 
 export const AddButton = styled.button`
@@ -90,6 +92,12 @@ export const Table = styled.table`
 
   th { background-color: #f8f9fa; font-weight: 600; }
   tbody tr:hover { background-color: #f1f3f5; }
+`;
+
+// ✨ 중지 상태일 때 스타일을 적용하기 위한 Tr 컴포넌트 추가
+export const Tr = styled.tr<{ $isInactive?: boolean }>`
+  color: ${({ $isInactive }) => $isInactive ? '#adb5bd' : 'inherit'};
+  text-decoration: ${({ $isInactive }) => $isInactive ? 'line-through' : 'none'};
 `;
 
 export const ActionButton = styled.button<{ variant: string }>`

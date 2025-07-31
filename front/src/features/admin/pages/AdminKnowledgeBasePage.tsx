@@ -1,16 +1,22 @@
 import { useEffect, useState } from 'react';
+import type { KnowledgeItem } from '../mock/knowledgeBaseData';
 import { mockKnowledgeBaseData } from '../mock/knowledgeBaseData';
 import * as S from './AdminKnowledgeBasePageStyle';
 
 const AdminKnowledgeBasePage = () => {
-  const [knowledgeBase, setKnowledgeBase] = useState(mockKnowledgeBaseData);
-  const [filteredKnowledge, setFilteredKnowledge] = useState(knowledgeBase);
+  const [knowledgeBase] = useState(mockKnowledgeBaseData);
+  const [filteredKnowledge, setFilteredKnowledge] = useState<KnowledgeItem[]>([]);
   const [activeTab, setActiveTab] = useState<'FAQ' | 'QNA'>('FAQ');
 
   useEffect(() => {
-    const result = knowledgeBase.filter(item => 
-      activeTab === 'FAQ' ? item.isFaq : !item.isFaq
-    );
+    let result = [];
+    if (activeTab === 'FAQ') {
+      // FAQ 탭: isFaq가 true인 항목만 표시
+      result = knowledgeBase.filter(item => item.isFaq);
+    } else {
+      // QNA 탭: 모든 항목 표시
+      result = knowledgeBase;
+    }
     setFilteredKnowledge(result);
   }, [activeTab, knowledgeBase]);
 
@@ -50,8 +56,8 @@ const AdminKnowledgeBasePage = () => {
           </thead>
           <tbody>
             {filteredKnowledge.map(item => (
-              <tr key={item.id}>
-                <td><input type="checkbox" checked={item.isFaq} /></td>
+              <S.Tr key={item.id} $isInactive={!item.isActive}>
+                <td><input type="checkbox" checked={item.isFaq} readOnly/></td>
                 <td>{item.intent}</td>
                 <td style={{textAlign: 'left'}}>{item.question}</td>
                 <td style={{textAlign: 'left', maxWidth: '400px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.answer}</td>
@@ -59,7 +65,7 @@ const AdminKnowledgeBasePage = () => {
                   <S.ActionButton variant="수정">수정</S.ActionButton>
                   <S.ActionButton variant="중지">{item.isActive ? '중지' : '재개'}</S.ActionButton>
                 </td>
-              </tr>
+              </S.Tr>
             ))}
           </tbody>
         </S.Table>
