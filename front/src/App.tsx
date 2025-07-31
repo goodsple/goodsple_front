@@ -30,6 +30,7 @@ import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
+import Community from './features/community/components/Community.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
 
@@ -54,7 +55,7 @@ function App() {
           <Route path='/payment/success' element={<PaymentSuccessPage />} />
           <Route path='/payment/failure' element={<PaymentFailurePage />} />
           <Route path='/map' element={<MapViewPage />} />
-          
+          <Route path='/community' element={<Community />} />
         </Route>
 
         <Route element={<AdminLayout />}>
