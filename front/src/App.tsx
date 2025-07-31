@@ -37,6 +37,7 @@ import AdminAuctionPage from './features/admin/pages/AdminAuctionPage';
 import AdminAuctionResultPage from './features/admin/pages/AdminAuctionResultPage';
 import AdminChatLogDetailPage from './features/admin/pages/AdminChatLogDetailPage';
 import AdminChatLogPage from './features/admin/pages/AdminChatLogPage';
+import AdminKnowledgeBasePage from './features/admin/pages/AdminKnowledgeBasePage';
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
@@ -76,6 +77,7 @@ function App() {
           <Route path='/admin/auctions/result/:auctionId' element={<AdminAuctionResultPage />} />
           <Route path='/admin/chatbot/logs' element={<AdminChatLogPage />} />
           <Route path='/admin/chatbot/logs/:logId' element={<AdminChatLogDetailPage />} />
+          <Route path='/admin/chatbot/knowledge' element={<AdminKnowledgeBasePage />} />
         </Route>
 
         {/* Layout 없이 단독 페이지 */}
