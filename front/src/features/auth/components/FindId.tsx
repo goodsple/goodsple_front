@@ -164,7 +164,7 @@ const FindId:React.FC = () => {
             });
 
             // 반환된 아이디를 화면에 표시
-            const loginId = response.data.split(':')[1]?.trim();
+            const loginId = response.data.trim();
             setFoundId(loginId);   // 암호화된 아이디 반환
             setIsFound(true);  // 아이디를 찾았음을 표시
         } catch (error) {

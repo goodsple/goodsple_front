@@ -9,10 +9,14 @@ import ConfirmModal from '../../../components/common/modal/ConfirmModal';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../api/axiosInstance';
 import type { CheckResultType, EditProfileErrorType, EditProfileFormDataType } from '../types/editProfile';
+import { useAuth } from '../../auth/contexts/AuthContext';
+import type { UserProfile } from '../../auth/types/auth';
 
 const EditProfile:React.FC = () => {
 
     const navigate = useNavigate();
+
+    const { userProfile, setUserProfile } = useAuth();
 
     const [initialData, setInitialData] = useState<EditProfileFormDataType | null>(null);
 
@@ -442,18 +446,28 @@ const EditProfile:React.FC = () => {
             }
         });
 
-        // 5. PUT 요청 전송
         try {
-            // 서버에 PATCH 요청 (내 정보 수정)
-            await axiosInstance.put('/users/me', payload, config);
+            // 5. PUT 요청 전송
+            await axiosInstance.put('/users/me', payload);
+      
+            // 6. 컨텍스트에 반영 (헤더 갱신용)
+            if (userProfile) {
+                const updated: UserProfile = {
+                    ...userProfile,
+                    name:            payload.name            ?? userProfile.name,
+                    nickname:        payload.nickname        ?? userProfile.nickname,
+                    email:           payload.email           ?? userProfile.email,
+                    phoneNumber:     payload.phoneNumber     ?? userProfile.phoneNumber,
+                    profileImageUrl: payload.profileImageUrl ?? userProfile.profileImageUrl,
+                };
+                setUserProfile(updated);
+            }
 
-            // 성공 시 결과 메시지 설정
-            setResultMessage('회원정보가 저장되었습니다.');
-        } catch (err:any) {
-            setResultMessage(err.response?.data?.message ?? '저장 중 오류가 발생했습니다.');
+        setResultMessage('회원정보가 저장되었습니다.');
+        } catch (err: any) {
+        setResultMessage(err.response?.data?.message ?? '저장 중 오류가 발생했습니다.');
         } finally {
-            // 성공/실패와 관계없이 결과 모달 열기
-            setIsResultOpen(true);
+        setIsResultOpen(true);
         }
     };
 
@@ -478,14 +492,8 @@ const EditProfile:React.FC = () => {
         <ep.EditProfileContainer>
             <s.SignUpWrap>
             <s.SignUpTitle>회원정보 수정</s.SignUpTitle>
-
                 <ep.ProfileImageWrap>
                 <ep.ProfileImage isDefault={!userProfileImg && !formData.profileImageUrl}>
-                    {/* {userProfileImg ?(
-                         <img src={userProfileImg} alt="업로드된 프로필 이미지" />
-                    ):(
-                        <img src={profileImg} alt="기본 프로필 이미지" />
-                    )} */}
                     <img
                         src={userProfileImg || formData.profileImageUrl || profileImg}
                         alt="프로필 이미지"
@@ -732,5 +740,6 @@ const EditProfile:React.FC = () => {
     </ep.EditProfileContainer>
     )
 }
+
 
 export default EditProfile;
