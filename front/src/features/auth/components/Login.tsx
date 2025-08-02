@@ -45,12 +45,15 @@ const Login:React.FC = () => {
 
             // 4) 로그인 직후 프로필 정보 가져오기
             const profileRes = await axiosInstance.get<UserProfile>('/users/me');
-            console.log('내 프로필:', profileRes.data);
-           
-            setUserProfile(profileRes.data);                     // 4) Context 업데이트
+            const profile = profileRes.data;
+            setUserProfile(profile);                     // 4) Context 업데이트
 
-            // 5) 홈으로 이동
-            navigate("/");
+            // 5) role 검사 후 라우팅 (추가된 부분)
+            if (profile.role === 'ADMIN') {
+                navigate('/admin/');
+            } else {
+                navigate('/');
+            }
         }catch (err: any) {
             // 에러 처리
             if (err.response?.status === 401) {
