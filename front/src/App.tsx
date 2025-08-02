@@ -45,6 +45,7 @@ import Community from './features/community/components/Community.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
 import ReportWrapper from './features/report/ReportWrapper.tsx';
+import AdminUserPage from './features/admin/auth/page/AdminUserPage.tsx';
 
 
 function App() {
@@ -77,10 +78,15 @@ function App() {
 
           <Route element={<AdminLayout />}>
             <Route path='/admin' element={<AdminMain />} />
+             <Route path="admin/users" element={<AdminUserPage />} />
+            {/* <Route path="reviews" element={<AdminReviewPage />} />
+            <Route path="reports" element={<AdminReportPage />} />  */}
+
             <Route path='/admin/auctions' element={<AdminAuctionPage />} />
             <Route path='/admin/auctions/create' element={<AdminAuctionCreatePage />} />
             <Route path='/admin/auctions/edit/:auctionId' element={<AdminAuctionEditPage />} />
             <Route path='/admin/auctions/result/:auctionId' element={<AdminAuctionResultPage />} />
+            
             <Route path='/admin/chatbot/logs' element={<AdminChatLogPage />} />
             <Route path='/admin/chatbot/logs/:logId' element={<AdminChatLogDetailPage />} />
             <Route path='/admin/chatbot/knowledge' element={<AdminKnowledgeBasePage />} />
