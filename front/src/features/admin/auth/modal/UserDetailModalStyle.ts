@@ -72,6 +72,8 @@ export const Footer = styled.div`
   border-top: 1px solid #eee;
   display: flex;
   justify-content: center;
+  width: 506px;
+  margin: auto;
 `;
 
 export const SaveButton = styled.button`

@@ -46,6 +46,7 @@ import AdminMain from './pages/AdminMain.tsx';
 
 import ReportWrapper from './features/report/ReportWrapper.tsx';
 import AdminUserPage from './features/admin/auth/page/AdminUserPage.tsx';
+import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
 
 
 function App() {
@@ -79,8 +80,8 @@ function App() {
           <Route element={<AdminLayout />}>
             <Route path='/admin' element={<AdminMain />} />
              <Route path="admin/users" element={<AdminUserPage />} />
-            {/* <Route path="reviews" element={<AdminReviewPage />} />
-            <Route path="reports" element={<AdminReportPage />} />  */}
+            <Route path="admin/reviews" element={<AdminReviewPage />} />
+            {/* <Route path="reports" element={<AdminReportPage />} />  */} 
 
             <Route path='/admin/auctions' element={<AdminAuctionPage />} />
             <Route path='/admin/auctions/create' element={<AdminAuctionCreatePage />} />
