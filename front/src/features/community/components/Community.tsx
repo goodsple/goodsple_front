@@ -3,6 +3,7 @@ import { useState, type KeyboardEvent } from 'react';
 import sendIcon from '../../../assets/images/comm_send.png';
 import Logo from '../../../assets/images/logo.png';
 import * as s from './CommunityStyle';
+import CommUserInfoModal from './CommUserInfoModal';
 
 type MessageType = 'normal' | 'announcement';
 
@@ -14,9 +15,11 @@ interface ChatMessage {
     text: string;
     type: MessageType;
     sender: 'me';
+    userName: string;
+    userProfile: string;
 }
 
-const Community:React.FC<ChatInputBoxProps> = ({onSend}) => {
+const Community:React.FC<ChatInputBoxProps> = ({}) => {
 
     const chatRooms = ['K-POP 채팅방', '영화/드라마 채팅방', '게임 채팅방', '애니메이션 채팅방'];
     const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
@@ -24,6 +27,14 @@ const Community:React.FC<ChatInputBoxProps> = ({onSend}) => {
 
     const [input, setInput] = useState<string>(''); 
     const [messageType, setMessageType] = useState<MessageType>('normal');
+
+    const [profileModalOpen, setProfileModalOpen] = useState(false);
+    const [selectedUserInfo, setSelectedUserInfo] = useState<{
+        userName: string;
+        userProfile: string;
+        badgeName: string;
+        badgeImage: string;
+    } | null >(null);
 
 
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -39,16 +50,27 @@ const Community:React.FC<ChatInputBoxProps> = ({onSend}) => {
                     text: input.trim(),
                     type: messageType,
                     sender: 'me',
+                    userName: '홍길동', // 임시
+                    userProfile: ''     // 임시
                 };
 
                 setRoomMessages(prev => ({
                     ...prev,
                     [selectedRoom]: [...(prev[selectedRoom] || []), newMessage]
                 }));
-            onSend(input.trim(), messageType);
             setInput('');
         }
     };
+
+    const handleProfileClick = (msg: ChatMessage) => {
+        setSelectedUserInfo({
+            userName: msg.userName,
+            badgeName: 'LV. 3 굿즈 수호자',
+            badgeImage: '/assets/images/sample_badge.png', // 예시
+            userProfile: msg.userProfile
+        });
+            setProfileModalOpen(true);
+        };
 
     return (
         <s.CommunityContainer>
@@ -78,16 +100,38 @@ const Community:React.FC<ChatInputBoxProps> = ({onSend}) => {
                         </s.EmptyMessageArea>
                     ) : (
                         <>
-                            {/* (추후 메시지 목록 등 들어올 자리) */}
-                            {(roomMessages[selectedRoom] || []).map((msg, idx) => (
-                                <s.ChatMessageBubble key={idx} isMine={msg.sender === 'me'}>
-                                    {msg.text}
-                                </s.ChatMessageBubble>
-                            ))}
+                            <s.ChatMessagesWrapper>
+                                {(roomMessages[selectedRoom] || []).map((msg, idx) => (
+
+                                <s.ChatMessageItem key={idx} isMine={msg.sender === 'me'}>
+                                        <s.ProfileSection>
+                                            <s.ProfileImage 
+                                                src={msg.userProfile} 
+                                                alt="프로필 이미지" 
+                                                onClick={() => handleProfileClick(msg)}
+                                            />
+                                            <s.UserName>{msg.userName}</s.UserName>
+                                        </s.ProfileSection>
+                                    <s.ChatMessageBubble isMine={msg.sender === 'me'}>
+                                        {msg.text}
+                                    </s.ChatMessageBubble>
+                                </s.ChatMessageItem>
+
+                                ))}
+                            </s.ChatMessagesWrapper>
+
+                            {profileModalOpen && selectedUserInfo && (
+                                <CommUserInfoModal
+                                    userName={selectedUserInfo.userName}
+                                    badgeName={selectedUserInfo.badgeName}
+                                    badgeImage={selectedUserInfo.badgeImage}
+                                    userProfile={selectedUserInfo.userProfile}
+                                    onClose={() => setProfileModalOpen(false)}
+                                />
+                            )}
 
                             {/* 입력창 */}
                             <s.ChatInputBox>
-
                                 <s.InputRow>
                                     <s.MessageTypeToggle>
                                         <s.TypeButton
@@ -109,6 +153,7 @@ const Community:React.FC<ChatInputBoxProps> = ({onSend}) => {
                                         value={input}
                                         onChange={(e) => setInput(e.target.value)}
                                         onKeyDown={handleKeyDown}
+                                        maxLength={200}
                                     />
 
                                 
@@ -121,6 +166,7 @@ const Community:React.FC<ChatInputBoxProps> = ({onSend}) => {
                                 <s.AnnouncementCountMessage>
                                     <ul>
                                         <li>확성기 사용 → 한달에 2번 사용가능</li>
+                                        {/* 확성기 사용 => 한달에 사용할 수 있는 횟수를 모두 사용하셨습니다! */}
                                     </ul>
                                 </s.AnnouncementCountMessage>
                             </s.ChatInputBox>
