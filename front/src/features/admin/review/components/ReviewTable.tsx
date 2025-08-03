@@ -21,7 +21,7 @@ const ReviewTable: React.FC<Props> = ({ reviews, loading, onAction, onRowClick }
           <th>후기 ID</th>
           <th>작성자</th>
           <th>대상자</th>
-          <th>텍스트 내용</th>
+          <th>후기 내용</th>
           <th>신고 횟수</th>
           <th>별점</th>
           <th>후기 상태</th>
@@ -35,7 +35,7 @@ const ReviewTable: React.FC<Props> = ({ reviews, loading, onAction, onRowClick }
             <td>{r.reviewId}</td>
             <td>{r.author}</td>
             <td>{r.targetUser}</td>
-            <td>{r.content}</td>
+            <td className="ellipsis">{r.content}</td>
             <td>{r.reportCount}</td>
             <td>{r.rating}/5</td>
             <td>{r.status==='NORMAL'?'정상':'블라인드'}</td>

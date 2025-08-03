@@ -25,6 +25,12 @@ export const Table = styled.table`
         color: #fff;
         cursor: pointer;
     }
+    .ellipsis {
+      max-width: 200px;       
+      white-space: nowrap;    
+      overflow: hidden;       
+      text-overflow: ellipsis;
+    }
 `;
 export const Button = styled.button<ButtonProps>`
   padding: 4px 12px;
