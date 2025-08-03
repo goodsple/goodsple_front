@@ -48,7 +48,6 @@ const UserTable: React.FC<Props> = ({ users, loading, onDelete, onRowClick }) =>
             <td>{u.joinDate}</td>
             <td>
               <S.Button 
-                danger 
                 onClick={e => {  e.stopPropagation();  onDelete(u.userId);}}>
                 삭제
               </S.Button>

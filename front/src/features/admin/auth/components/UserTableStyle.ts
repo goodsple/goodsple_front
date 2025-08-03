@@ -24,18 +24,20 @@ export const Table = styled.table`
   }
 `;
 
-interface ButtonProps { danger?: boolean; }
-export const Button = styled.button<ButtonProps>`
+
+export const Button = styled.button`
   margin: 0 4px;
   padding: 5px 10px;
   border: 1px solid #444;
   border-radius: 5px;
   color: #444;
-  background: ${({ danger }) => (danger ? '#fff' : '#997BEB')};
+  background: #fff;
   cursor: pointer;
   font-size: 0.875rem;
 
   &:hover {
-    opacity: 0.9;
+    background: #E03131;
+    color: #fff;
   }
+  
 `;
