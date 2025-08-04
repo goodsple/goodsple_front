@@ -23,8 +23,8 @@ import MapViewPage from './features/map/pages/MapViewPage';
 import MyBidsPage from './features/mybids/pages/MyBidsPage';
 import EditProfile from './features/mypage/components/EditProfile';
 import MyPage from './features/mypage/components/Mypage';
-import NoticeList from './features/notice/NoticeList.tsx';
 import NoticeDetail from './features/notice/NoticeDetail.tsx';
+import NoticeList from './features/notice/NoticeList.tsx';
 import PaymentFailurePage from './features/payment/pages/PaymentFailurePage';
 import PaymentPage from './features/payment/pages/PaymentPage';
 import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
@@ -44,9 +44,10 @@ import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
 import Community from './features/community/components/Community.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
-import ReportWrapper from './features/report/ReportWrapper.tsx';
 import AdminUserPage from './features/admin/auth/page/AdminUserPage.tsx';
 import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
+import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
+import ReportWrapper from './features/report/ReportWrapper.tsx';
 
 
 function App() {
@@ -75,6 +76,7 @@ function App() {
             <Route path='/exchange/new' element={<ExchangePost />} />
             <Route path='/exchange/detail' element={<ExchangePostDetail />} />
             <Route path='/community' element={<Community />} />
+            <Route path='/chatbot' element={<ChatBotPage />} />
           </Route>
 
           <Route element={<AdminLayout />}>
