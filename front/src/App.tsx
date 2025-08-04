@@ -45,6 +45,7 @@ import Community from './features/community/components/Community.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
 import AdminUserPage from './features/admin/auth/page/AdminUserPage.tsx';
+import AdminReportPage from './features/admin/report/page/AdminReportPage.tsx';
 import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import ReportWrapper from './features/report/ReportWrapper.tsx';
@@ -83,7 +84,7 @@ function App() {
             <Route path='/admin' element={<AdminMain />} />
              <Route path="admin/users" element={<AdminUserPage />} />
             <Route path="admin/reviews" element={<AdminReviewPage />} />
-            {/* <Route path="reports" element={<AdminReportPage />} />  */} 
+            <Route path="admin/reports" element={<AdminReportPage />} />
 
             <Route path='/admin/auctions' element={<AdminAuctionPage />} />
             <Route path='/admin/auctions/create' element={<AdminAuctionCreatePage />} />

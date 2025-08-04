@@ -33,7 +33,7 @@ export const Group = styled.div`
     border-radius: 5px;
   }
   input[type="text"] {
-    width: 355px;
+    width: 288px;
     margin-left: 28px;
   }
 
