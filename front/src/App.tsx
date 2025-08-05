@@ -22,6 +22,8 @@ import ExchangePostDetail from './features/exchange/ExchangePostDetail.tsx';
 import MapViewPage from './features/map/pages/MapViewPage';
 import MyBidsPage from './features/mybids/pages/MyBidsPage';
 import EditProfile from './features/mypage/components/EditProfile';
+import MyExchangeHistory from './features/mypage/components/MyExchangeHistory.tsx';
+import MyExchangePosts from './features/mypage/components/MyExchangePosts.tsx';
 import MyPage from './features/mypage/components/Mypage';
 import NoticeDetail from './features/notice/NoticeDetail.tsx';
 import NoticeList from './features/notice/NoticeList.tsx';
@@ -30,8 +32,6 @@ import PaymentPage from './features/payment/pages/PaymentPage';
 import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
 import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview.tsx';
-import MyExchangePosts from './features/mypage/components/MyExchangePosts.tsx';
-import MyExchangeHistory from './features/mypage/components/MyExchangeHistory.tsx';
 import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
@@ -49,6 +49,7 @@ import AdminMain from './pages/AdminMain.tsx';
 import AdminUserPage from './features/admin/auth/page/AdminUserPage.tsx';
 import AdminCommunityDetailPage from './features/admin/community/pages/AdminCommunityDetailPage.tsx';
 import AdminCommunityPage from './features/admin/community/pages/AdminCommunityPage.tsx';
+import AdminProhibitedWordsPage from './features/admin/prohibitedWords/pages/AdminProhibitedWordsPage.tsx';
 import AdminReportPage from './features/admin/report/page/AdminReportPage.tsx';
 import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
@@ -104,6 +105,7 @@ function App() {
 
             <Route path='/admin/community' element={<AdminCommunityPage />} />
             <Route path="/admin/community/detail" element={<AdminCommunityDetailPage />} />
+            <Route path="/admin/prohibitedwords" element={<AdminProhibitedWordsPage />} />
           </Route>
 
           {/* Layout 없이 단독 페이지 */}
