@@ -454,8 +454,90 @@
     padding: 2px;
     font-size: 15px;
     color: #444444;
-    position: relative;
-    left: 92%;
+    position: absolute;
+    left: 80%;
+    bottom: 18%;
+    margin-bottom: 20px;
 }
 
+.vReply {
+    display: flex;
+    flex-direction: column;
+    width: 1200px;
+    height: 200px;
+    margin-bottom: 30px;
+    /*gap: 20px;*/
+}
 
+.vReplyWrap {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+    /*justify-content: center;*/
+}
+
+.vReplyWrap img {
+    width: 20px;
+    height: auto;
+    object-fit: contain;
+}
+
+.vReplyWrap p {
+    color: #444444;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: -1px;
+}
+
+.vReplyWrap2 {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    /*justify-content: center;*/
+}
+
+.replyInput {
+    width: 1000px;
+    height: 150px;
+    outline: none;
+    border: 1px solid #997BEB;
+    border-radius: 10px;
+    resize: none;
+    color: #444444;
+    font-size: 20px;
+    font-family: 'Pretendard', sans-serif;
+    letter-spacing: -1px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.replyInput::placeholder {
+    color: RGBA(153, 123, 235, 0.5);
+}
+
+.hiddenReply {
+    font-family: 'Pretendard', sans-serif;
+    font-size: 15px;
+    letter-spacing: -1px;
+    color: #444444;
+}
+
+.hiddenReplyBox {
+    border: 1px solid #997BEB;
+    outline: none;
+}
+
+.vReplyButton {
+    all: unset;
+    cursor: pointer;
+    width: 140px;
+    height: 120px;
+    background-color: #997BEB;
+    color: white;
+    font-size: 20px;
+    letter-spacing: -1px;
+    border-radius: 10px;
+    text-align: center;
+}
