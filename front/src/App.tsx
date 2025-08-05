@@ -45,6 +45,8 @@ import Community from './features/community/components/Community.tsx';
 import AdminMain from './pages/AdminMain.tsx';
 
 import AdminUserPage from './features/admin/auth/page/AdminUserPage.tsx';
+import AdminCommunityDetailPage from './features/admin/community/pages/AdminCommunityDetailPage.tsx';
+import AdminCommunityPage from './features/admin/community/pages/AdminCommunityPage.tsx';
 import AdminReportPage from './features/admin/report/page/AdminReportPage.tsx';
 import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
@@ -94,6 +96,10 @@ function App() {
             <Route path='/admin/chatbot/logs' element={<AdminChatLogPage />} />
             <Route path='/admin/chatbot/logs/:logId' element={<AdminChatLogDetailPage />} />
             <Route path='/admin/chatbot/knowledge' element={<AdminKnowledgeBasePage />} />
+
+
+            <Route path='/admin/community' element={<AdminCommunityPage />} />
+            <Route path="/admin/community/detail" element={<AdminCommunityDetailPage />} />
           </Route>
 
           {/* Layout 없이 단독 페이지 */}
