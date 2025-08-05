@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import * as S from './AdminNoticeList.styles';
+import { useNavigate } from 'react-router-dom';
 
 const mockData = [
     {
@@ -24,16 +25,21 @@ const mockData = [
 
 const AdminNoticeList = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
     const handleSearch = () => {
         // TODO: 검색 기능 구현
         console.log('검색어:', searchTerm);
     };
 
+    const handleRegister = () => {
+        navigate('/admin/notice/new'); // 버튼 클릭 시 이동
+    };
+
     return (
         <S.Container>
             <S.TopBar>
-                <S.RegisterButton>공지 등록</S.RegisterButton>
+                <S.RegisterButton onClick={handleRegister}>공지 등록</S.RegisterButton>
                 <S.SearchWrapper>
                     <S.SearchInput
                         type="text"
