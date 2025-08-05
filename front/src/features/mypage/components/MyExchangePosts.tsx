@@ -6,6 +6,7 @@ import sampleImage2 from '../../../assets/images/sample2.png';
 import sampleImage3 from '../../../assets/images/sample3.png';
 import Pagination from '../../../components/common/pagination/Pagination';
 import * as PC from '../../../components/common/pagination/PaginationStyle.ts';
+import { useNavigate } from 'react-router-dom';
 
 const statusOptions = ['거래가능', '거래중', '거래완료'];
 const FILTERS = ['전체', ...statusOptions] as const;
@@ -17,6 +18,14 @@ const MyExchangePosts = () => {
     const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
     const [activeFilter, setActiveFilter] = useState<FilterType>('전체');
     const [currentPage, setCurrentPage] = useState(1);
+    const navigate = useNavigate();
+
+    const handleTabClick = (tab: 'myPosts' | 'history') => {
+        setActiveTab(tab);
+        if (tab === 'history') {
+            navigate('/exchange/history');  // 거래내역으로 이동
+        }
+    };
 
     const [data, setData] = useState([
         {
@@ -112,10 +121,10 @@ const MyExchangePosts = () => {
         <S.Container>
             <S.TabFilterWrapper>
                 <S.TabWrapper>
-                    <S.Tab $active={activeTab === 'myPosts'} onClick={() => setActiveTab('myPosts')}>
+                    <S.Tab $active={activeTab === 'myPosts'} onClick={() => handleTabClick('myPosts')}>
                         내 거래글
                     </S.Tab>
-                    <S.Tab $active={activeTab === 'history'} onClick={() => setActiveTab('history')}>
+                    <S.Tab $active={activeTab === 'history'} onClick={() => handleTabClick('history')}>
                         거래내역
                     </S.Tab>
                 </S.TabWrapper>
