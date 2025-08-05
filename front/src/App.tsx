@@ -30,6 +30,7 @@ import PaymentPage from './features/payment/pages/PaymentPage';
 import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
 import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview.tsx';
+import MyExchangePosts from './features/mypage/components/MyExchangePosts.tsx';
 import MyExchangeHistory from './features/mypage/components/MyExchangeHistory.tsx';
 import UserMain from "./pages/UserMain.tsx";
 
@@ -65,6 +66,8 @@ function App() {
             <Route path='/editprofile' element={<EditProfile />} />
             <Route path='/writereview' element={<WriteReview />} />
             <Route path='/reviews' element={<MyReview />} />
+            <Route path='/exchangeposts' element={<MyExchangePosts />} />
+            <Route path='/exchange/history' element={<MyExchangeHistory />} />
             <Route path='/badgeguide' element={<BadgeGuide />} />
             <Route path='/bookmarkPage' element={<BookmarkPage />} />
             <Route path='/auction/live/:auctionId' element={<LiveAuctionPage />} />
@@ -77,14 +80,13 @@ function App() {
             <Route path='/notice/detail' element={<NoticeDetail />} />
             <Route path='/exchange/new' element={<ExchangePost />} />
             <Route path='/exchange/detail' element={<ExchangePostDetail />} />
-            <Route path='/exchange/history' element={<MyExchangeHistory />} /> 
             <Route path='/community' element={<Community />} />
             <Route path='/chatbot' element={<ChatBotPage />} />
           </Route>
 
           <Route element={<AdminLayout />}>
             <Route path='/admin' element={<AdminMain />} />
-             <Route path="admin/users" element={<AdminUserPage />} />
+            <Route path="admin/users" element={<AdminUserPage />} />
             <Route path="admin/reviews" element={<AdminReviewPage />} />
             <Route path="admin/reports" element={<AdminReportPage />} />
 
@@ -92,7 +94,7 @@ function App() {
             <Route path='/admin/auctions/create' element={<AdminAuctionCreatePage />} />
             <Route path='/admin/auctions/edit/:auctionId' element={<AdminAuctionEditPage />} />
             <Route path='/admin/auctions/result/:auctionId' element={<AdminAuctionResultPage />} />
-            
+
             <Route path='/admin/chatbot/logs' element={<AdminChatLogPage />} />
             <Route path='/admin/chatbot/logs/:logId' element={<AdminChatLogDetailPage />} />
             <Route path='/admin/chatbot/knowledge' element={<AdminKnowledgeBasePage />} />
