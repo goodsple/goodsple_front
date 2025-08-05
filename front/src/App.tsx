@@ -57,6 +57,7 @@ import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import ReportWrapper from './features/report/ReportWrapper.tsx';
 import AdminNotice from './features/admin/notice/AdminNotice.tsx';
+import AdminKeywordMonitoring from './features/admin/keyword/AdminKeywordMonitoring.tsx';
 
 
 function App() {
@@ -116,6 +117,8 @@ function App() {
 
             <Route path='/admin/notice' element={<AdminNoticeList />} />
             <Route path='/admin/notice/new' element={<AdminNotice />} />
+
+            <Route path='/admin/keyword' element={<AdminKeywordMonitoring />} />
           </Route>
 
           {/* Layout 없이 단독 페이지 */}
