@@ -54,6 +54,7 @@ import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import ReportWrapper from './features/report/ReportWrapper.tsx';
 import MyExchangePage from './features/mypage/components/MyExchangePage.tsx';
+import AdminNoticeList from './features/admin/notice/AdminNoticeList.tsx';
 
 
 function App() {
@@ -109,6 +110,10 @@ function App() {
 
             <Route path='/admin/community' element={<AdminCommunityPage />} />
             <Route path="/admin/community/detail" element={<AdminCommunityDetailPage />} />
+
+            <Route path='/admin/notice' element={<AdminNoticeList />} />
+
+
           </Route>
 
           {/* Layout 없이 단독 페이지 */}
