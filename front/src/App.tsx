@@ -49,10 +49,12 @@ import AdminMain from './pages/AdminMain.tsx';
 import AdminUserPage from './features/admin/auth/page/AdminUserPage.tsx';
 import AdminCommunityDetailPage from './features/admin/community/pages/AdminCommunityDetailPage.tsx';
 import AdminCommunityPage from './features/admin/community/pages/AdminCommunityPage.tsx';
+import AdminNoticeList from './features/admin/notice/AdminNoticeList.tsx';
 import AdminProhibitedWordsPage from './features/admin/prohibitedWords/pages/AdminProhibitedWordsPage.tsx';
 import AdminReportPage from './features/admin/report/page/AdminReportPage.tsx';
 import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
+import MyExchangePage from './features/mypage/components/MyExchangePage.tsx';
 import ReportWrapper from './features/report/ReportWrapper.tsx';
 
 
@@ -69,8 +71,12 @@ function App() {
             <Route path='/editprofile' element={<EditProfile />} />
             <Route path='/writereview' element={<WriteReview />} />
             <Route path='/reviews' element={<MyReview />} />
-            <Route path='/exchangeposts' element={<MyExchangePosts />} />
-            <Route path='/exchange/history' element={<MyExchangeHistory />} />
+
+            <Route path="/exchange" element={<MyExchangePage />}>
+              <Route index element={<MyExchangePosts />} />
+              <Route path='history' element={<MyExchangeHistory />} />
+            </Route>
+
             <Route path='/badgeguide' element={<BadgeGuide />} />
             <Route path='/bookmarkPage' element={<BookmarkPage />} />
             <Route path='/auction/live/:auctionId' element={<LiveAuctionPage />} />
@@ -106,6 +112,8 @@ function App() {
             <Route path='/admin/community' element={<AdminCommunityPage />} />
             <Route path="/admin/community/detail" element={<AdminCommunityDetailPage />} />
             <Route path="/admin/prohibitedwords" element={<AdminProhibitedWordsPage />} />
+            <Route path='/admin/notice' element={<AdminNoticeList />} />
+            
           </Route>
 
           {/* Layout 없이 단독 페이지 */}
