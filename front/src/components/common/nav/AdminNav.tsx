@@ -20,7 +20,7 @@ const MENU_ITEMS = [
         ]
     },
     { label: "실시간 검색어 관리", path: "/admin" },
-    { label: "공지사항 관리", path: "/admin" },
+    { label: "공지사항 관리", path: "/admin/notice" },
 ];
 
 const AdminNav = () => {

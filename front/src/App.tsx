@@ -22,6 +22,7 @@ import ExchangePostDetail from './features/exchange/ExchangePostDetail.tsx';
 import MapViewPage from './features/map/pages/MapViewPage';
 import MyBidsPage from './features/mybids/pages/MyBidsPage';
 import EditProfile from './features/mypage/components/EditProfile';
+import MyExchangePage from './features/mypage/components/MyExchangePage.tsx';
 import MyExchangeHistory from './features/mypage/components/MyExchangeHistory.tsx';
 import MyExchangePosts from './features/mypage/components/MyExchangePosts.tsx';
 import MyPage from './features/mypage/components/Mypage';
@@ -54,8 +55,8 @@ import AdminProhibitedWordsPage from './features/admin/prohibitedWords/pages/Adm
 import AdminReportPage from './features/admin/report/page/AdminReportPage.tsx';
 import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
-import MyExchangePage from './features/mypage/components/MyExchangePage.tsx';
 import ReportWrapper from './features/report/ReportWrapper.tsx';
+import AdminNotice from './features/admin/notice/AdminNotice.tsx';
 
 
 function App() {
@@ -112,8 +113,9 @@ function App() {
             <Route path='/admin/community' element={<AdminCommunityPage />} />
             <Route path="/admin/community/detail" element={<AdminCommunityDetailPage />} />
             <Route path="/admin/prohibitedwords" element={<AdminProhibitedWordsPage />} />
+
             <Route path='/admin/notice' element={<AdminNoticeList />} />
-            
+            <Route path='/admin/notice/new' element={<AdminNotice />} />
           </Route>
 
           {/* Layout 없이 단독 페이지 */}
