@@ -1,0 +1,62 @@
+import type { AdminReport, ReportTargetType, ReportStatus } from '../types/adminReport';
+
+export const mockReports: AdminReport[] = [
+  {
+    reportId:   'rep-0001',
+    targetId:   'post-1234',
+    targetType: 'POST',
+    targetTypeLabel: '게시글 신고',
+    targetName: '엑소 점퍼 교환구합니다',
+    reporter:   '러버굿',
+    reportType:       'INAPPROPRIATE_CONTENT',
+    reportTypeLabel:  '부적절한 게시글 또는 사진',
+    reason:     '허위정보에 일부러 안 좋게 써놨습니다.허위정보에 일부러 안 좋게 써놨습니다.허위정보에 일부러 안 좋게 써놨습니다.',
+    action:     'WARNING',
+    status:     'PROCESSED',
+    reportedAt: '2025.01.05 23:55',
+    handledAt:  '2025.01.06 09:30',
+  },
+  {
+    reportId:         'rep-0002',
+    targetId:         'review-asdf123',
+    targetType:       'REVIEW',
+    targetTypeLabel:  '후기 신고',
+    targetName:       '굿또오님의 후기',
+    reporter:         '닉넴모하지',
+    reportType:       'UNCOMFORTABLE',
+    reportTypeLabel:  '불쾌한 행동 및 언행',
+    reason:           '예의 없고 모욕적인 표현이 있습니다.',
+    action:           '',    // 3일 정지 (블라인드)
+    status:           'PENDING',
+    reportedAt:       '2025.01.06 08:12',
+  },
+  {
+    reportId:         'rep-0003',
+    targetId:         'msg-7890',
+    targetType:       'MESSAGE',
+    targetTypeLabel:  '메시지 신고',
+    targetName:       '1:1 문의',
+    reporter:         '굿또오',
+    reportType:       'SUSPECTED_FRAUD',
+    reportTypeLabel:  '사기 의심 거래',
+    reason:           '스팸 링크가 포함되어 있습니다.',
+    action:           'SUSPEND_PERM',  // 영구 정지 (차단)
+    status:           'PROCESSED',
+    reportedAt:       '2025.01.07 14:20',
+    handledAt:        '2025.01.07 15:05',
+  },
+  {
+    reportId:         'rep-0004',
+    targetId:         'event-321',
+    targetType:       'EVENT',
+    targetTypeLabel:  '이벤트 신고',
+    targetName:       '이벤트',
+    reporter:         '예이이',
+    reportType:       'OTHER',
+    reportTypeLabel:  '기타',
+    reason:           '광고성 이벤트 링크가 의심됩니다.',
+    action:           '',      // 기각
+    status:           'PENDING',
+    reportedAt:       '2025.01.08 11:00',
+  },
+];

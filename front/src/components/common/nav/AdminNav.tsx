@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 
 const MENU_ITEMS = [
     { label: "대시보드", path: "/admin" },
-    { label: "회원 관리", path: "/admin" },
-    { label: "후기 관리", path: "/admin" },
-    { label: "신고 관리", path: "/admin" },
+    { label: "회원 관리", path: "/admin/users" },
+    { label: "후기 관리", path: "/admin/reviews" },
+    { label: "신고 관리", path: "/admin/reports" },
     { label: "이벤트존 관리", path: "/admin" },
     { label: "경매 관리", path: "/admin" },
     { label: "카테고리 관리", path: "/admin" },

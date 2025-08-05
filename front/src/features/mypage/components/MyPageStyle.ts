@@ -5,6 +5,7 @@ export const MyPageContainer = styled.div`
         width: 100vw;
         min-height: 100vh;
         padding-top : 80px;
+        padding-bottom: 80px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -77,6 +78,7 @@ export const EditProfileButton = styled.button`
         margin-top: 35px;
         border: 2px solid #997BEB;
         border-radius: 10px;
+        cursor: pointer;
 `;
 
 // 게시글 / 북마크 / 후기  => 정보 나타내는 박스 
@@ -168,4 +170,13 @@ export const ActivityLink = styled(Link)`
         &:hover {
             color: #997BEB;          
         }
+`;
+
+export const NonData = styled.div`
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #444;
 `;

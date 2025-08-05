@@ -46,7 +46,7 @@ export const LogoutButton = styled.button`
 // `;
 
 export const MainContent = styled.main`
-  padding-top: 100px; 
+  // padding-top: 100px; 
   padding-left: 40px;
   padding-right: 40px;
   background-color: #FFFDFA;

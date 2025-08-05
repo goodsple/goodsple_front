@@ -270,19 +270,24 @@ const KakaoInfo:React.FC = () => {
             birthDate:   formData.birthDate,
           })
           .then(res => {
-            // 1) 받은 토큰을 로컬 스토리지에 저장
-            localStorage.setItem('accessToken',  res.data.accessToken);
-            localStorage.setItem('refreshToken', res.data.refreshToken);
-      
-            // 2) 로그인 후 헤더 반영을 위해 프로필 정보 fetch
-            return axiosInstance.get<UserProfile>('/auth/me');
+                const { accessToken, refreshToken } = res.data;
+                // 1) 받은 토큰을 로컬 스토리지에 저장
+                localStorage.setItem('accessToken',  accessToken);
+                localStorage.setItem('refreshToken', refreshToken);
+        
+                // 2) axiosInstance 에도 Authorization 헤더를 설정
+                axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        
+                // 3) 이제야 /me 호출하면 헤더에 토큰이 포함됩니다
+                return axiosInstance.get<UserProfile>('/users/me');
             })
+
             .then(r => {
-            // 3) 컨텍스트에 프로필 세팅 → Header가 자동으로 리렌더링 됩니다.
+            // 4) 컨텍스트에 프로필 세팅 → Header가 자동으로 리렌더링 됩니다.
             setUserProfile(r.data);
             navigate('/');
 
-            // 4) 모달 로직
+            // 5) 모달 로직
             setIsConfirmOpen(false);
             setIsResultOpen(true);
         })

@@ -10,7 +10,12 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
-        // rewrite: (path) => path.replace(/^\/api/, '/api'), // /api 유지
+      },
+       // /uploads/** 로 들어오는 요청은 백엔드(8080)로 포워딩
+       '/uploads': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
       },
     },
   },
