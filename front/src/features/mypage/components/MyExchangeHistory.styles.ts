@@ -8,6 +8,49 @@ export const Container = styled.div`
   box-sizing: border-box;
 `;
 
+export const TabWrapper = styled.div`
+  display: flex;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #ccc;
+`;
+
+export const Tab = styled.button<{ $active: boolean }>`
+  padding: 16px 32px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid ${({ $active }) => ($active ? '#997BEB' : 'transparent')};
+  font-weight: ${({ $active }) => ($active ? 'bold' : 'normal')};
+  color: ${({ $active }) => ($active ? '#000' : '#999')};
+  cursor: pointer;
+  font-size: 20px;
+`;
+
+export const TabFilterWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+export const FilterGroup = styled.div`
+  display: flex;
+  gap: 12px;
+`;
+
+export const FilterButton = styled.button<{ $active: boolean }>`
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: ${({ $active }) => ($active ? 'bold' : 'normal')};
+  color: ${({ $active }) => ($active ? '#000' : '#999')};
+//   border-bottom: ${({ $active }) => ($active ? '2px solid #000' : 'none')};
+  padding-bottom: 4px;
+  cursor: pointer;
+
+  &:hover {
+    color: #000;
+  }
+`;
+
 export const Table = styled.table`
   width: 100%;
   table-layout: fixed;

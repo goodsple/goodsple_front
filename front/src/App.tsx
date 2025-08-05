@@ -53,6 +53,7 @@ import AdminReportPage from './features/admin/report/page/AdminReportPage.tsx';
 import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import ReportWrapper from './features/report/ReportWrapper.tsx';
+import MyExchangePage from './features/mypage/components/MyExchangePage.tsx';
 
 
 function App() {
@@ -68,8 +69,12 @@ function App() {
             <Route path='/editprofile' element={<EditProfile />} />
             <Route path='/writereview' element={<WriteReview />} />
             <Route path='/reviews' element={<MyReview />} />
-            <Route path='/exchangeposts' element={<MyExchangePosts />} />
-            <Route path='/exchange/history' element={<MyExchangeHistory />} />
+
+            <Route path="/exchange" element={<MyExchangePage />}>
+              <Route index element={<MyExchangePosts />} />
+              <Route path='history' element={<MyExchangeHistory />} />
+            </Route>
+
             <Route path='/badgeguide' element={<BadgeGuide />} />
             <Route path='/bookmarkPage' element={<BookmarkPage />} />
             <Route path='/auction/live/:auctionId' element={<LiveAuctionPage />} />

@@ -40,7 +40,9 @@ const MyExchangeHistory = () => {
                 <tbody>
                     {data.map(item => (
                         <tr key={item.id}>
-                            <td><S.Thumbnail src={item.imageUrl} alt="상품 이미지" /></td>
+                            <td>
+                                <S.Thumbnail src={item.imageUrl} alt="상품 이미지" />
+                            </td>
                             <td>{item.title}</td>
                             <td>{item.nickname}</td>
                             <td>{item.tradeMethod}</td>

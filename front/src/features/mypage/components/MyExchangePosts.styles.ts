@@ -124,8 +124,9 @@ export const DropdownIcon = styled.img`
 
 export const TabFilterWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
+  margin-bottom: 15px;
 `
 
 export const FilterGroup = styled.div`
