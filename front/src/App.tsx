@@ -30,6 +30,7 @@ import PaymentPage from './features/payment/pages/PaymentPage';
 import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
 import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview.tsx';
+import MyExchangeHistory from './features/mypage/components/MyExchangeHistory.tsx';
 import UserMain from "./pages/UserMain.tsx";
 
 // 관리자화면 컴포넌트
@@ -76,6 +77,7 @@ function App() {
             <Route path='/notice/detail' element={<NoticeDetail />} />
             <Route path='/exchange/new' element={<ExchangePost />} />
             <Route path='/exchange/detail' element={<ExchangePostDetail />} />
+            <Route path='/exchange/history' element={<MyExchangeHistory />} /> 
             <Route path='/community' element={<Community />} />
             <Route path='/chatbot' element={<ChatBotPage />} />
           </Route>
