@@ -51,7 +51,7 @@ export const SignUpInput = styled.input`
 `;
 
 export const SignUpDupli = styled.button`
-    padding: 12px 16px;
+    padding: 14px 16px;
     background: #fff;
     color: #997beb;
     border: 1px solid #997beb;
@@ -61,6 +61,7 @@ export const SignUpDupli = styled.button`
     width: 110px;
     flex-shrink: 0;
     margin-left: 20px;
+    font-size: 13px;
 
     &.active {
       background: #997BEB;

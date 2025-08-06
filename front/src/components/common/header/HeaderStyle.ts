@@ -22,6 +22,8 @@ export const HeaderInner = styled.div`
     width: 100%;
     height: 100px;
     margin: 0 auto;
+    padding: 0 24px;          
+    box-sizing: border-box;
     display: flex;
     justify-content: space-between;
     align-items: center;
