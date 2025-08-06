@@ -32,7 +32,7 @@ export const TextContent = styled.div`
 `;
 
 export const CharacterImage = styled.img`
-  height: 120px;
+  height: 220px;
 `;
 
 export const GridContainer = styled.div`
