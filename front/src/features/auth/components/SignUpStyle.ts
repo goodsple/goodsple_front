@@ -61,7 +61,6 @@ export const SignUpDupli = styled.button`
     width: 110px;
     flex-shrink: 0;
     margin-left: 20px;
-    font-size: 13px;
 
     &.active {
       background: #997BEB;
