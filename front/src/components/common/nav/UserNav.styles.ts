@@ -5,14 +5,14 @@ export const NavContainer = styled.nav<{ $open: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
-  transform: translateX(${({ $open }) => ($open ? '0' : '-400px')});
+  transform: translateX(${({ $open }) => ($open ? '0' : '-100%')});
   width: 450px;
   height: 100vh;
   background-color: #fff;
   z-index: 1000;
   padding-top: 100px;
   border-right: 1px solid #ddd;
-  transition: transform 0.3s ease;
+  will-change: transform;
   overflow-y: auto;
 `;
 

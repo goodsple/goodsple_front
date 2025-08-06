@@ -55,7 +55,7 @@ export const HamburgerButton = styled.button<{ $open: boolean }>`
     position: fixed;       
     top: 38px;             
     left: 24px;
-    z-index: 1101;         
+    z-index: 1001;         
     width: 40px;
     height: 24px;
     display: flex;
@@ -67,11 +67,14 @@ export const HamburgerButton = styled.button<{ $open: boolean }>`
     cursor: pointer;
 
   span {
+    display: block;
+    width: 100%;
     height: 4px;
     background: #444;
-    // transition: 0.3s;
-    transition: transform 0.3s ease, opacity 0.3s ease;  
     transform-origin: center;
+    will-change: transform, opacity;
+    transition: transform 0.3s ease-in-out,
+                opacity   0.3s ease-in-out;
   }
 
   ${({ $open }) =>
@@ -158,7 +161,6 @@ export const ProfileIcon = styled.img<{ $isDefault?: boolean }>`
     transform: translateY(16%);
     opacity: 0.8;
   `}
-}
 `;
 
 export const LogoutButton = styled.button`
@@ -172,11 +174,23 @@ export const LogoutButton = styled.button`
     cursor: pointer;
 `;
 
-export const Overlay = styled.div`
+// export const Overlay = styled.div`
+//   position: fixed;
+//   top: 0; 
+//   width: 100%;
+//   height: 100vh;
+//   background-color: rgba(154, 154, 154, 0.6);
+//   z-index: 100;
+// `;
+
+export const Overlay = styled.div<{ $open: boolean }>`
   position: fixed;
-  top: 0; 
-  width: 100%;
-  height: 100vh;
-  background-color: rgba(154, 154, 154, 0.6);
+  top: 0; left: 0;
+  width: 100%; height: 100vh;
+  background-color: rgba(0,0,0,0.4);
+  pointer-events: ${({ $open }) => ($open ? 'auto' : 'none')};
+  opacity:        ${({ $open }) => ($open ? 1 : 0)};
+  transition: opacity 0.3s ease-in-out;
   z-index: 100;
 `;
+

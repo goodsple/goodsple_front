@@ -8,17 +8,18 @@ const UserNav = ({ onClose, menuOpen }: { onClose: () => void; menuOpen: boolean
     const [showSubMenu, setShowSubMenu] = useState(false);
 
     return (
-        <NavContainer $open={menuOpen}>
-
+        <>
             {/* 닫기 버튼: 열렸을 때는 X 모양 */}
+             {/* 메뉴가 열렸을 때만 닫기 버튼 렌더 */}
+      {menuOpen && (
             <HamburgerButton $open={menuOpen} onClick={onClose} aria-label="메뉴 닫기">
                 <span />
                 <span />
                 <span />
             </HamburgerButton>
-    
-
-            <NavLinks>
+      )}
+            <NavContainer $open={menuOpen}>
+                <NavLinks>
                 <NavLinkItem
                     onClick={() => setShowSubMenu((prev) => !prev)}>
                     <ExtraBoldText>굿즈 카테고리</ExtraBoldText>
@@ -43,8 +44,9 @@ const UserNav = ({ onClose, menuOpen }: { onClose: () => void; menuOpen: boolean
                 <NavLinkItem><ExtraBoldLink to="/">공지사항/소식</ExtraBoldLink></NavLinkItem>
                 <MenuLine />
                 <NavLinkItem><ExtraBoldLink to="/">지도</ExtraBoldLink></NavLinkItem>
-            </NavLinks>
-        </NavContainer>
+                </NavLinks>
+            </NavContainer>
+        </>
     );
 };
 export default UserNav;
