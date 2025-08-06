@@ -52,6 +52,10 @@ export const Logo = styled.img`
 `;
 
 export const HamburgerButton = styled.button<{ $open: boolean }>`
+    position: fixed;       
+    top: 38px;             
+    left: 24px;
+    z-index: 1101;         
     width: 40px;
     height: 24px;
     display: flex;
@@ -65,7 +69,8 @@ export const HamburgerButton = styled.button<{ $open: boolean }>`
   span {
     height: 4px;
     background: #444;
-    transition: 0.3s;
+    // transition: 0.3s;
+    transition: transform 0.3s ease, opacity 0.3s ease;  
     transform-origin: center;
   }
 

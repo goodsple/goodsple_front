@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { ExtraBoldLink, ExtraBoldText, HamburgerButton, MenuLine, NavContainer, NavHeader, NavLinkItem, NavLinks, SubMenu, SubMenuItem } from "./UserNav.styles";
+import { ExtraBoldLink, ExtraBoldText, MenuLine, NavContainer, NavLinkItem, NavLinks, SubMenu, SubMenuItem } from "./UserNav.styles";
+import { HamburgerButton } from "../header/HeaderStyle";
 import { useState } from "react";
 
 
@@ -8,14 +9,14 @@ const UserNav = ({ onClose, menuOpen }: { onClose: () => void; menuOpen: boolean
 
     return (
         <NavContainer $open={menuOpen}>
-            <NavHeader>
-                {/* 닫기 버튼: 열렸을 때는 X 모양 */}
-                <HamburgerButton $open={menuOpen} onClick={onClose} aria-label="메뉴 닫기">
-                    <span />
-                    <span />
-                    <span />
-                </HamburgerButton>
-            </NavHeader>
+
+            {/* 닫기 버튼: 열렸을 때는 X 모양 */}
+            <HamburgerButton $open={menuOpen} onClick={onClose} aria-label="메뉴 닫기">
+                <span />
+                <span />
+                <span />
+            </HamburgerButton>
+    
 
             <NavLinks>
                 <NavLinkItem
