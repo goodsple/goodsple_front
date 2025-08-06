@@ -73,8 +73,7 @@ export const HamburgerButton = styled.button<{ $open: boolean }>`
     background: #444;
     transform-origin: center;
     will-change: transform, opacity;
-    transition: transform 0.3s ease-in-out,
-                opacity   0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out, opacity   0.3s ease-in-out;
   }
 
   ${({ $open }) =>
@@ -173,15 +172,6 @@ export const LogoutButton = styled.button`
     margin-left: 10px;
     cursor: pointer;
 `;
-
-// export const Overlay = styled.div`
-//   position: fixed;
-//   top: 0; 
-//   width: 100%;
-//   height: 100vh;
-//   background-color: rgba(154, 154, 154, 0.6);
-//   z-index: 100;
-// `;
 
 export const Overlay = styled.div<{ $open: boolean }>`
   position: fixed;

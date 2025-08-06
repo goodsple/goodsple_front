@@ -32,7 +32,7 @@ export const FooterLeft = styled.div`
     line-height: 1.4;
     }
     span:first-of-type {
-        margin-top: 10px;
+        margin-top: 14px;
     }
 `;
 
@@ -47,7 +47,6 @@ export const FooterRight = styled.div`
 export const FooterLogo = styled.img`
     width: 130px;
     object-fit: contain;
-    margin-top: 8px;
 `;
 
 export const SectionTitle = styled.strong`
@@ -56,7 +55,7 @@ export const SectionTitle = styled.strong`
     color: #997BEB;
 
     &.conTitle {
-        // margin-top:10px;
+         margin-top:5px;
     }
     &.fooTitle {
         margin-top : -8px;
@@ -72,7 +71,6 @@ export const ContactList = styled.ul`
     margin-top: 0px;
 
     li {
-        // width: calc(33% - 8px);
         width: calc(20% - 12px);
         font-size: 12px;
         color: #fff;
@@ -83,6 +81,9 @@ export const ContactList = styled.ul`
             color: #fff;
             font-size: 12px;
         }
+    }
+    li:nth-child(3) {
+        margin-left: -8px;
     }
 `;
 
