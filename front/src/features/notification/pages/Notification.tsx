@@ -7,7 +7,6 @@ function Notification() {
 
   }
 
-
   return(
     <div className={CSS.notification}>
       <div className={CSS.notificationTitle}>

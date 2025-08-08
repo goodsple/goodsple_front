@@ -32,6 +32,7 @@ import PaymentPage from './features/payment/pages/PaymentPage';
 import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
 import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview.tsx';
+import Notification from './features/notification/pages/Notification.tsx';
 import CategorySelect from './features/category/pages/CategorySelect.tsx';
 import ThirdCategory from './features/category/pages/ThirdCategory.tsx';
 import EventZoneMain from './features/eventzone/pages/EventZoneMain.tsx';
