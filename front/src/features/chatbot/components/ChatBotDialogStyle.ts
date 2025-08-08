@@ -106,6 +106,7 @@ export const InputBoxWrapper = styled.div`
         background-color: #fefcf9;
         margin-top: 15px;
         // position: absolute;
+        position: sticky;
         box-sizing: border-box;
 `;
 

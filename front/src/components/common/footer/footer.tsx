@@ -13,7 +13,7 @@ function Footer(){
                 <span>© 2025 GoodsPle. All rights reserved.</span>
             </style.FooterLeft>
             <style.FooterRight>
-                <style.SectionTitle>CONTACT</style.SectionTitle>
+                <style.SectionTitle className='conTitle'>CONTACT</style.SectionTitle>
                 <style.ContactList>
                     <li>정예인<span>yein181677@naver.com</span></li>
                     <li>최완수<span>ys615098@naver.com</span></li>
@@ -21,7 +21,7 @@ function Footer(){
                     <li>진보경<span>qhrud4231@naver.com</span></li>
                     <li>조수민<span>tnals030927@gmail.com</span></li>
                 </style.ContactList>
-                <style.SectionTitle>협업도구</style.SectionTitle>
+                <style.SectionTitle className='fooTitle'>협업도구</style.SectionTitle>
                 <style.ToolBox>
                     <style.ToolList>
                     <li><img src={githubImg} alt="깃허브 로고" /></li>

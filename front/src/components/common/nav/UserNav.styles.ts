@@ -5,57 +5,15 @@ export const NavContainer = styled.nav<{ $open: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
-  transform: translateX(${({ $open }) => ($open ? '0' : '-400px')});
+  transform: translateX(${({ $open }) => ($open ? '0' : '-100%')});
   width: 450px;
   height: 100vh;
   background-color: #fff;
   z-index: 1000;
   padding-top: 100px;
   border-right: 1px solid #ddd;
-  transition: transform 0.3s ease;
+  will-change: transform;
   overflow-y: auto;
-`;
-
-export const NavHeader = styled.div`
-  position: absolute;       /* 헤더와 동일 위치에 고정 */
-  top: 38px;            
-  left: 78px;           
-  width: 40px;           
-  height: 24px;         
-  z-index: 1100;         /* 메뉴 컨테이너(z-index:1000)보다 위 */
-`;
-
-export const HamburgerButton = styled.button<{ $open: boolean }>`
-  width: 40px;
-  height: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border: none;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-
-  span {
-    height: 4px;
-    background: #444;
-    transition: 0.3s;
-    transform-origin: center;
-  }
-
-  ${({ $open }) =>
-        $open &&
-        `
-    span:nth-child(1) {
-      transform: translateY(10px) rotate(45deg);
-    }
-    span:nth-child(2) {
-      opacity: 0;
-    }
-    span:nth-child(3) {
-      transform: translateY(-10px) rotate(-45deg);
-    }
-  `}
 `;
 
 export const NavLinks = styled.ul`

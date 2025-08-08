@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { ExtraBoldLink, ExtraBoldText, HamburgerButton, MenuLine, NavContainer, NavHeader, NavLinkItem, NavLinks, SubMenu, SubMenuItem } from "./UserNav.styles";
+import { ExtraBoldLink, ExtraBoldText, MenuLine, NavContainer, NavLinkItem, NavLinks, SubMenu, SubMenuItem } from "./UserNav.styles";
+import { HamburgerButton } from "../header/HeaderStyle";
 import { useState } from "react";
 
 
@@ -7,17 +8,18 @@ const UserNav = ({ onClose, menuOpen }: { onClose: () => void; menuOpen: boolean
     const [showSubMenu, setShowSubMenu] = useState(false);
 
     return (
-        <NavContainer $open={menuOpen}>
-            <NavHeader>
-                {/* 닫기 버튼: 열렸을 때는 X 모양 */}
-                <HamburgerButton $open={menuOpen} onClick={onClose} aria-label="메뉴 닫기">
-                    <span />
-                    <span />
-                    <span />
-                </HamburgerButton>
-            </NavHeader>
-
-            <NavLinks>
+        <>
+            {/* 닫기 버튼: 열렸을 때는 X 모양 */}
+             {/* 메뉴가 열렸을 때만 닫기 버튼 렌더 */}
+      {menuOpen && (
+            <HamburgerButton $open={menuOpen} onClick={onClose} aria-label="메뉴 닫기">
+                <span />
+                <span />
+                <span />
+            </HamburgerButton>
+      )}
+            <NavContainer $open={menuOpen}>
+                <NavLinks>
                 <NavLinkItem
                     onClick={() => setShowSubMenu((prev) => !prev)}>
                     <ExtraBoldText>굿즈 카테고리</ExtraBoldText>
@@ -42,8 +44,9 @@ const UserNav = ({ onClose, menuOpen }: { onClose: () => void; menuOpen: boolean
                 <NavLinkItem><ExtraBoldLink to="/">공지사항/소식</ExtraBoldLink></NavLinkItem>
                 <MenuLine />
                 <NavLinkItem><ExtraBoldLink to="/">지도</ExtraBoldLink></NavLinkItem>
-            </NavLinks>
-        </NavContainer>
+                </NavLinks>
+            </NavContainer>
+        </>
     );
 };
 export default UserNav;

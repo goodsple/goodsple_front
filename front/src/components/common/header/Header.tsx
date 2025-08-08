@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserNav from '../nav/UserNav';
 import { useAuth } from '../../../features/auth/contexts/AuthContext';
@@ -14,7 +14,7 @@ function Header() {
   const navigate = useNavigate();
 
   // 햄버거 메뉴 & 로그인 여부
-  const [isOpen, setIsOpen] = useState(false); // 햄버거 버튼용
+  // const [isOpen, setIsOpen] = useState(false); // 햄버거 버튼용
   const [menuOpen, setMenuOpen] = useState(false);  // 메뉴바 전용
 
   // Context에서 가져온 userProfile
@@ -45,7 +45,10 @@ function Header() {
       <style.HeaderContainer>
         <style.HeaderInner>
           <style.LeftArea>
-          <style.HamburgerButton onClick={() => { setIsOpen(!isOpen); setMenuOpen(!menuOpen); }} $open={isOpen}>
+          <style.HamburgerButton 
+            $open={menuOpen}
+            onClick={() => setMenuOpen(prevOpen => !prevOpen)}
+            aria-label="메뉴 토글">
               <span />
               <span />
               <span />
@@ -95,12 +98,16 @@ function Header() {
         </style.HeaderInner>
 
       </style.HeaderContainer>
-      {menuOpen && (
-        <>
-          <UserNav onClose={() => { setIsOpen(false); setMenuOpen(false); } } menuOpen={menuOpen}  />
-          <style.Overlay onClick={() => { setIsOpen(false); setMenuOpen(false); }} />
-        </>
-      )}
+
+       {/* 항상 렌더링하되, CSS transform/opacity 만 토글 */}
+       <UserNav 
+        menuOpen={menuOpen} 
+        onClose={() => setMenuOpen(false)} 
+      />
+      <style.Overlay 
+        $open={menuOpen} 
+        onClick={() => setMenuOpen(false)} 
+      />
     </>
   );
 }

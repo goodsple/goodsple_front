@@ -19,8 +19,8 @@ const MENU_ITEMS = [
             { label: "챗봇 지식 베이스 관리", path: "/admin" },
         ]
     },
-    { label: "실시간 검색어 관리", path: "/admin" },
-    { label: "공지사항 관리", path: "/admin" },
+    { label: "실시간 검색어 관리", path: "/admin/keyword" },
+    { label: "공지사항 관리", path: "/admin/notice" },
 ];
 
 const AdminNav = () => {

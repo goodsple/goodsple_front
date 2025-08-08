@@ -1,7 +1,7 @@
 import type React from 'react';
 import { useState, type KeyboardEvent } from 'react';
-import sendIcon from '../../../assets/images/comm_send.png';
 import Logo from '../../../assets/images/logo.png';
+import sendIcon from '../../../assets/images/send_purple.png';
 import * as s from './CommunityStyle';
 import CommUserInfoModal from './CommUserInfoModal';
 
