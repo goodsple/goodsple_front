@@ -1,8 +1,8 @@
 import CSS from './UserMainComponents.module.css';
 import EventZone from './EventZone.tsx';
-import con from '../../assets/eventImages/hoshiXwoozi.jpg';
-import left from '../../assets/eventImages/right.png';
-import right from '../../assets/eventImages/left.png';
+import con from '../../../assets/eventImages/hoshiXwoozi.jpg';
+import left from '../../../assets/eventImages/right.png';
+import right from '../../../assets/eventImages/left.png';
 import { useEffect, useState } from 'react';
 
 interface EventZoneType {
