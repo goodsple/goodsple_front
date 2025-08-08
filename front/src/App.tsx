@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import KakaoCallback from './features/auth/components/KakaoCallback.tsx';
@@ -6,9 +5,9 @@ import { AuthProvider } from './features/auth/contexts/AuthContext.tsx';
 
 // 레이아웃(사용자,관리자)
 import AdminLayout from './components/common/layouts/AdminLayout.tsx';
-import Layout from "./components/common/layouts/Layout.tsx";
+import Layout from './components/common/layouts/Layout.tsx';
 
-// 사용자화면 컴포넌트 
+// 사용자화면 컴포넌트
 import Error from './components/common/error/Error';
 import LiveAuctionPage from './features/auction/pages/LiveAuctionPage.tsx';
 import FindId from './features/auth/components/FindId';
@@ -33,13 +32,12 @@ import PaymentPage from './features/payment/pages/PaymentPage';
 import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
 import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview.tsx';
-import UserMain from "./features/usermain/pages/UserMain.tsx";
-import ThirdCategory from "./features/category/pages/ThirdCategory.tsx";
-import Notification from './features/notification/pages/Notification.tsx';
 import CategorySelect from './features/category/pages/CategorySelect.tsx';
+import ThirdCategory from './features/category/pages/ThirdCategory.tsx';
 import EventZoneMain from './features/eventzone/pages/EventZoneMain.tsx';
 import EventWritePage from './features/eventzone/pages/EventWritePage.tsx';
 import EventViewPage from './features/eventzone/pages/EventViewPage.tsx';
+import UserMain from './pages/UserMain.tsx';
 
 // 관리자화면 컴포넌트
 import AdminAuctionCreatePage from './features/admin/pages/AdminAuctionCreatePage';
@@ -64,88 +62,95 @@ import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import ReportWrapper from './features/report/ReportWrapper.tsx';
 import AdminNotice from './features/admin/notice/AdminNotice.tsx';
 import AdminKeywordMonitoring from './features/admin/keyword/AdminKeywordMonitoring.tsx';
+import AdminCategoryPage from './features/category/pages/AdminCategoryPage.tsx';
 
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-      <Routes>
-        {/* Layout이 적용되는 페이지 */}
-        <Route element={<Layout />}>
-        <Route path="/kakao/callback" element={<KakaoCallback />} />
-          <Route index element={<UserMain/>} />
-          <Route path='/mypage' element={<MyPage />} />
-          <Route path='/editprofile' element={<EditProfile/>}/>
-          <Route path='/writereview' element={<WriteReview/>}/>
-          <Route path='/reviews' element={<MyReview/>}/>
-          <Route path="/exchange" element={<MyExchangePage />}>
-            <Route index element={<MyExchangePosts />} />
-            <Route path='history' element={<MyExchangeHistory />} />
+        <Routes>
+          {/* Layout이 적용되는 페이지 */}
+          <Route element={<Layout />}>
+            <Route path="/kakao/callback" element={<KakaoCallback />} />
+            <Route index element={<UserMain />} />
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/editprofile" element={<EditProfile />} />
+            <Route path="/writereview" element={<WriteReview />} />
+            <Route path="/reviews" element={<MyReview />} />
+
+            <Route path="/exchange" element={<MyExchangePage />}>
+              <Route index element={<MyExchangePosts />} />
+              <Route path="history" element={<MyExchangeHistory />} />
+            </Route>
+
+            <Route path="/badgeguide" element={<BadgeGuide />} />
+            <Route path="/bookmarkPage" element={<BookmarkPage />} />
+            <Route path="/auction/live/:auctionId" element={<LiveAuctionPage />} />
+            <Route path="/mypage/bids" element={<MyBidsPage />} />
+            <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/payment/success" element={<PaymentSuccessPage />} />
+            <Route path="/payment/failure" element={<PaymentFailurePage />} />
+            <Route path="/map" element={<MapViewPage />} />
+            <Route path="/notice" element={<NoticeList />} />
+            <Route path="/notice/detail" element={<NoticeDetail />} />
+            <Route path="/exchange/new" element={<ExchangePost />} />
+            <Route path="/exchange/detail" element={<ExchangePostDetail />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/chatbot" element={<ChatBotPage />} />
+            <Route path="/categories" element={<CategorySelect />} />
+            <Route path="/category" element={<ThirdCategory />} />
+            <Route path="/notification" element={<Notification />} />
+            <Route path="/eventzone" element={<EventZoneMain />} />
+            <Route path="/eventwrite" element={<EventWritePage />} />
+            <Route path="/eventview" element={<EventViewPage />} />
+
           </Route>
-          <Route path='/badgeguide' element={<BadgeGuide/>} />
-          <Route path='/bookmarkPage' element={<BookmarkPage />} />
-          <Route path='/auction/live/:auctionId' element={<LiveAuctionPage />} />
-          <Route path='/categories' element={<CategorySelect />} />
-          <Route path='/category' element={<ThirdCategory />} />
-          <Route path='/notification' element={<Notification />} />
-          <Route path='/eventzone' element={<EventZoneMain />} />
-          <Route path='/eventwrite' element={<EventWritePage />} />
-          <Route path='/eventview' element={<EventViewPage />} />
-          <Route path='/mypage/bids' element={<MyBidsPage />} />
-          <Route path='/payment' element={<PaymentPage />} />
-          <Route path='/payment/success' element={<PaymentSuccessPage />} />
-          <Route path='/payment/failure' element={<PaymentFailurePage />} />
-          <Route path='/map' element={<MapViewPage />} />
-          <Route path='/notice' element={<NoticeList />} />
-          <Route path='/notice/detail' element={<NoticeDetail />} />
-          <Route path='/exchange/new' element={<ExchangePost />} />
-          <Route path='/exchange/detail' element={<ExchangePostDetail />} />
-          <Route path='/community' element={<Community />} />
-          <Route path='/chatbot' element={<ChatBotPage />} />
-        </Route>
 
           <Route element={<AdminLayout />}>
-            <Route path='/admin' element={<AdminMain />} />
+            <Route path="/admin" element={<AdminMain />} />
             <Route path="admin/users" element={<AdminUserPage />} />
             <Route path="admin/reviews" element={<AdminReviewPage />} />
             <Route path="admin/reports" element={<AdminReportPage />} />
 
-            <Route path='/admin/auctions' element={<AdminAuctionPage />} />
-            <Route path='/admin/auctions/create' element={<AdminAuctionCreatePage />} />
-            <Route path='/admin/auctions/edit/:auctionId' element={<AdminAuctionEditPage />} />
-            <Route path='/admin/auctions/result/:auctionId' element={<AdminAuctionResultPage />} />
+            <Route path="/admin/auctions" element={<AdminAuctionPage />} />
+            <Route path="/admin/auctions/create" element={<AdminAuctionCreatePage />} />
+            <Route path="/admin/auctions/edit/:auctionId" element={<AdminAuctionEditPage />} />
+            <Route path="/admin/auctions/result/:auctionId" element={<AdminAuctionResultPage />} />
 
-            <Route path='/admin/chatbot/logs' element={<AdminChatLogPage />} />
-            <Route path='/admin/chatbot/logs/:logId' element={<AdminChatLogDetailPage />} />
-            <Route path='/admin/chatbot/knowledge' element={<AdminKnowledgeBasePage />} />
+            <Route path="/admin/chatbot/logs" element={<AdminChatLogPage />} />
+            <Route path="/admin/chatbot/logs/:logId" element={<AdminChatLogDetailPage />} />
+            <Route path="/admin/chatbot/knowledge" element={<AdminKnowledgeBasePage />} />
 
-            <Route path='/admin/community' element={<AdminCommunityPage />} />
+
+            <Route path="/admin/community" element={<AdminCommunityPage />} />
             <Route path="/admin/community/detail" element={<AdminCommunityDetailPage />} />
             <Route path="/admin/prohibitedwords" element={<AdminProhibitedWordsPage />} />
 
-            <Route path='/admin/notice' element={<AdminNoticeList />} />
-            <Route path='/admin/notice/new' element={<AdminNotice />} />
+            <Route path="/admin/notice" element={<AdminNoticeList />} />
+            <Route path="/admin/notice/new" element={<AdminNotice />} />
 
-            <Route path='/admin/keyword' element={<AdminKeywordMonitoring />} />
+            <Route path="/admin/keyword" element={<AdminKeywordMonitoring />} />
+
+            <Route path="/admin/category" element={<AdminCategoryPage />} />
           </Route>
 
           {/* Layout 없이 단독 페이지 */}
-          <Route path='/login' element={<Login />} />
-          <Route path='/signup' element={<SignUp />} />
-          <Route path='/signup/kakao' element={<KakaoInfo />} />
-          <Route path='/findid' element={<FindId />} />
-          <Route path='/findpwd' element={<FindPassword />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/signup/kakao" element={<KakaoInfo />} />
+          <Route path="/findid" element={<FindId />} />
+          <Route path="/findpwd" element={<FindPassword />} />
 
           {/* 신고 들어가는 컴포넌트 준비되면 ReportWrapper 없앨 예정 test로 만듬 */}
-          <Route path='/reports' element={<ReportWrapper />} />
+          <Route path="/reports" element={<ReportWrapper />} />
 
           {/* 에러 페이지 */}
-          <Route path='*' element={<Error />} />
+          <Route path="*" element={<Error />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
-  )
-};
+  );
+}
 
 export default App;
