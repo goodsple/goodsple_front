@@ -38,7 +38,7 @@ import ThirdCategory from './features/category/pages/ThirdCategory.tsx';
 import EventZoneMain from './features/eventzone/pages/EventZoneMain.tsx';
 import EventWritePage from './features/eventzone/pages/EventWritePage.tsx';
 import EventViewPage from './features/eventzone/pages/EventViewPage.tsx';
-import UserMain from './pages/UserMain.tsx';
+import UserMain from './features/usermain/pages/UserMain.tsx';
 
 // 관리자화면 컴포넌트
 import AdminAuctionCreatePage from './features/admin/pages/AdminAuctionCreatePage';
