@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
 interface secCateProps {
   cateName: string;
@@ -6,7 +7,6 @@ interface secCateProps {
 }
 
 export const createSecCate = async ({cateName, firstCateId} : secCateProps) => {
-
   try {
     const response = await axios.post('http://localhost:8080/api/admin/category/second', {
       cateName: cateName,
@@ -17,3 +17,11 @@ export const createSecCate = async ({cateName, firstCateId} : secCateProps) => {
     console.log('error: ', error);
   }
 }
+
+export const fetchSecCate = createAsyncThunk(
+  'category/fetchSecCate',
+  async (firstCateId: number) => {
+    const response = await axios.get(`http://localhost:8080/api/admin/category/second/${firstCateId}`);
+    return response.data;
+  }
+);

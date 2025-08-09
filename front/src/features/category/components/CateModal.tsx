@@ -1,5 +1,8 @@
 import * as S from '../../admin/auth/components/SearchControlsStyle.ts';
 import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { fetchSecCate } from '../../../api/category/categoryAPICalls.ts';
+import type { AppDispatch } from '../../../store/Store.ts';
 
 interface CateModalProps {
   isOpen: boolean;
@@ -9,8 +12,19 @@ interface CateModalProps {
 function CateModal({ isOpen, onClose }: CateModalProps) {
   if (!isOpen) return null;
 
-  const dispatch = useDispatch();
-  const secondCates = useSelector(state => state.category.secondCate);
+  const [firstCate, setFirstCate] = useState(0);
+
+  const dispatch = useDispatch<AppDispatch>();
+  const secondCates = useSelector((state : any) => state.category.secondCate);
+
+  useEffect(() => {
+    if (firstCate !== 0)
+      dispatch(fetchSecCate(firstCate));
+  }, [firstCate]);
+
+  useEffect(() => {
+
+  }, [secondCates]);
 
   return (
     <S.ModalBackground>
@@ -22,17 +36,20 @@ function CateModal({ isOpen, onClose }: CateModalProps) {
         </S.ModalRow>
         <S.ModalRow>
           <p>상위 카테고리</p>
-          <select name={"first"}>
+          <select name={"first"} onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {setFirstCate(Number(event.target.value))}}>
+            <option value={0}>선택</option>
             <option value={1}>K-pop</option>
             <option value={2}>영화/드라마</option>
             <option value={3}>애니메이션</option>
             <option value={4}>게임</option>
           </select>
-          <select>
-            <option>등록</option>
-          </select>
-          <select>
-            <option>등록</option>
+          <select name={"second"}>
+            <option value={0}>등록</option>
+            {secondCates?.map((cate : any) => (
+              <option key={cate.secondCateId} value={cate.secondCateId}>
+                {cate.cateName}
+              </option>
+            ))}
           </select>
         </S.ModalRow>
         <S.ModalRow>
