@@ -160,19 +160,6 @@ export const Modal = styled.div`
         font-size: 24px;
         margin: 15px 0;
     }
-    
-    button {
-        all: unset;
-        cursor: pointer;
-        width: 140px;
-        height: 40px;
-        font-size: 20px;
-        text-align: center;
-        color: white;
-        background-color: #997BEB;
-        border-radius: 10px;
-        margin: 15px 0;
-    }
 `;
 
 export const ModalRow = styled.div `
@@ -224,5 +211,25 @@ export const ModalRow = styled.div `
         color: white;
         background-color: #997BEB;
         border-radius: 5px;
+    }
+`;
+
+export const ModalRow2 = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+
+    button {
+        all: unset;
+        cursor: pointer;
+        width: 140px;
+        height: 40px;
+        font-size: 20px;
+        text-align: center;
+        color: white;
+        background-color: #997BEB;
+        border-radius: 10px;
+        margin: 15px 0;
     }
 `;

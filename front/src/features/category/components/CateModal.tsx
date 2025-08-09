@@ -1,14 +1,16 @@
 import * as S from '../../admin/auth/components/SearchControlsStyle.ts';
+import { useDispatch, useSelector } from 'react-redux';
 
-// 1. 인터페이스 정의 추가
 interface CateModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// 2. 함수 타입 정의 수정
 function CateModal({ isOpen, onClose }: CateModalProps) {
   if (!isOpen) return null;
+
+  const dispatch = useDispatch();
+  const secondCates = useSelector(state => state.category.secondCate);
 
   return (
     <S.ModalBackground>
@@ -20,11 +22,17 @@ function CateModal({ isOpen, onClose }: CateModalProps) {
         </S.ModalRow>
         <S.ModalRow>
           <p>상위 카테고리</p>
-          <select>
-            <option></option>
+          <select name={"first"}>
+            <option value={1}>K-pop</option>
+            <option value={2}>영화/드라마</option>
+            <option value={3}>애니메이션</option>
+            <option value={4}>게임</option>
           </select>
           <select>
-            <option></option>
+            <option>등록</option>
+          </select>
+          <select>
+            <option>등록</option>
           </select>
         </S.ModalRow>
         <S.ModalRow>
@@ -39,7 +47,10 @@ function CateModal({ isOpen, onClose }: CateModalProps) {
           <p>서브 텍스트</p>
           <input type={'text'} placeholder={'텍스트는 최대 20자를 넘지 않도록 작성'}/>
         </S.ModalRow>
-        <button onClick={onClose}>닫기</button>
+        <S.ModalRow2>
+          <button onClick={onClose}>저장하기</button>
+          <button onClick={onClose}>취소</button>
+        </S.ModalRow2>
       </S.Modal>
     </S.ModalBackground>
   );
