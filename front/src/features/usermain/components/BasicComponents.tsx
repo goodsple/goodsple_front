@@ -1,21 +1,24 @@
+import CateButtons from './CateButtons';
+import CommMegaPhoneBox from './CommMegaPhoneBox';
+import SearchBox from './SearchBox';
 import CSS from './UserMainComponents.module.css';
-import map from '../../../assets/images/map.png';
-import search from '../../../assets/images/search.png';
-import megaPhone from '../../../assets/images/megaphone.png';
-import { useState } from 'react';
-import PopularKeywords from './PopularKeywords.tsx';
 
 function BasicComponents() {
 
-  const [keywordsList, setKeywordsList] = useState(false);
+  // const [keywordsList, setKeywordsList] = useState(false);
 
-  const onClickKeywords = () => {
-    setKeywordsList(!keywordsList);
-  };
+  // const onClickKeywords = () => {
+  //   setKeywordsList(!keywordsList);
+  // };
 
   return (<>
     <div className={CSS.basicComponent}>
-      <div className={CSS.searchWrap}>
+
+      <SearchBox /> {/* 검색 박스 */}
+      <CateButtons /> {/* 카테고리 검색 박스 */}
+      <CommMegaPhoneBox /> {/* 커뮤니티 => 확성기 사용 박스 */}
+
+      {/* <div className={CSS.searchWrap}>
         <img src={map} className={CSS.searchIcon} />
         <div className={CSS.searchInputWrap}>
           <input className={CSS.searchInput}
@@ -42,7 +45,7 @@ function BasicComponents() {
           K-POP 채팅방  =&gt; 엑소 포카 교환할 사람 구함!!!! 난 백현 포카 나옴~~~
         </p>
         <button className={CSS.megaButton}>참여하기</button>
-      </div>
+      </div> */}
     </div>
   </>);
 }

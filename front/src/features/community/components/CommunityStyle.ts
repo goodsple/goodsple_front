@@ -4,7 +4,6 @@ import styled from "styled-components";
 export const CommunityContainer = styled.div`
         width: 100vw;
         min-height: 100vh;
-        padding-top : 150px;
         align-items: center;
         display: flex;
         flex-direction: column;
@@ -16,6 +15,7 @@ export const CommunityChatLayout = styled.div`
         width: 76vw;
         min-width: 600px;
         height: 75vh;
+        margin-top: 70px;
         display: flex;
         border-radius: 15px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -203,7 +203,7 @@ export const SendButton = styled.button`
         cursor: pointer;
 
         img{
-            width: 25px;
-            height: 25px;
+            width: 30px;
+            height: 30px;
         }
     `;

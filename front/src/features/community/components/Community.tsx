@@ -2,6 +2,7 @@ import type React from 'react';
 import { useState, type KeyboardEvent } from 'react';
 import Logo from '../../../assets/images/logo.png';
 import sendIcon from '../../../assets/images/send_purple.png';
+import SearchBox from '../../usermain/components/SearchBox';
 import * as s from './CommunityStyle';
 import CommUserInfoModal from './CommUserInfoModal';
 
@@ -73,7 +74,10 @@ const Community:React.FC<ChatInputBoxProps> = ({}) => {
         };
 
     return (
+        <>
+            <SearchBox />
         <s.CommunityContainer>
+
             <s.CommunityChatLayout>
                 {/* 채팅방 리스트 */}
                 <s.ChatRoomList>
@@ -175,6 +179,7 @@ const Community:React.FC<ChatInputBoxProps> = ({}) => {
                 </s.ChatMessageArea>
             </s.CommunityChatLayout>
         </s.CommunityContainer>
+        </>
     );
 };
 
