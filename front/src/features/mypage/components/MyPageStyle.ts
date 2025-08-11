@@ -173,7 +173,7 @@ export const ActivityLink = styled(Link)`
 `;
 
 export const NonData = styled.div`
-  height: 500px;
+  height: 550px;
   display: flex;
   align-items: center;
   justify-content: center;
