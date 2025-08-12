@@ -1,4 +1,4 @@
-// map/pages/MapViewPage.tsx (이 코드로 덮어쓰기)
+// map/pages/MapViewPage.tsx (최종본)
 
 import { useEffect, useRef, useState } from 'react';
 import Pagination from '../../../components/common/pagination/Pagination';
@@ -8,17 +8,16 @@ import type { MapGood } from '../mock/mapData';
 import { mockMapGoodsData } from '../mock/mapData';
 import * as S from './MapViewPageStyle';
 
-const ITEMS_PER_PAGE = 6; // 한 페이지에 6개씩 보여주기
+const ITEMS_PER_PAGE = 5; // 아이템 개수 5개로 수정
 
 const MapViewPage = () => {
   const [location, setLocation] = useState<{ lat: number; lng: number }>({ lat: 35.824223, lng: 127.147953 });
   const [visibleGoods, setVisibleGoods] = useState<MapGood[]>(mockMapGoodsData);
   const [selectedMarker, setSelectedMarker] = useState<{ items: MapGood[], position: { lat: number, lng: number } } | null>(null);
-  const [currentPage, setCurrentPage] = useState(1); // 페이지 상태 추가
+  const [currentPage, setCurrentPage] = useState(1);
   
   const debounceTimer = useRef<number | null>(null);
 
-  // 지도 영역이 바뀔 때마다 실행되는 함수
   const handleMapIdle = (map: kakao.maps.Map) => {
     if (debounceTimer.current) { clearTimeout(debounceTimer.current); }
     debounceTimer.current = setTimeout(() => {
@@ -27,7 +26,7 @@ const MapViewPage = () => {
         bounds.contain(new kakao.maps.LatLng(good.lat, good.lng))
       );
       setVisibleGoods(newVisibleGoods);
-      setCurrentPage(1); // 지도 이동 시, 목록을 1페이지로 초기화
+      setCurrentPage(1);
     }, 300);
   };
 
@@ -40,6 +39,16 @@ const MapViewPage = () => {
       good => good.lat === markerPosition.lat && good.lng === markerPosition.lng
     );
     setSelectedMarker({ items: itemsAtSamePosition, position: markerPosition });
+    
+    // ✨ 마커-리스트 연동 로직 (이전 코드에 빠져있었을 수 있는 부분)
+    const clickedItem = itemsAtSamePosition[0];
+    if (clickedItem) {
+      const itemIndexInVisibleList = visibleGoods.findIndex(g => g.id === clickedItem.id);
+      if (itemIndexInVisibleList > -1) {
+        const targetPage = Math.ceil((itemIndexInVisibleList + 1) / ITEMS_PER_PAGE);
+        setCurrentPage(targetPage);
+      }
+    }
   };
   
   const handleListItemClick = (good: MapGood) => {
@@ -47,13 +56,11 @@ const MapViewPage = () => {
     handleMarkerClick({ lat: good.lat, lng: good.lng }); 
   };
 
-  // --- 페이지네이션을 위한 계산 ---
   const totalPages = Math.ceil(visibleGoods.length / ITEMS_PER_PAGE);
   const paginatedGoods = visibleGoods.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
-  // --- 여기까지 ---
 
   return (
     <S.PageLayout>
@@ -66,11 +73,10 @@ const MapViewPage = () => {
         setSelectedMarker={setSelectedMarker}
       />
 
-      {/* 목록과 페이지네이션을 함께 렌더링 */}
-      <div style={{ width: '380px', display: 'flex', flexDirection: 'column' }}>
+      <S.ListWrapper> {/* ✨ 스크롤과 레이아웃을 담당하는 Wrapper */}
         <GoodsList 
-          visibleGoods={paginatedGoods}       // 잘라낸 데이터 전달
-          totalCount={visibleGoods.length}    // 전체 개수 전달
+          visibleGoods={paginatedGoods}
+          totalCount={visibleGoods.length}
           onItemClick={handleListItemClick}
         />
         {totalPages > 1 && (
@@ -80,7 +86,7 @@ const MapViewPage = () => {
             onPageChange={(page) => setCurrentPage(page)}
           />
         )}
-      </div>
+      </S.ListWrapper>
     </S.PageLayout>
   );
 };
