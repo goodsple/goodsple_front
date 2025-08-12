@@ -15,6 +15,11 @@ export const ChatBotWrapper = styled.div`
         margin: auto;
         border-radius: 15px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+
+        /* ⭐️ 추가: Flexbox 레이아웃으로 변경 */
+        display: flex;
+        flex-direction: column;
+        // overflow: hidden;
 `;
 
 
@@ -85,6 +90,7 @@ export const ChatbotTransitionWrapper = styled.div`
 export const FadeBox = styled.div<{ visible: boolean }>`
         position: absolute;
         width: 100%;
+        height: 100%; // 추가⭐️
         top: 0;
         left: 0;
 
@@ -95,12 +101,15 @@ export const FadeBox = styled.div<{ visible: boolean }>`
         transition: opacity 0.7s ease, transform 0.7s ease;
 `;
 
-export const ChatScrollArea = styled.div`
-        // overflow-y: auto;
-        // height: 530px; 
+export const ChatScrollArea = styled.div<{ scrollable: boolean }>`
+        flex: 1; /* 남은 공간 채우기 */
+        // min-height: 0; /* ⭐️ flex 컨테이너에서 스크롤 정상 작동 */
+        // padding: 20px 20px 80px; /* 아래쪽 패딩은 입력창 높이만큼 */
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
 
-        // display: flex;
-        // flex-direction: column;
+        overflow-y: ${({ scrollable }) => (scrollable ? 'auto' : 'hidden')};
 `;
 
 
