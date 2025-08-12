@@ -1,17 +1,20 @@
+// admin/pages/AdminAuctionPage.tsx (최종본)
+
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Pagination from '../../../../components/common/pagination/Pagination';
 import AuctionTable from '../components/AuctionTable';
 import { mockAdminAuctionData } from '../mock/adminAuctionData';
 import * as S from './AdminAuctionPageStyle';
 
-// AdminControls 컴포넌트는 더 이상 사용하지 않거나, 검색/날짜 필터만 남겨둘 수 있습니다.
-// 여기서는 페이지에 직접 필터를 구현합니다.
+const ITEMS_PER_PAGE = 10;
 
 const AdminAuctionPage = () => {
   const [auctions] = useState(mockAdminAuctionData);
   const [filteredAuctions, setFilteredAuctions] = useState(auctions);
   const [statusFilter, setStatusFilter] = useState('전체');
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const statuses = ['전체', '예정', '진행', '종료', '중지'];
 
@@ -20,27 +23,43 @@ const AdminAuctionPage = () => {
     if (statusFilter !== '전체') {
       result = result.filter(auction => auction.status === statusFilter);
     }
+    if (searchTerm) {
+      result = result.filter(auction => 
+        auction.productName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
     setFilteredAuctions(result);
-  }, [statusFilter, auctions]);
+    setCurrentPage(1);
+  }, [statusFilter, searchTerm, auctions]);
+
+  const totalPages = Math.ceil(filteredAuctions.length / ITEMS_PER_PAGE);
+  const paginatedAuctions = filteredAuctions.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   return (
     <S.PageContainer>
       <S.ContentCard>
-        {/* ✨ 컨트롤 영역을 페이지에 직접 배치 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ fontSize: '14px', fontWeight: 500, width: '80px' }}>상품명</span>
-            <input type="text" placeholder="검색" style={{ padding: '8px 12px', border: '1px solid #ced4da', borderRadius: '6px', width: '300px' }} />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ fontSize: '14px', fontWeight: 500, width: '80px' }}>등록 날짜</span>
-            <input type="date" style={{ padding: '8px', border: '1px solid #ced4da', borderRadius: '6px' }}/>
+        {/* ✨ 인라인 스타일을 모두 제거하고 스타일 컴포넌트로 대체 */}
+        <S.FilterSection>
+          <S.FilterRow>
+            <S.FilterLabel>상품명</S.FilterLabel>
+            <S.StyledInput 
+              type="text" 
+              placeholder="검색" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </S.FilterRow>
+          <S.FilterRow>
+            <S.FilterLabel>등록 날짜</S.FilterLabel>
+            <S.DateInput type="date" />
             <span>~</span>
-            <input type="date" style={{ padding: '8px', border: '1px solid #ced4da', borderRadius: '6px' }}/>
-          </div>
-        </div>
+            <S.DateInput type="date" />
+          </S.FilterRow>
+        </S.FilterSection>
         
-        {/* ✨ 탭 그룹 */}
         <S.TabGroup>
           <S.StatusFilterGroup>
             {statuses.map(status => (
@@ -58,7 +77,17 @@ const AdminAuctionPage = () => {
           </Link>
         </S.TabGroup>
 
-        <AuctionTable auctions={filteredAuctions} />
+        <AuctionTable auctions={paginatedAuctions} />
+
+        {totalPages > 1 && (
+          <S.PaginationWrapper>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
+          </S.PaginationWrapper>
+        )}
       </S.ContentCard>
     </S.PageContainer>
   );
