@@ -31,31 +31,27 @@ const MyPage:React.FC = () => {
         fetchUser();
       }, []);
 
-    if (loading) {   
-     return <s.NonData>로딩 중…</s.NonData>;
-    }
-
-    if (!userInfo) {
-     return <s.NonData>사용자 정보를 불러올 수 없습니다.</s.NonData>;
-    }
-    const { nickname, profileImageUrl } = userInfo;
-
     const handleEditProfile = () => {
         navigate(`/editprofile`);
     };
 
     return(
+        loading || !userInfo ? (
+            <s.NonData>
+              {loading ? '로딩 중…' : '사용자 정보를 불러올 수 없습니다.'}
+            </s.NonData>
+          ) : (
         <s.MyPageContainer>  {/* 전체 div */}
             <s.ProfileSection> {/* 위 사용자 정보 박스 / 게시글? 갯수 표시 박스 */}
                 <s.MyProfile>
                     {/* 프로필 사진 / 닉네임 / 등급, 뱃지 / 내 정보 수정 버튼 */}
-                    <s.ProfileImage isDefault={!profileImageUrl}>
+                    <s.ProfileImage isDefault={!userInfo.profileImageUrl}>
                     <img
-                        src={profileImageUrl || profileImg}
-                        alt={profileImageUrl ? '업로드된 프로필 이미지' : '기본 프로필 이미지'}
+                        src={userInfo.profileImageUrl || profileImg}
+                        alt={userInfo.profileImageUrl ? '업로드된 프로필 이미지' : '기본 프로필 이미지'}
                     />
                     </s.ProfileImage>
-                       {nickname}
+                       {userInfo.nickname}
                     <s.profileBadge>
 
                         LV1. 새싹 교환러
@@ -113,8 +109,7 @@ const MyPage:React.FC = () => {
 
         </s.MyPageContainer>
     )
-    
-
+    );
 }
 
 export default MyPage;
