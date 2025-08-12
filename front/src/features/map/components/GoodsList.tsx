@@ -1,15 +1,19 @@
+// map/components/GoodsList.tsx (이 코드로 덮어쓰기)
+
 import type { MapGood } from '../mock/mapData';
 import * as S from './GoodsListStyle';
 
 interface Props {
   visibleGoods: MapGood[];
+  totalCount: number; // ✨ 전체 아이템 개수를 props로 받도록 추가
   onItemClick: (good: MapGood) => void;
 }
 
-const GoodsList: React.FC<Props> = ({ visibleGoods, onItemClick }) => {
+const GoodsList: React.FC<Props> = ({ visibleGoods, totalCount, onItemClick }) => {
   return (
     <S.ListContainer>
-      <S.ListHeader>이 지역의 굿즈 목록 ({visibleGoods.length}개)</S.ListHeader>
+      {/* ✨ props를 totalCount로 변경하여 전체 개수를 올바르게 표시 */}
+      <S.ListHeader>이 지역의 굿즈 목록 ({totalCount}개)</S.ListHeader>
       <S.GoodsListUl>
         {visibleGoods.length > 0 ? (
           visibleGoods.map((good) => (
