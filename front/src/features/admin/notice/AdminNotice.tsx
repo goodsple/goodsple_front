@@ -3,6 +3,7 @@ import * as S from './AdminNotice.styles';
 import axios from 'axios';
 import { NoticeTitle } from '../../notice/NoticeDetail.styles';
 import ConfirmModal from '../../../components/common/modal/ConfirmModal';
+import { jwtDecode } from 'jwt-decode';
 
 const AdminNotice = () => {
     const [title, setTitle] = useState('');
@@ -17,12 +18,22 @@ const AdminNotice = () => {
     const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
     const [modalMessage, setModalMessage] = useState('');  // 모달에 보여줄 메시지
 
+    const accessToken = localStorage.getItem('accessToken');
+    let userId = null;
+
+    if (accessToken) {
+        const decoded: any = jwtDecode(accessToken);
+        console.log("Decoded Token:", decoded); // 실제 필드 확인
+        userId = decoded.userId || decoded.id || decoded.sub; // 실제 키 맞춰서 수정
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
             // 1. 공지사항 데이터 기본
             const noticeData = {
+                userId,
                 noticeTitle: title,
                 noticeContent: content,
                 noticeCreatedAt: new Date().toISOString(),
@@ -46,6 +57,7 @@ const AdminNotice = () => {
             // 3. POST 요청 (백엔드 API 주소 확인 필요)
             await axios.post('/api/notices', noticeData, {
                 headers: {
+                    Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
             });
