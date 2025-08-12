@@ -41,13 +41,13 @@ import WriteReview from './features/review/components/WriteReview.tsx';
 import UserMain from './features/usermain/pages/UserMain.tsx';
 
 // 관리자화면 컴포넌트
-import AdminAuctionCreatePage from './features/admin/pages/AdminAuctionCreatePage';
-import AdminAuctionEditPage from './features/admin/pages/AdminAuctionEditPage';
-import AdminAuctionPage from './features/admin/pages/AdminAuctionPage';
-import AdminAuctionResultPage from './features/admin/pages/AdminAuctionResultPage';
-import AdminChatLogDetailPage from './features/admin/pages/AdminChatLogDetailPage';
-import AdminChatLogPage from './features/admin/pages/AdminChatLogPage';
-import AdminKnowledgeBasePage from './features/admin/pages/AdminKnowledgeBasePage';
+import AdminAuctionCreatePage from './features/admin/wansu/pages/AdminAuctionCreatePage.tsx';
+import AdminAuctionEditPage from './features/admin/wansu/pages/AdminAuctionEditPage.tsx';
+import AdminAuctionPage from './features/admin/wansu/pages/AdminAuctionPage.tsx';
+import AdminAuctionResultPage from './features/admin/wansu/pages/AdminAuctionResultPage.tsx';
+import AdminChatLogDetailPage from './features/admin/wansu/pages/AdminChatLogDetailPage.tsx';
+import AdminChatLogPage from './features/admin/wansu/pages/AdminChatLogPage.tsx';
+import AdminKnowledgeBasePage from './features/admin/wansu/pages/AdminKnowledgeBasePage.tsx';
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
 import Community from './features/community/components/Community.tsx';
 import AdminMain from './pages/AdminMain.tsx';

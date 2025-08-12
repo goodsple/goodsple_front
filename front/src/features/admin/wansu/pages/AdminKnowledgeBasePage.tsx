@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { KnowledgeItem } from '../mock/knowledgeBaseData';
 import { mockKnowledgeBaseData } from '../mock/knowledgeBaseData';
-import KnowledgeModal from '../modals/KnowledgeModal';
+import KnowledgeModal from './../modals/KnowledgeModal';
 import * as S from './AdminKnowledgeBasePageStyle';
 
 const AdminKnowledgeBasePage = () => {
