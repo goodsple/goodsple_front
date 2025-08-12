@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import type { KnowledgeItem } from '../mock/knowledgeBaseData';
+import type { KnowledgeItem } from '../../wansu/mock/knowledgeBaseData';
 import * as S from './KnowledgeModalStyle';
 
 interface Props {
