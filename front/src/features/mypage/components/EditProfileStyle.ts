@@ -55,6 +55,8 @@ export const PasswordToggleButton = styled.button`
     font-weight: 500;
     cursor: pointer;
     margin-bottom: 24px;
+    border: none;
+    font-size: 13px;
 
     img {
         width: 16px;

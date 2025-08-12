@@ -415,7 +415,7 @@ const SignUp:React.FC = () => {
                     <s.SignUpLi>휴대폰 번호</s.SignUpLi>
                     <s.InputRow>
                         <s.SignUpInput
-                        type='number'
+                        type="tel"
                         name='phoneNumber'
                         placeholder='휴대폰 번호를 입력해 주세요.'
                         value={formData.phoneNumber}
