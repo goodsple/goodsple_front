@@ -1,6 +1,6 @@
 import { useState } from "react";
-import * as S from "./AdminNav.styles"
 import { useNavigate } from "react-router-dom";
+import * as S from "./AdminNav.styles";
 
 const MENU_ITEMS = [
     { label: "대시보드", path: "/admin" },
@@ -8,15 +8,15 @@ const MENU_ITEMS = [
     { label: "후기 관리", path: "/admin/reviews" },
     { label: "신고 관리", path: "/admin/reports" },
     { label: "이벤트존 관리", path: "/admin" },
-    { label: "경매 관리", path: "/admin" },
+    { label: "경매 관리", path: "/admin/auctions" },
     { label: "카테고리 관리", path: "/admin" },
     { label: "금칙어 필터링 관리", path: "/admin" },
     { label: "커뮤니티 관리", path: "/admin" },
     {
         label: "챗봇 관리",
         children: [
-            { label: "챗봇 대화 로그 관리", path: "/admin" },
-            { label: "챗봇 지식 베이스 관리", path: "/admin" },
+            { label: "챗봇 대화 로그 관리", path: "/admin/chatbot/logs" },
+            { label: "챗봇 지식 베이스 관리", path: "/admin/chatbot/knowledge" },
         ]
     },
     { label: "실시간 검색어 관리", path: "/admin/keyword" },
