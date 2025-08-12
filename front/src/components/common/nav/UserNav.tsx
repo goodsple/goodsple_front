@@ -41,7 +41,7 @@ const UserNav = ({ onClose, menuOpen }: { onClose: () => void; menuOpen: boolean
                 <MenuLine />
                 <NavLinkItem><ExtraBoldLink to="/">라이브 경매</ExtraBoldLink></NavLinkItem>
                 <MenuLine />
-                <NavLinkItem><ExtraBoldLink to="/">공지사항/소식</ExtraBoldLink></NavLinkItem>
+                <NavLinkItem><ExtraBoldLink to="/notice">공지사항/소식</ExtraBoldLink></NavLinkItem>
                 <MenuLine />
                 <NavLinkItem><ExtraBoldLink to="/">지도</ExtraBoldLink></NavLinkItem>
                 </NavLinks>
