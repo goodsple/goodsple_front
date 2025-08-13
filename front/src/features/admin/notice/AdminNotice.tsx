@@ -38,10 +38,13 @@ const AdminNotice = () => {
                 noticeContent: content,
                 noticeCreatedAt: new Date().toISOString(),
                 isPopup: popupEnabled,
-                popupStart: popupEnabled ? popupStart : null,
-                popupEnd: popupEnabled ? popupEnd : null,
-                popupSummary: popupEnabled ? popupSummary : null,
-                // 첨부파일은 파일 업로드 API와 별도 처리하거나 Multipart로 전송해야 함
+                attachments: [], // 파일은 Multipart 처리 예정
+                popupInfo: popupEnabled ? {
+                    popupStart: popupStart || null,
+                    popupEnd: popupEnd || null,
+                    popupImageUrl: popupImage ? URL.createObjectURL(popupImage) : null, // 실제 저장 후 URL 넣어야 함
+                    popupSummary: popupSummary || null,
+                } : null,
             };
 
             // 2. FormData로 파일 포함해서 보내기 (추후 다시 추가 예정)
