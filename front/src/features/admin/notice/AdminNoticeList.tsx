@@ -1,39 +1,84 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as S from './AdminNoticeList.styles';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const mockData = [
-    {
-        id: 1,
-        title: '서비스 점검 안내',
-        date: '2025-08-06 (08.07)',
-        attachments: 2,
-        author: 'admin1',
-        isPopup: true,
-        popupPeriod: '2025.08.06 ~ 2025.08.10',
-    },
-    {
-        id: 2,
-        title: '신규 기능 추가',
-        date: '2025-07-30 (08.01)',
-        attachments: 0,
-        author: 'admin2',
-        isPopup: false,
-        popupPeriod: '-',
-    },
-];
+interface Notice {
+    noticeId: number;
+    noticeTitle: string;
+    noticeContent: string;
+    noticeCreatedAt: string;
+    noticeUpdatedAt?: string;
+    attachments?: number;
+    author?: string;
+    isPopup: boolean;
+    popupInfo?: {
+        popupStart: string;
+        popupEnd: string;
+    };
+}
+
 
 const AdminNoticeList = () => {
+    const [notices, setNotices] = useState<Notice[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
+    const accessToken = localStorage.getItem('accessToken');
+
+    const fetchNotices = async (keyword: string = '') => {
+        try {
+            const response = await axios.get('/api/admin/notices', {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                params: {
+                    keyword,    // 백엔드 NoticeListFilterDto의 keyword
+                    page: 0,
+                    size: 20,
+                },
+            });
+            setNotices(response.data);
+        } catch (error) {
+            console.error('공지사항 목록 불러오기 실패:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchNotices();
+    }, []);
+
+    // 공지사항 검색
     const handleSearch = () => {
-        // TODO: 검색 기능 구현
+        fetchNotices(searchTerm);
         console.log('검색어:', searchTerm);
     };
 
+    // 공지사항 등록
     const handleRegister = () => {
         navigate('/admin/notice/new'); // 버튼 클릭 시 이동
+    };
+
+    // 공지사항 수정
+        const handleEdit = (noticeId: number) => {
+        navigate(`/admin/notice/${noticeId}/edit`);
+    };
+
+    // 공지사항 삭제
+    const handleDelete = async (noticeId: number) => {
+        if (!window.confirm('정말 삭제하시겠습니까?')) return;
+
+        try {
+            await axios.delete(`/api/admin/notices/${noticeId}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            // 삭제 후 목록 갱신
+            fetchNotices(searchTerm);
+        } catch (error) {
+            console.error('공지사항 삭제 실패:', error);
+        }
     };
 
     return (
@@ -65,18 +110,27 @@ const AdminNoticeList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {mockData.map((item, idx) => (
-                        <tr key={item.id}>
+                    {notices.map((item, idx) => (
+                        <tr key={item.noticeId}>
                             <td>{idx + 1}</td>
-                            <td>{item.title}</td>
-                            <td>{item.date}</td>
-                            <td>{item.attachments}</td>
-                            <td>{item.author}</td>
-                            <td>{item.isPopup ? 'Y' : 'N'}</td>
-                            <td>{item.popupPeriod}</td>
+                            <td>{item.noticeTitle}</td>
                             <td>
-                                <S.ActionButton>수정</S.ActionButton>
-                                <S.ActionButton>삭제</S.ActionButton>
+                                {new Date(item.noticeCreatedAt).toLocaleDateString(undefined, {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                })}
+                                {item.noticeUpdatedAt ? ` (${new Date(item.noticeUpdatedAt).getMonth() + 1}.${String(new Date(item.noticeUpdatedAt).getDate()).padStart(2, '0')})` : ''}
+                            </td>
+                            <td>{item.attachments ?? 0}</td>
+                            <td>{item.author ?? '관리자'}</td>
+                            <td>{item.isPopup ? 'Y' : 'N'}</td>
+                            <td>
+                                {item.popupInfo ? `${item.popupInfo.popupStart} ~ ${item.popupInfo.popupEnd}` : '-'}
+                            </td>
+                            <td>
+                                <S.ActionButton onClick={() => handleEdit(item.noticeId)}>수정</S.ActionButton>
+                                <S.ActionButton onClick={() => handleDelete(item.noticeId)}>삭제</S.ActionButton>
                             </td>
                         </tr>
                     ))}
