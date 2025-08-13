@@ -10,6 +10,8 @@ import * as s from './ChatBotPageStyle';
 const ChatBotPage:React.FC = () => {
 
     const [chatStarted, setChatStarted] = useState(false);
+    const [messages, setMessages] = useState([]);
+    const scrollable = messages.length > 2;
 
     // comm_send 이미지 => 이름 send_purple 로 수정하기
     return(
@@ -29,7 +31,7 @@ const ChatBotPage:React.FC = () => {
                     궁금한점은 언제든 질문하세요.
                 </s.ChatbotAlarmBox>
 
-                <s.ChatScrollArea>
+                <s.ChatScrollArea scrollable={scrollable}>
                     <s.ChatbotGreeting>
                         {/* 큰 로고 이미지 */}
                         <s.ChatBotBigLogo src = {chatbot} alt="챗봇 큰 로고 이미지" />

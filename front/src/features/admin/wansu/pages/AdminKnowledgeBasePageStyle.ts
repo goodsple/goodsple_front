@@ -110,3 +110,10 @@ export const ActionButton = styled.button<{ variant: string }>`
   margin: 0 4px;
   background-color: ${({ variant }) => variant === '수정' ? '#997BEB' : '#444444'};
 `;
+
+// ✨ 페이지네이션 컴포넌트를 감싸고 중앙 정렬하기 위한 Wrapper
+export const PaginationWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+`;
