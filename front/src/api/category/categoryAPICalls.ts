@@ -30,6 +30,16 @@ export const fetchSecCate = createAsyncThunk(
   }
 );
 
+export const fetchAllSecCate = createAsyncThunk(
+  'category/fetchAllSecCate',
+  async () => {
+    const response = await axios.get(
+      `http://localhost:8080/api/admin/category/second/all`,
+    );
+    return response.data;
+  }
+);
+
 export const createThiCategory = createAsyncThunk(
   'category/createThiCate',
   async (categoryData: {cateName: string, secondCateId: number, subText: string}) => {
@@ -51,3 +61,12 @@ export const fetchThiCate = createAsyncThunk(
   }
 );
 
+export const fetchAllThiCate = createAsyncThunk(
+  'category/fetchAllThiCate',
+  async () => {
+    const response = await axios.get(
+      `http://localhost:8080/api/admin/category/third/all`,
+    );
+    return response.data;
+  }
+);

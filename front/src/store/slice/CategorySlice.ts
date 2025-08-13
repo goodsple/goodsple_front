@@ -1,10 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { createSecCategory, fetchSecCate } from '../../api/category/categoryAPICalls.ts';
+import {
+  createSecCategory,
+  fetchAllSecCate,
+  fetchAllThiCate,
+  fetchSecCate,
+} from '../../api/category/categoryAPICalls.ts';
 
 const initialState = {
   firstCate: [],
   secondCate: [],
   thirdCate: [],
+  allSecCate: [],
+  allThiCate: [],
   loading: false,
   error: null
 };
@@ -45,16 +52,34 @@ const categorySlice = createSlice({
         state.error = null;
       })
       .addCase(fetchSecCate.fulfilled, (state, action) => {
-        console.log('🔍 extraReducers에서 받은 데이터:', action.payload);
-        console.log('🔍 데이터 타입:', typeof action.payload);
-        console.log('🔍 Array.isArray:', Array.isArray(action.payload));
-
-        state.secondCate = action.payload; // 이 부분이 문제일 수 있음
+        state.secondCate = action.payload;
       })
       .addCase(fetchSecCate.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
-      });
+      })
+      .addCase(fetchAllSecCate.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllSecCate.fulfilled, (state, action) => {
+        state.allSecCate = action.payload;
+      })
+      .addCase(fetchAllSecCate.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(fetchAllThiCate.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllThiCate.fulfilled, (state, action) => {
+        state.allThiCate = action.payload;
+      })
+      .addCase(fetchAllThiCate.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
   }
 });
 
@@ -62,7 +87,11 @@ export const {
   postSecCate,
   putSecCate,
   deleteSecCate,
-  getSecCate
+  getSecCate,
+  postThiCate,
+  putThiCate,
+  deleteThiCate,
+  getThiCate,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;
