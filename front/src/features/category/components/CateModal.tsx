@@ -1,7 +1,7 @@
 import * as S from '../../admin/auth/components/SearchControlsStyle.ts';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { createCategory, fetchSecCate } from '../../../api/category/categoryAPICalls.ts';
+import { createSecCategory, createThiCategory, fetchSecCate } from '../../../api/category/categoryAPICalls.ts';
 import type { AppDispatch } from '../../../store/Store.ts';
 
 interface CateModalProps {
@@ -34,19 +34,45 @@ function CateModal({ isOpen, onClose }: CateModalProps) {
 
   const dispatch = useDispatch<AppDispatch>();
   const secondCates = useSelector((state : any) => state.category.secondCate);
+  const entireState = useSelector((state: any) => state);
 
   useEffect(() => {
-    if (firstCate !== 0)
-      dispatch(fetchSecCate(firstCate));
+    if (firstCate === 0)
+      return;
+
+    dispatch(fetchSecCate(firstCate));
+    setFormData(prev => ( {
+      ...prev,
+      firstCateId: firstCate
+    }));
   }, [firstCate]);
 
+
   useEffect(() => {
-    // if (secondCate !== 0)
-    //   dispatch()
-  }, [secondCates]);
+    if (secondCates === 0)
+      return;
+
+    setFormData(prev => ( {
+      ...prev,
+      secondCateId: secondCate
+    }));
+
+  }, [secondCate]);
+
+  useEffect(() => {
+
+  }, [formData]);
+
+  useEffect(() => { // 디버깅용
+    console.log("🔍 전체 Redux 상태:", entireState);
+    console.log("🔍 category 상태:", entireState.category);
+    console.log("🔍 secondCates:", secondCates);
+  }, [secondCates, entireState]);
 
   const saveCate = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    console.log("현재 form 상태", formData);
 
     if (!formData.cateName) {
       alert('카테고리 이름을 입력해주세요');
@@ -58,9 +84,49 @@ function CateModal({ isOpen, onClose }: CateModalProps) {
       return;
     }
 
-    if (secondCates !== 0)
+    if (secondCate === 0)
     {
-      dispatch(createCategory(formData) as any);
+      dispatch(createSecCategory(formData) as any)
+        .unwrap()
+        .then((result) => {
+          alert('저장되었습니다.');
+          setFormData({
+            cateName: '',
+            firstCateId: 0,
+            secondCateId: 0,
+            mainImage: '',
+            subImage: '',
+            subText: ''
+          });
+          setFirstCate(0);
+          setSecondCate(0);
+          onClose();
+        })
+        .catch((error) => {
+          alert('저장이 실패하였습니다.');
+        });
+    }
+    else {
+      dispatch(createThiCategory(formData) as any)
+        .unwrap()
+        .then((result) => {
+          alert('저장되었습니다.');
+          alert('저장되었습니다.');
+          setFormData({
+            cateName: '',
+            firstCateId: 0,
+            secondCateId: 0,
+            mainImage: '',
+            subImage: '',
+            subText: ''
+          });
+          setFirstCate(0);
+          setSecondCate(0);
+          onClose();
+        })
+        .catch((error) => {
+          alert('저장이 실패하였습니다.');
+        });
     }
   }
 
