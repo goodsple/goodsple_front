@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import * as c from './ConfirmStyle'
 
 type ConfirmModalProps = {
@@ -10,6 +11,7 @@ type ConfirmModalProps = {
     cancelText?: string;  // 취소버튼 텍스트
     onConfirm: () => void; // 확인 버튼 클릭 시 실행될 함수
     onCancel?: () => void;  // 취소 버튼 클릭 시 실행될 함수
+    zIndex?: number; 
 }
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
     isOpen,
@@ -20,22 +22,24 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     cancelText = "취소",
     onConfirm,
     onCancel,
+    zIndex = 1000,
   }) => {
     if (!isOpen) return null;
 
-    return(
-        <c.ModalBg>
-            <c.ModalWrap>
-                {title && <c.ModalTitle>{title}</c.ModalTitle>}
+    return createPortal(
+        <c.ModalBg $zIndex={zIndex}>
+          <c.ModalWrap>
+            {title && <c.ModalTitle>{title}</c.ModalTitle>}
             <c.ModalContent>{content}</c.ModalContent>
-
+    
             <c.ButtonRow>
-            {showCancel && <c.CancelButton onClick={onCancel}>{cancelText}</c.CancelButton>}
-            <c.ConfirmButton onClick={onConfirm}>{confirmText}</c.ConfirmButton>
+              {showCancel && <c.CancelButton onClick={onCancel}>{cancelText}</c.CancelButton>}
+              <c.ConfirmButton onClick={onConfirm}>{confirmText}</c.ConfirmButton>
             </c.ButtonRow>
-            </c.ModalWrap>
-
-        </c.ModalBg>
-    )
+          </c.ModalWrap>
+        </c.ModalBg>,
+        document.body
+    );
 }
+
 export default ConfirmModal;

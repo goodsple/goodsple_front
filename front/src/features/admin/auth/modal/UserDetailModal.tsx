@@ -1,52 +1,106 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import * as S from './UserDetailModalStyle';
-import type { AdminUser } from '../types/searchUser';
+import type { AdminUserSummary,AdminUserDetail } from '../types/searchUser';
 import cancelImg from '../../../../assets/images/cancel.png';
 import ConfirmModal from '../../../../components/common/modal/ConfirmModal';
+import { formatJoinDateKo } from '../lib/adapters';
+
+type Role = AdminUserSummary['role'];
+type Status = AdminUserSummary['status'];
 
 type Props = {
   isOpen: boolean;
-  user: AdminUser | null;
+  user: AdminUserDetail | null;
   onClose: () => void;
-  onSave: (updated: { userId: string; role: AdminUser['role']; status: AdminUser['status'] }) => void;
+  onSave: (payload: { userId: string; role: Role; status: Status }) => void;
 };
 
+const roleOptions: Role[] = ['USER', 'ADMIN'];
+const statusOptions: Status[] = ['ACTIVE', 'SUSPENDED', 'WITHDRAWN'];
+
 const UserDetailModal: React.FC<Props> = ({ isOpen, user, onClose, onSave }) => {
-  const [role, setRole]     = useState<AdminUser['role']>('USER');
-  const [status, setStatus] = useState<AdminUser['status']>('ACTIVE');
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [showResult, setShowResult]     = useState(false);
-  const [resultMessage, setResultMessage] = useState('');
+  const [role, setRole] = useState<Role>('USER');
+  const [status, setStatus] = useState<Status>('ACTIVE');
+
+  // 확인 모달
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmMsg, setConfirmMsg] = useState<React.ReactNode>('');
+
+  // 결과 모달
+  const [resultOpen, setResultOpen] = useState(false);
+  const [resultMsg, setResultMsg] = useState('');
+
+  const roleChanged = useMemo(() => user && user.role !== role, [user, role]);
+  const statusChanged = useMemo(() => user && user.status !== status, [user, status]);
 
   useEffect(() => {
-    if (user) {
-      setRole(user.role);
-      setStatus(user.status);
-      setShowConfirm(false);
-    }
-  }, [user]);
+    if (!isOpen || !user) return;
+    setRole(user.role);
+    setStatus(user.status);
+  }, [isOpen, user]);
+
+  const isChanged = useMemo(() => {
+    if (!user) return false;
+    return user.role !== role || user.status !== status;
+  }, [user, role, status]);
 
   if (!isOpen || !user) return null;
 
   const handleClickSave = () => {
-    setShowConfirm(true);
+    if (!isChanged) return;
+  
+    let msg = '';
+  
+    // 1) 상태 변경 메시지
+    if (statusChanged) {
+      if (status === 'WITHDRAWN') {
+        msg += '상태를 [탈퇴]로 변경합니다.\n 이 상태에서는 로그인할 수 없습니다.';
+      } else if (status === 'SUSPENDED') {
+        msg += '상태를 [정지]로 변경합니다.\n 일정 기간 접근이 제한됩니다.';
+      } else if (status === 'ACTIVE') {
+        msg += '상태를 [활동 중]으로 변경합니다.';
+      }
+    }
+  
+    // 2) 역할(구분) 변경 메시지
+    if (roleChanged) {
+      const roleMsg =
+        role === 'ADMIN'
+          ? '해당 사용자에게 관리자 권한이 부여됩니다.'
+          : '관리자 권한이 제거됩니다.';
+    
+      msg = msg ? `${msg}\n\n${roleMsg}` : roleMsg;
+    }
+  
+    // 변경이 있는데 메시지가 만들어졌으면 확인 모달 오픈
+    if (msg) {
+      setConfirmMsg(
+        <>
+          {msg}
+          <br />
+          변경하시겠습니까?
+        </>
+      );
+      setConfirmOpen(true);
+      return;
+    }
+  
+    // (이 케이스는 거의 없지만) 메시지 없이 저장
+    onSave({ userId: user!.userId, role, status });
   };
 
   const handleConfirmSave = () => {
-    setShowConfirm(false);
+    setConfirmOpen(false);
+    if (!user) return;
     onSave({ userId: user.userId, role, status });
-
-    // 저장 결과 모달
-    setResultMessage('변경 사항이 저장되었습니다.');
-    setShowResult(true);
   };
 
-  const handleCancelSave = () => {
-    setShowConfirm(false);
+  const handleCancelConfirm = () => {
+    setConfirmOpen(false);
   };
 
   const handleResultClose = () => {
-    setShowResult(false);
+    setResultOpen(false);
     onClose();  // 상세 모달도 닫고 싶으면 호출
   };
 
@@ -60,7 +114,7 @@ const UserDetailModal: React.FC<Props> = ({ isOpen, user, onClose, onSave }) => 
 
         <S.Body>
           <S.Field>
-            <S.Label>회원 ID</S.Label>
+            <S.Label>회원번호</S.Label>
             <S.Value>{user.userId}</S.Value>
           </S.Field>
           <S.Field>
@@ -73,7 +127,7 @@ const UserDetailModal: React.FC<Props> = ({ isOpen, user, onClose, onSave }) => 
           </S.Field>
           <S.Field>
             <S.Label>가입일</S.Label>
-            <S.Value>{user.joinDate}</S.Value>
+            <S.Value>{formatJoinDateKo(user.joinDate)}</S.Value>
           </S.Field>
           <S.Field>
             <S.Label>작성 후기 수</S.Label>
@@ -81,9 +135,10 @@ const UserDetailModal: React.FC<Props> = ({ isOpen, user, onClose, onSave }) => 
           </S.Field>
           <S.Field>
             <S.Label>회원 구분</S.Label>
-            <S.Select value={role} onChange={e => setRole(e.target.value as any)}>
-              <option value="USER">회원</option>
-              <option value="ADMIN">관리자</option>
+            <S.Select value={role} onChange={e => setRole(e.target.value as Role)}>
+              {roleOptions.map(r => (
+                <option key={r} value={r}>{r === 'ADMIN' ? '관리자' : '회원'}</option>
+              ))}
             </S.Select>
           </S.Field>
           <S.Field>
@@ -93,9 +148,11 @@ const UserDetailModal: React.FC<Props> = ({ isOpen, user, onClose, onSave }) => 
           <S.Field>
             <S.Label>활동 상태</S.Label>
             <S.Select value={status} onChange={e => setStatus(e.target.value as any)}>
-              <option value="ACTIVE">활동 중</option>
-              <option value="SUSPENDED">정지</option>
-              <option value="WITHDRAWN">탈퇴</option>
+            {statusOptions.map(s => (
+                <option key={s} value={s}>
+                  {s === 'ACTIVE' ? '활동 중' : s === 'SUSPENDED' ? '정지' : '탈퇴'}
+                </option>
+            ))}
             </S.Select>
           </S.Field>
           <S.Field>
@@ -112,23 +169,23 @@ const UserDetailModal: React.FC<Props> = ({ isOpen, user, onClose, onSave }) => 
 
         <S.Footer>
             <S.SaveButton 
-           disabled={role === user.role && status === user.status}
-           onClick={handleClickSave}
+            disabled={!isChanged}
+            onClick={handleClickSave}
             >
             저장
           </S.SaveButton>
           <ConfirmModal
-            isOpen={showConfirm}
-            content="변경된 내용을 저장하시겠습니까?"
+            isOpen={confirmOpen}
+            content={confirmMsg}
             showCancel={true}
             confirmText="저장"
             cancelText="취소"
             onConfirm={handleConfirmSave}
-            onCancel={handleCancelSave}
+            onCancel={handleCancelConfirm}
         />
          <ConfirmModal
-            isOpen={showResult}
-            content={resultMessage}
+            isOpen={resultOpen}
+            content={resultMsg}
             showCancel={false}
             confirmText="확인"
             onConfirm={handleResultClose}
