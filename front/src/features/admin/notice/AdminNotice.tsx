@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import * as S from './AdminNotice.styles';
 import axios from 'axios';
-import { NoticeTitle } from '../../notice/NoticeDetail.styles';
 import ConfirmModal from '../../../components/common/modal/ConfirmModal';
 import { jwtDecode } from 'jwt-decode';
 
@@ -57,7 +56,7 @@ const AdminNotice = () => {
             //     formData.append('attachments', popupImage);
             // }
 
-            // 3. POST 요청 (백엔드 API 주소 확인 필요)
+            // 3. POST 요청
             await axios.post('/api/notices', noticeData, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
