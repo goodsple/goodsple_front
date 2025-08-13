@@ -32,7 +32,7 @@ const AdminUserPage: React.FC = () => {
   const navigate = useNavigate();
 
   const [criteria, setCriteria] = useState<SearchCriteria>({
-    searchBy: 'loginId',
+    searchBy: 'userId',
     keyword: '',
     roles: [],
     statuses: [],
@@ -194,7 +194,7 @@ const AdminUserPage: React.FC = () => {
       await axiosInstance.delete(`/admin/users/${userIdToDelete}`);
       setIsModalOpen(false);
       setUserIdToDelete(null);
-      await fetchUsers(); // ✅ 중복 호출하지 말 것
+      await fetchUsers(); // 중복 호출하지 말 것
       setResultMessage('회원이 삭제되었습니다.');
       setIsResultOpen(true);
     } catch (e:any) {
@@ -235,8 +235,6 @@ const AdminUserPage: React.FC = () => {
       <SearchControls onSearch={handleSearch} />
 
       <S.TableWrap>
-        {/* 🔎 부모 → 자식으로 내려가는 실제 데이터 로그 */}
-        {console.log('[PARENT] users.len=', users.length, 'sorted.len=', sortedUsers.length, 'ids=', sortedUsers.map(u => u.userId))}
         <UserTable
           users={sortedUsers}
           loading={loading}
