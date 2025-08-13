@@ -1,27 +1,27 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '../axiosInstance.ts';
 
 interface secCateProps {
   cateName: string;
   firstCateId: bigint;
 }
 
-export const createSecCate = async ({cateName, firstCateId} : secCateProps) => {
-  try {
-    const response = await axios.post('http://localhost:8080/api/admin/category/second', {
-      cateName: cateName,
-      firstCateId: firstCateId,
-    });
-    console.log('created: ', response.data);
-  } catch (error) {
-    console.log('error: ', error);
+export const createCategory = createAsyncThunk(
+  'category/create',
+  async (categoryData: {cateName: string, firstCateId: number}) => {
+    const response = await axiosInstance.post(
+      '/admin/category',
+      categoryData
+    );
+    return response.data;
   }
-}
+);
 
 export const fetchSecCate = createAsyncThunk(
   'category/fetchSecCate',
   async (firstCateId: number) => {
-    const response = await axios.get(`http://localhost:8080/api/admin/category/second/${firstCateId}`);
+    const response = await axiosInstance.get(`/admin/category/second/${firstCateId}`);
     return response.data;
   }
 );

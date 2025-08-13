@@ -18,6 +18,18 @@ const categorySlice = createSlice({
     getSecCate: (state, action) => {
       return action.payload;
     },
+    postThiCate: (state, action) => {
+      return action.payload;
+    },
+    putThiCate: (state, action) => {
+      return action.payload;
+    },
+    deleteThiCate: (state, action) => {
+      return action.payload;
+    },
+    getThiCate: (state, action) => {
+      return action.payload;
+    },
   }
 });
 

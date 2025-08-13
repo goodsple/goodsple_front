@@ -144,7 +144,7 @@ export const ModalBackground = styled.div`
     z-index: 99999;
 `;
 
-export const Modal = styled.div`
+export const Modal = styled.form`
     width: 500px;
     height: 350px;
     display: flex;
