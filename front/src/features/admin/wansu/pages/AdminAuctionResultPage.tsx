@@ -1,28 +1,43 @@
+// admin/pages/AdminAuctionResultPage.tsx (수정본)
+
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { getAdminAuctionResult } from '../api/auctionApi';
 import { PaymentStatusBadge, StatusBadge, Table, Tbody, Td, Th, Thead, Tr } from '../components/AuctionTableStyle';
-import type { AuctionResult } from '../mock/auctionResultData';
-import { findAuctionResultById } from '../mock/auctionResultData'; // ✨ 수정: 함수를 import
+import type { AuctionAdminResult } from '../types/auction';
+import { translateStatusToKo } from '../utils/statusUtils';
 import * as S from './AdminAuctionResultPageStyle';
 
 const AdminAuctionResultPage = () => {
   const { auctionId } = useParams();
-  const [resultData, setResultData] = useState<AuctionResult | null>(null);
+  const [resultData, setResultData] = useState<AuctionAdminResult | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // ✨ 수정: URL의 auctionId를 숫자로 변환하여 데이터 찾기
-    const id = Number(auctionId); 
-    if (id) {
-      const data = findAuctionResultById(id);
-      setResultData(data || null);
-    }
+    const fetchResult = async () => {
+      if (!auctionId) return;
+      setIsLoading(true);
+      try {
+        const data = await getAdminAuctionResult(Number(auctionId));
+        setResultData(data);
+      } catch (error) {
+        console.error('경매 결과를 불러오는 데 실패했습니다:', error);
+        alert('경매 결과를 불러올 수 없습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchResult();
   }, [auctionId]);
 
-  if (!resultData) {
-    return <div style={{padding: '40px'}}>ID에 해당하는 경매 결과가 없거나 불러오는 중...</div>;
+  if (isLoading) {
+    return <div style={{padding: '40px'}}>데이터를 불러오는 중...</div>;
   }
 
-  // ... (이하 return 문은 기존과 동일) ...
+  if (!resultData) {
+    return <div style={{padding: '40px'}}>ID에 해당하는 경매 결과가 없습니다.</div>;
+  }
+
   return (
     <S.PageContainer>
       <S.ContentCard>
@@ -44,24 +59,32 @@ const AdminAuctionResultPage = () => {
             <S.InfoTable>
               <S.InfoRow>
                 <S.InfoLabel>최종 낙찰가</S.InfoLabel>
-                <S.InfoValue className="price">{resultData.finalPrice.toLocaleString()}원</S.InfoValue>
+                <S.InfoValue className="price">
+                  {resultData.finalPrice ? `${resultData.finalPrice.toLocaleString()}원` : '낙찰자 없음'}
+                </S.InfoValue>
               </S.InfoRow>
               <S.InfoRow>
                 <S.InfoLabel>낙찰자</S.InfoLabel>
-                <S.InfoValue>{resultData.winnerInfo.nickname} ({resultData.winnerInfo.userId})</S.InfoValue>
+                <S.InfoValue>
+                  {resultData.winnerInfo ? `${resultData.winnerInfo.nickname} (${resultData.winnerInfo.userId})` : '-'}
+                </S.InfoValue>
               </S.InfoRow>
               <S.InfoRow>
                 <S.InfoLabel>연락처</S.InfoLabel>
-                <S.InfoValue>{resultData.winnerInfo.phone}</S.InfoValue>
+                <S.InfoValue>{resultData.winnerInfo?.phone || '-'}</S.InfoValue>
               </S.InfoRow>
               <S.InfoRow>
                 <S.InfoLabel>경매 상태</S.InfoLabel>
-                <S.InfoValue><StatusBadge>{resultData.status}</StatusBadge></S.InfoValue>
+                <S.InfoValue><StatusBadge>{translateStatusToKo(resultData.status, 'auction')}</StatusBadge></S.InfoValue>
               </S.InfoRow>
               <S.InfoRow>
                 <S.InfoLabel>결제 상태</S.InfoLabel>
                 <S.InfoValue>
-                  {resultData.paymentStatus ? <PaymentStatusBadge $status={resultData.paymentStatus}>{resultData.paymentStatus}</PaymentStatusBadge> : '-'}
+                  {resultData.paymentStatus ? 
+                    <PaymentStatusBadge $status={translateStatusToKo(resultData.paymentStatus, 'payment')}>
+                      {translateStatusToKo(resultData.paymentStatus, 'payment')}
+                    </PaymentStatusBadge> 
+                    : '-'}
                 </S.InfoValue>
               </S.InfoRow>
             </S.InfoTable>
@@ -83,7 +106,7 @@ const AdminAuctionResultPage = () => {
                     <S.InfoLabel>배송 주소</S.InfoLabel>
                     <S.InfoValue>{resultData.shippingInfo.address}</S.InfoValue>
                   </S.InfoRow>
-                   <S.InfoRow>
+                    <S.InfoRow>
                     <S.InfoLabel>배송 메시지</S.InfoLabel>
                     <S.InfoValue>{resultData.shippingInfo.message || '-'}</S.InfoValue>
                   </S.InfoRow>
@@ -103,13 +126,17 @@ const AdminAuctionResultPage = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {resultData.bidHistory.map((bid, index) => (
-                <Tr key={index}>
-                  <Td>{bid.time}</Td>
-                  <Td>{bid.bidder}</Td>
-                  <Td>{bid.price.toLocaleString()}원</Td>
-                </Tr>
-              ))}
+              {resultData.bidHistory.length > 0 ? (
+                resultData.bidHistory.map((bid, index) => (
+                  <Tr key={index}>
+                    <Td>{bid.time}</Td>
+                    <Td>{bid.bidder}</Td>
+                    <Td>{bid.price.toLocaleString()}원</Td>
+                  </Tr>
+                ))
+              ) : (
+                <Tr><Td colSpan={3}>입찰 기록이 없습니다.</Td></Tr>
+              )}
             </Tbody>
           </Table>
         </S.ResultSection>
