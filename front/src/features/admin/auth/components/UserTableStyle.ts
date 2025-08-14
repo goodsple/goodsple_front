@@ -24,6 +24,15 @@ export const Table = styled.table`
   }
 `;
 
+export const SortableTh = styled.th`
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  /* 옵션: 살짝 호버 효과 */
+  &:hover {
+    background-color: #f9f9f9;
+  }
+`;
 
 export const Button = styled.button`
   margin: 0 4px;
@@ -35,9 +44,19 @@ export const Button = styled.button`
   cursor: pointer;
   font-size: 0.875rem;
 
-  &:hover {
+  /* 활성화일 때만 hover 효과 */
+  &:not(:disabled):hover {
     background: #E03131;
     color: #fff;
+  }
+
+  /* 비활성화 상태 */
+  &:disabled {
+    background: #D9D9D9;   
+    color: #666;          
+    border-color: #bbb;   
+    cursor: not-allowed;   
+    /* pointer-events: none; 
   }
   
 `;

@@ -39,6 +39,9 @@ export const Group = styled.div`
   span {
     margin: 0 4px;
   }
+  input[type="checkbox"][data-indeterminate="true"] {
+    accent-color: #9aa0a6; /* 체크색보다 연하게 */
+  }
 `;
 
 export const Group2 = styled.div`
@@ -232,4 +235,15 @@ export const ModalRow2 = styled.div`
         border-radius: 10px;
         margin: 15px 0;
     }
+`;
+
+export const ResetButton = styled.button`
+  margin-left: 8px;
+  padding: 6px 16px;
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
 `;
