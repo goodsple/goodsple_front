@@ -3,40 +3,48 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Pagination from '../../../../components/common/pagination/Pagination';
+import { getAdminAuctions } from '../api/auctionApi'; // 1. API 함수 import
 import AuctionTable from '../components/AuctionTable';
-import { mockAdminAuctionData } from '../mock/adminAuctionData';
+import type { AdminAuction } from '../mock/adminAuctionData';
 import * as S from './AdminAuctionPageStyle';
 
 const ITEMS_PER_PAGE = 10;
 
 const AdminAuctionPage = () => {
-  const [auctions] = useState(mockAdminAuctionData);
-  const [filteredAuctions, setFilteredAuctions] = useState(auctions);
+  const [auctions, setAuctions] = useState<AdminAuction[]>([]); // 2. 경매 목록 상태
+  const [isLoading, setIsLoading] = useState(true); // 3. 로딩 상태 추가
+  const [totalPages, setTotalPages] = useState(0); // 4. 전체 페이지 수 상태
   const [statusFilter, setStatusFilter] = useState('전체');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
   const statuses = ['전체', '예정', '진행', '종료', '중지'];
 
+  // 5. 필터나 페이지가 변경될 때마다 API를 호출하는 useEffect
   useEffect(() => {
-    let result = auctions;
-    if (statusFilter !== '전체') {
-      result = result.filter(auction => auction.status === statusFilter);
-    }
-    if (searchTerm) {
-      result = result.filter(auction => 
-        auction.productName.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    setFilteredAuctions(result);
-    setCurrentPage(1);
-  }, [statusFilter, searchTerm, auctions]);
+    const fetchAuctions = async () => {
+      setIsLoading(true);
+      try {
+        const response = await getAdminAuctions({
+          page: currentPage - 1, // 백엔드는 0부터 시작하므로 -1
+          size: ITEMS_PER_PAGE,
+          status: statusFilter,
+          productName: searchTerm,
+        });
+        setAuctions(response.content);
+        setTotalPages(response.totalPages);
+      } catch (error) {
+        // axiosInstance에 에러 인터셉터가 있다면 거기서 처리될 수 있습니다.
+        // 없다면 여기서 에러 처리를 합니다. (예: alert, 에러 페이지로 이동)
+        console.error("경매 목록을 불러오는 데 실패했습니다:", error);
+        alert("데이터를 불러오는 데 실패했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const totalPages = Math.ceil(filteredAuctions.length / ITEMS_PER_PAGE);
-  const paginatedAuctions = filteredAuctions.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+    fetchAuctions();
+  }, [statusFilter, searchTerm, currentPage]); // 의존성 배열에 currentPage 추가
 
   return (
     <S.PageContainer>
@@ -77,7 +85,7 @@ const AdminAuctionPage = () => {
           </Link>
         </S.TabGroup>
 
-        <AuctionTable auctions={paginatedAuctions} />
+        <AuctionTable auctions={auctions} />
 
         {totalPages > 1 && (
           <S.PaginationWrapper>

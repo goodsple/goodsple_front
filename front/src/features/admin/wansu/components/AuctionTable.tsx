@@ -1,4 +1,5 @@
 import type { AdminAuction } from '../mock/adminAuctionData';
+import { translateStatusToKo } from '../utils/statusUtils'; // 1. 방금 만든 변환 함수를 import 합니다.
 import * as S from './AuctionTableStyle';
 
 interface Props {
@@ -44,11 +45,11 @@ const AuctionTable: React.FC<Props> = ({ auctions }) => {
               <td>{auction.startTime}</td>
               <td>{auction.endTime}</td>
               <td>{auction.currentPrice.toLocaleString()}원</td>
-              <td><S.StatusBadge>{auction.status}</S.StatusBadge></td>
+              <td><S.StatusBadge>{translateStatusToKo(auction.status, 'auction')}</S.StatusBadge></td>
               <td>
                 {auction.paymentStatus ? (
                   <S.PaymentStatusBadge $status={auction.paymentStatus}>
-                    {auction.paymentStatus}
+                    {translateStatusToKo(auction.paymentStatus, 'payment')}
                   </S.PaymentStatusBadge>
                 ) : '-'}
               </td>
