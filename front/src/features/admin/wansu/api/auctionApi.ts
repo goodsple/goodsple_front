@@ -50,3 +50,54 @@ export const getAdminAuctions = async (params: AuctionSearchParams): Promise<Pag
 };
 
 // TODO: 경매 생성, 수정, 상세 조회 API 함수들을 여기에 추가할 수 있습니다.
+
+/**
+ * 경매 생성을 위한 데이터 타입 정의
+ */
+export interface AuctionCreateData {
+  productName: string;
+  description: string;
+  startPrice: number;
+  minBidUnit: number;
+  startTime: string; // ISO 8601 형식 (예: 2025-09-02T21:00:00+09:00)
+  endTime: string;
+  imageUrls: string[];
+}
+
+/**
+ * 이미지를 서버에 업로드하고 URL을 반환하는 API 함수
+ * @param imageFile 업로드할 이미지 파일
+ * @returns 업로드된 이미지의 URL
+ */
+export const uploadImage = async (imageFile: File): Promise<string> => {
+  // TODO: 백엔드 S3 이미지 업로드 API가 구현되면 아래 주석을 해제하고 실제 로직을 연결해야 합니다.
+  /*
+  const formData = new FormData();
+  formData.append('image', imageFile);
+
+  // 이미지 업로드 API 호출 (Content-Type을 multipart/form-data로 설정)
+  const response = await axiosInstance.post('/uploads/image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data.imageUrl; // 백엔드가 { "imageUrl": "..." } 형태로 응답한다고 가정
+  */
+
+  // 임시 목업 로직: 1초 후, 임시 이미지 URL을 반환합니다.
+  console.log("임시 이미지 업로드 시뮬레이션:", imageFile.name);
+  return new Promise(resolve => {
+    setTimeout(() => {
+      // 실제와 비슷한 형태의 임시 URL을 반환합니다.
+      resolve(`https://placehold.co/600x400/EEE/31343C?text=Image-Preview`);
+    }, 1000);
+  });
+};
+
+/**
+ * 새로운 경매를 생성하는 API 함수
+ * @param auctionData 생성할 경매 데이터
+ */
+export const createAdminAuction = async (auctionData: AuctionCreateData): Promise<void> => {
+  await axiosInstance.post('/admin/auctions', auctionData);
+};
