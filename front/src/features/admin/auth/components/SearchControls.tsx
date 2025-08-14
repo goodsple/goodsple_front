@@ -11,7 +11,7 @@ const SearchControls: React.FC<Props> = ({ onSearch }) => {
   const [keyword, setKeyword] = useState("");
   const [searchBy, setSearchBy] = useState<"nickname" | "userId">("nickname");
 
-  // ✅ IME(한글) 조합 상태
+  // IME(한글) 조합 상태
   const [isComposing, setIsComposing] = useState(false);
 
   // 역할
@@ -38,7 +38,7 @@ const SearchControls: React.FC<Props> = ({ onSearch }) => {
   // 최초 마운트 이후에만 자동 검색
   const didMountRef = useRef(false);
 
-  // ✅ 공통 필터(roles/statuses/dates/searchBy)만 모은 객체
+  // 공통 필터(roles/statuses/dates/searchBy)만 모은 객체
   const commonFilters = useMemo(() => {
     const roles: SearchCriteria["roles"] = [];
     if (roleMember) roles.push("USER");

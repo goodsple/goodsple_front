@@ -39,15 +39,14 @@ export const Group = styled.div`
   span {
     margin: 0 4px;
   }
-  input[type="checkbox"][data-indeterminate="true"] {
-    accent-color: #9aa0a6; /* 체크색보다 연하게 */
+  input[type="checkbox"] {
+    accent-color: #997BEB; 
   }
 `;
 
 export const Group2 = styled.div`
   display: flex;
-    flex-direction: column;
-  //align-items: center;
+  flex-direction: column;
   gap: 12px;  
 
   label {
@@ -69,8 +68,6 @@ export const Group2 = styled.div`
   span {
     margin: 0 4px;
   }
-    
-
 `;
 
 export const SearchWrap = styled.div `

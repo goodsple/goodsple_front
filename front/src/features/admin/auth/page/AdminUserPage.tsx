@@ -53,7 +53,7 @@ const AdminUserPage: React.FC = () => {
   const [sortKey, setSortKey]       = useState<'levelScore' | 'joinDate' | null>(null);
   const [sortOrder, setSortOrder]   = useState<'asc' | 'desc'>('asc');
 
-  // ⭐ 최신 요청 id & AbortController (이전 요청 취소)
+  // 최신 요청 id & AbortController (이전 요청 취소)
   const latestReqIdRef = useRef(0);
   const abortRef       = useRef<AbortController | null>(null);
 
@@ -69,7 +69,7 @@ const AdminUserPage: React.FC = () => {
     setLoading(true);
     try {
       const params = buildAdminUserQueryParams(criteria, currentPage);
-      console.log('[AdminUserPage/auth] FETCH - criteria=', criteria, 'page=', currentPage, 'params=', params);
+      // console.log('[AdminUserPage/auth] FETCH - criteria=', criteria, 'page=', currentPage, 'params=', params);
 
       const [listRes, countRes] = await Promise.all([
         axiosInstance.get<BackendUserSummary[] | any>('/admin/users',       { params, signal: ac.signal }),
@@ -89,7 +89,7 @@ const AdminUserPage: React.FC = () => {
         : [];
 
       // 디버그(원하는 개수로 줄었는지)
-      console.log('[AdminUserPage/auth] rows(raw)=', rawRows.length, rawRows?.[0]);
+      // console.log('[AdminUserPage/auth] rows(raw)=', rawRows.length, rawRows?.[0]);
 
       setUsers(rawRows.map(mapBackendSummaryToView));
 
