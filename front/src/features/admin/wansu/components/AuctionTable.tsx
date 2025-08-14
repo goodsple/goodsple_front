@@ -8,13 +8,14 @@ import * as S from './AuctionTableStyle';
 
 interface Props {
   auctions: AdminAuction[];
+  // 부모로부터 받을 onStatusChange 함수의 타입을 정의합니다.
+  onStatusChange: (auctionId: number, newStatus: string, statusKo: string) => void;
 }
 
-const AuctionTable: React.FC<Props> = ({ auctions }) => {
+const AuctionTable: React.FC<Props> = ({ auctions, onStatusChange }) => {
   const navigate = useNavigate();
 
   const handleRowClick = (auction: AdminAuction) => {
-    // 백엔드에서 받은 영어 status 값으로 비교
     if (auction.status.toLowerCase() === 'ended') {
       navigate(`/admin/auctions/${auction.id}/result`);
     } else {
@@ -27,9 +28,7 @@ const AuctionTable: React.FC<Props> = ({ auctions }) => {
     callback();
   };
 
-  // 버튼 렌더링 로직
   const renderActionButtons = (auction: AdminAuction) => {
-    // 백엔드에서 받은 영어 원본 값으로 비교
     switch (auction.status.toLowerCase()) {
       case 'scheduled':
       case 'active':
@@ -43,7 +42,7 @@ const AuctionTable: React.FC<Props> = ({ auctions }) => {
             </S.ActionButton>
             <S.ActionButton 
               variant="중지"
-              onClick={(e) => handleButtonClick(e, () => alert(`ID ${auction.id} 경매 중지 (기능 구현 필요)`))}
+              onClick={(e) => handleButtonClick(e, () => onStatusChange(auction.id, 'cancelled', '중지'))}
             >
               중지
             </S.ActionButton>
@@ -58,8 +57,8 @@ const AuctionTable: React.FC<Props> = ({ auctions }) => {
             결과
           </S.ActionButton>
         );
-      case 'cancelled': // DB ENUM 값인 'cancelled'로 비교
-         return (
+      case 'cancelled':
+        return (
           <>
             <S.ActionButton 
               variant="수정"
@@ -69,9 +68,9 @@ const AuctionTable: React.FC<Props> = ({ auctions }) => {
             </S.ActionButton>
             <S.ActionButton 
               variant="시작"
-              onClick={(e) => handleButtonClick(e, () => alert(`ID ${auction.id} 경매 시작 (기능 구현 필요)`))}
+              onClick={(e) => handleButtonClick(e, () => onStatusChange(auction.id, 'active', '재개'))}
             >
-              시작
+              재개
             </S.ActionButton>
           </>
         );
@@ -95,30 +94,24 @@ const AuctionTable: React.FC<Props> = ({ auctions }) => {
         </tr>
       </thead>
       <tbody>
-        {auctions.length > 0 ? (
-          auctions.map(auction => (
-            <S.ClickableTr key={auction.id} onClick={() => handleRowClick(auction)}>
-              <td>{auction.id}</td>
-              <td style={{textAlign: 'left', width: '30%'}}>{auction.productName}</td>
-              <td>{auction.startTime}</td>
-              <td>{auction.endTime}</td>
-              <td>{auction.currentPrice.toLocaleString()}원</td>
-              <td><S.StatusBadge>{translateStatusToKo(auction.status, 'auction')}</S.StatusBadge></td>
-              <td>
-                {auction.paymentStatus ? (
-                  <S.PaymentStatusBadge $status={translateStatusToKo(auction.paymentStatus, 'payment')}>
-                    {translateStatusToKo(auction.paymentStatus, 'payment')}
-                  </S.PaymentStatusBadge>
-                ) : '-'}
-              </td>
-              <td><S.ActionButtonGroup>{renderActionButtons(auction)}</S.ActionButtonGroup></td>
-            </S.ClickableTr>
-          ))
-        ) : (
-          <tr>
-            <td colSpan={8}>검색 결과가 없습니다.</td>
-          </tr>
-        )}
+        {auctions.map(auction => (
+          <S.ClickableTr key={auction.id} onClick={() => handleRowClick(auction)}>
+            <td>{auction.id}</td>
+            <td style={{textAlign: 'left', width: '30%'}}>{auction.productName}</td>
+            <td>{auction.startTime}</td>
+            <td>{auction.endTime}</td>
+            <td>{auction.currentPrice.toLocaleString()}원</td>
+            <td><S.StatusBadge>{translateStatusToKo(auction.status, 'auction')}</S.StatusBadge></td>
+            <td>
+              {auction.paymentStatus ? (
+                <S.PaymentStatusBadge $status={translateStatusToKo(auction.paymentStatus, 'payment')}>
+                  {translateStatusToKo(auction.paymentStatus, 'payment')}
+                </S.PaymentStatusBadge>
+              ) : '-'}
+            </td>
+            <td><S.ActionButtonGroup>{renderActionButtons(auction)}</S.ActionButtonGroup></td>
+          </S.ClickableTr>
+        ))}
       </tbody>
     </S.Table>
   );

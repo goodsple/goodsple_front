@@ -159,3 +159,13 @@ export const getAdminAuctionResult = async (auctionId: number): Promise<AuctionA
     bidHistory: response.data.bidHistory || [],
   };
 };
+
+/**
+ * 관리자가 경매 상태를 변경하는 API 함수 (중지/재개 등)
+ * @param auctionId 상태를 변경할 경매 ID
+ * @param status 새로운 상태 값 ('cancelled', 'active' 등)
+ */
+export const updateAdminAuctionStatus = async (auctionId: number, status: string): Promise<void> => {
+  // 백엔드 DTO 형식에 맞춰 { "status": "..." } 형태로 전송합니다.
+  await axiosInstance.patch(`/admin/auctions/${auctionId}/status`, { status });
+};
