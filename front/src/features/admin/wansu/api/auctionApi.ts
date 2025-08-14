@@ -5,6 +5,7 @@
 import axiosInstance from '../../../../api/axiosInstance'; // 팀원이 만든 axios 인스턴스를 import 합니다.
 import type { PagedResponse } from '../../../../types/common'; // 페이지네이션 타입을 위한 공통 타입 (필요시 생성)
 import type { AdminAuction } from '../mock/adminAuctionData'; // 기존 목업 데이터 타입 재활용
+import type { AuctionAdminDetail } from '../types/auction'; // 상세 정보 타입을 위한 import 추가
 
 // 검색 조건을 위한 타입 정의
 export interface AuctionSearchParams {
@@ -101,3 +102,38 @@ export const uploadImage = async (imageFile: File): Promise<string> => {
 export const createAdminAuction = async (auctionData: AuctionCreateData): Promise<void> => {
   await axiosInstance.post('/admin/auctions', auctionData);
 };
+
+/**
+ * 경매 수정을 위한 데이터 타입 정의 (생성과 유사)
+ */
+export interface AuctionUpdateData extends AuctionCreateData {}
+
+/**
+ * 관리자용 경매 상세 정보를 조회하는 API 함수 (수정 페이지용)
+ * @param auctionId 조회할 경매 ID
+ */
+export const getAdminAuctionDetail = async (auctionId: number): Promise<AuctionAdminDetail> => {
+  const response = await axiosInstance.get(`/admin/auctions/${auctionId}`);
+  // 백엔드 응답(AuctionAdminDetailResponse)을 프론트엔드 타입(AuctionAdminDetail)으로 변환
+  return {
+    id: response.data.id,
+    productName: response.data.productName,
+    description: response.data.description,
+    startPrice: response.data.startPrice,
+    minBidUnit: response.data.minBidUnit,
+    startTime: response.data.startTime,
+    endTime: response.data.endTime,
+    imageUrls: response.data.imageUrls,
+    status: response.data.status,
+  };
+};
+
+/**
+ * 경매 정보를 수정하는 API 함수
+ * @param auctionId 수정할 경매 ID
+ * @param auctionData 수정할 경매 데이터
+ */
+export const updateAdminAuction = async (auctionId: number, auctionData: AuctionUpdateData): Promise<void> => {
+  await axiosInstance.put(`/admin/auctions/${auctionId}`, auctionData);
+};
+

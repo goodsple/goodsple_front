@@ -1,16 +1,15 @@
+// admin/pages/AdminAuctionEditPage.tsx (수정본)
+
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import * as S from './AdminAuctionCreatePageStyle'; // ✨ 등록 페이지 스타일 재사용
+import { getAdminAuctionDetail, updateAdminAuction, uploadImage } from '../api/auctionApi';
+import * as S from './AdminAuctionCreatePageStyle'; // 등록 페이지 스타일 재사용
 
-// 수정을 위해 불러왔다고 가정한 목업 데이터
-const mockAuctionToEdit = {
-  id: 4,
-  productName: '세븐틴 FML 개봉앨범',
-  description: '포토카드 확인만 하고 보관한 거의 새 상품입니다. 구성품 모두 포함.',
-  startPrice: '5000',
-  startTime: '2025-06-30T20:00',
-  endTime: '2025-06-30T21:00',
-  imageUrl: 'https://picsum.photos/seed/svt_edit/200/200',
+// datetime-local input 형식에 맞게 ISO 문자열을 변환하는 함수
+const formatDateTimeForInput = (isoString: string) => {
+  if (!isoString) return '';
+  // 'YYYY-MM-DDTHH:mm:ss.sssZ' 형식에서 'YYYY-MM-DDTHH:mm' 부분만 잘라냅니다.
+  return isoString.slice(0, 16);
 };
 
 const AdminAuctionEditPage = () => {
@@ -20,25 +19,40 @@ const AdminAuctionEditPage = () => {
     productName: '',
     description: '',
     startPrice: '',
+    minBidUnit: '',
     startTime: '',
     endTime: '',
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // 실제로는 auctionId를 이용해 서버에서 데이터를 불러오는 로직
-    console.log(`ID: ${auctionId} 경매 데이터 불러오기`);
-    // 지금은 목업 데이터를 초기값으로 설정
-    setAuctionData({
-      productName: mockAuctionToEdit.productName,
-      description: mockAuctionToEdit.description,
-      startPrice: mockAuctionToEdit.startPrice,
-      startTime: mockAuctionToEdit.startTime,
-      endTime: mockAuctionToEdit.endTime,
-    });
-    setImagePreview(mockAuctionToEdit.imageUrl);
-  }, [auctionId]);
+    const fetchAuctionDetail = async () => {
+      if (!auctionId) return;
+      try {
+        const data = await getAdminAuctionDetail(Number(auctionId));
+        setAuctionData({
+          productName: data.productName,
+          description: data.description,
+          startPrice: String(data.startPrice),
+          minBidUnit: String(data.minBidUnit),
+          startTime: formatDateTimeForInput(data.startTime),
+          endTime: formatDateTimeForInput(data.endTime),
+        });
+        if (data.imageUrls && data.imageUrls.length > 0) {
+          setImagePreview(data.imageUrls[0]);
+        }
+      } catch (error) {
+        console.error('경매 정보를 불러오는 데 실패했습니다:', error);
+        alert('경매 정보를 불러올 수 없습니다.');
+        navigate('/admin/auctions');
+      }
+    };
+    fetchAuctionDetail();
+  }, [auctionId, navigate]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -48,6 +62,7 @@ const AdminAuctionEditPage = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => { setImagePreview(reader.result as string); };
       reader.readAsDataURL(file);
@@ -55,23 +70,58 @@ const AdminAuctionEditPage = () => {
   };
 
   const handleCancelImage = () => {
+    setImageFile(null);
     setImagePreview(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(`수정된 경매 데이터 (ID: ${auctionId}):`, { ...auctionData, image: imagePreview });
-    alert(`경매(ID: ${auctionId}) 정보가 성공적으로 수정되었습니다!`);
-    navigate('/admin/auctions');
+    if (!auctionId) return;
+    setIsSubmitting(true);
+
+    try {
+      let imageUrl = imagePreview; // 기본값은 기존 이미지
+      // 새 이미지를 선택한 경우에만 업로드 API 호출
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+      }
+      if (!imageUrl) {
+        alert('상품 이미지를 등록해주세요.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      await updateAdminAuction(Number(auctionId), {
+        productName: auctionData.productName,
+        description: auctionData.description,
+        startPrice: Number(auctionData.startPrice),
+        minBidUnit: Number(auctionData.minBidUnit),
+        startTime: new Date(auctionData.startTime).toISOString(),
+        endTime: new Date(auctionData.endTime).toISOString(),
+        imageUrls: [imageUrl],
+      });
+
+      alert(`경매(ID: ${auctionId}) 정보가 성공적으로 수정되었습니다!`);
+      navigate('/admin/auctions');
+
+    } catch (error) {
+      console.error('경매 수정에 실패했습니다:', error);
+      alert('경매 수정에 실패했습니다. 입력 값을 확인해주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
 
   return (
     <S.PageContainer>
       <S.ContentCard>
         <S.Form onSubmit={handleSubmit}>
+          {/* 폼 UI는 기존과 동일, value가 상태와 연결되어 자동으로 채워짐 */}
           <S.FormGroup>
             <S.Label htmlFor="productName">상품명</S.Label>
             <S.Input type="text" id="productName" name="productName" value={auctionData.productName} onChange={handleChange} required />
@@ -98,6 +148,10 @@ const AdminAuctionEditPage = () => {
               <S.Label htmlFor="startPrice">시작가 (원)</S.Label>
               <S.Input type="number" id="startPrice" name="startPrice" value={auctionData.startPrice} onChange={handleChange} required />
             </S.FormGroup>
+             <S.FormGroup>
+              <S.Label htmlFor="minBidUnit">최소 입찰 단위 (원)</S.Label>
+              <S.Input type="number" id="minBidUnit" name="minBidUnit" value={auctionData.minBidUnit} onChange={handleChange} required />
+            </S.FormGroup>
             <S.FormGroup>
               <S.Label htmlFor="startTime">경매 시작 시간</S.Label>
               <S.Input type="datetime-local" id="startTime" name="startTime" value={auctionData.startTime} onChange={handleChange} required />
@@ -110,7 +164,9 @@ const AdminAuctionEditPage = () => {
           
           <S.FormActions>
             <S.ActionLink to="/admin/auctions">취소</S.ActionLink>
-            <S.ActionButton type="submit">수정 완료</S.ActionButton>
+            <S.ActionButton type="submit" disabled={isSubmitting}>
+              {isSubmitting ? '수정 중...' : '수정 완료'}
+            </S.ActionButton>
           </S.FormActions>
         </S.Form>
       </S.ContentCard>
