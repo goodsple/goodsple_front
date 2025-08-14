@@ -111,7 +111,6 @@ const AuctionTable: React.FC<Props> = ({ auctions }) => {
                   </S.PaymentStatusBadge>
                 ) : '-'}
               </td>
-              {/* ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 이 부분이 빠져있었습니다! ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */}
               <td><S.ActionButtonGroup>{renderActionButtons(auction)}</S.ActionButtonGroup></td>
             </S.ClickableTr>
           ))

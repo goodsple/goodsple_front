@@ -5,7 +5,7 @@
 import axiosInstance from '../../../../api/axiosInstance'; // 팀원이 만든 axios 인스턴스를 import 합니다.
 import type { PagedResponse } from '../../../../types/common'; // 페이지네이션 타입을 위한 공통 타입 (필요시 생성)
 import type { AdminAuction } from '../mock/adminAuctionData'; // 기존 목업 데이터 타입 재활용
-import type { AuctionAdminDetail } from '../types/auction'; // 상세 정보 타입을 위한 import 추가
+import type { AuctionAdminDetail, AuctionAdminResult } from '../types/auction'; // 상세 정보 타입을 위한 import 추가
 
 // 검색 조건을 위한 타입 정의
 export interface AuctionSearchParams {
@@ -137,3 +137,25 @@ export const updateAdminAuction = async (auctionId: number, auctionData: Auction
   await axiosInstance.put(`/admin/auctions/${auctionId}`, auctionData);
 };
 
+/**
+ * 관리자용 경매 결과 상세 정보를 조회하는 API 함수
+ * @param auctionId 조회할 경매 ID
+ */
+export const getAdminAuctionResult = async (auctionId: number): Promise<AuctionAdminResult> => {
+  const response = await axiosInstance.get(`/admin/auctions/${auctionId}/result`);
+  // 백엔드 응답(AuctionAdminResultResponse)을 프론트엔드 타입(AuctionAdminResult)으로 변환
+  // 백엔드에서 null로 올 수 있는 객체들을 안전하게 처리합니다.
+  return {
+    productName: response.data.productName,
+    imageUrl: response.data.imageUrl,
+    startPrice: response.data.startPrice,
+    startTime: response.data.startTime,
+    endTime: response.data.endTime,
+    finalPrice: response.data.finalPrice,
+    status: response.data.status,
+    paymentStatus: response.data.paymentStatus,
+    winnerInfo: response.data.winnerInfo || null,
+    shippingInfo: response.data.shippingInfo || null,
+    bidHistory: response.data.bidHistory || [],
+  };
+};
