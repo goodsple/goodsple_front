@@ -5,6 +5,7 @@ const ALLOWED_PARAM_KEYS = new Set([
   "joinedFrom", "joinedTo",
   "roles", "statuses",
   "page", "size",
+  "status","productName","startDate","endDate" // 추가
 ]);
 
 const normalizeArrayParam = (v: any) => {

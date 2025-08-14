@@ -71,28 +71,20 @@ export interface AuctionCreateData {
  * @returns 업로드된 이미지의 URL
  */
 export const uploadImage = async (imageFile: File): Promise<string> => {
-  // TODO: 백엔드 S3 이미지 업로드 API가 구현되면 아래 주석을 해제하고 실제 로직을 연결해야 합니다.
-  /*
+  // 1. FormData 객체를 생성하여 이미지 파일을 담습니다.
   const formData = new FormData();
-  formData.append('image', imageFile);
+  formData.append('file', imageFile); // 백엔드 @RequestPart("file") 이름과 일치해야 합니다.
 
-  // 이미지 업로드 API 호출 (Content-Type을 multipart/form-data로 설정)
-  const response = await axiosInstance.post('/uploads/image', formData, {
+  // 2. 이미지 업로드 API 호출 (Content-Type을 multipart/form-data로 설정)
+  // 경매 이미지를 업로드하므로, URL의 {type} 부분에 'auction'을 사용합니다.
+  const response = await axiosInstance.post('/upload/auction', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
-  return response.data.imageUrl; // 백엔드가 { "imageUrl": "..." } 형태로 응답한다고 가정
-  */
-
-  // 임시 목업 로직: 1초 후, 임시 이미지 URL을 반환합니다.
-  console.log("임시 이미지 업로드 시뮬레이션:", imageFile.name);
-  return new Promise(resolve => {
-    setTimeout(() => {
-      // 실제와 비슷한 형태의 임시 URL을 반환합니다.
-      resolve(`https://placehold.co/600x400/EEE/31343C?text=Image-Preview`);
-    }, 1000);
-  });
+  
+  // 3. 백엔드가 { "url": "..." } 형태로 응답하므로, response.data.url을 반환합니다.
+  return response.data.url;
 };
 
 /**
@@ -158,4 +150,14 @@ export const getAdminAuctionResult = async (auctionId: number): Promise<AuctionA
     shippingInfo: response.data.shippingInfo || null,
     bidHistory: response.data.bidHistory || [],
   };
+};
+
+/**
+ * 관리자가 경매 상태를 변경하는 API 함수 (중지/재개 등)
+ * @param auctionId 상태를 변경할 경매 ID
+ * @param status 새로운 상태 값 ('cancelled', 'active' 등)
+ */
+export const updateAdminAuctionStatus = async (auctionId: number, status: string): Promise<void> => {
+  // 백엔드 DTO 형식에 맞춰 { "status": "..." } 형태로 전송합니다.
+  await axiosInstance.patch(`/admin/auctions/${auctionId}/status`, { status });
 };
