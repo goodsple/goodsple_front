@@ -1,4 +1,3 @@
-// src/api/axiosInstance.ts
 import axios from "axios";
 
 const ALLOWED_PARAM_KEYS = new Set([
@@ -28,7 +27,7 @@ const axiosInstance = axios.create({
       const usp = new URLSearchParams();
       const p = params ?? {};
       Object.entries(p).forEach(([k, v]) => {
-        // ✅ 허용 키만 전송
+        // 허용 키만 전송
         if (!ALLOWED_PARAM_KEYS.has(k)) return;
         if (v == null || v === "") return;
 
