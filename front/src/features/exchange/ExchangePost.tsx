@@ -1,49 +1,252 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as S from './ExchangePost.styles';
 import deleteButton from '../../assets/images/delete-button.png'; // 이미지 삭제 버튼 아이콘
+import axios from 'axios';
+
 
 const ExchangePost = () => {
+
+    const accessToken = localStorage.getItem('accessToken');
+    // 백엔드 DTO와 필드명이 동일하게 
+    interface Category {
+        firstCateId: number;
+        firstCateName: string;
+        secondCateId: number;
+        secondCateName: string;
+        thirdCateId: number;
+        thirdCateName: string;
+    }
+
+    // --- State 관리 ---
     const [deliveryMethods, setDeliveryMethods] = useState<string[]>([]);
     const [productName, setProductName] = useState('');
     const [productDescription, setProductDescription] = useState('');
     const [parcelOptions, setParcelOptions] = useState({
-        normal: false,
-        half: false,
         normalFee: '',
-        halfFee: '',
+        halfDetailPrice: '',
         halfOption: '불가능',
-        halfDetailOption: '둘다 가능', // 새로 추가
-        halfDetailPrice: 'GS25만 가능',
-        halfDetailPriceValue: 'CU만 가능',
+        halfDetailOption: '둘다 가능',
     });
+    const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
+    // 카테고리 선택을 위한 상태
+    const [firstCateId, setFirstCateId] = useState('');
+    const [secondCateId, setSecondCateId] = useState('');
+    const [thirdCateId, setThirdCateId] = useState('');
+
+    // 백엔드에서 받아온 전체 카테고리 목록
+    const [allCategories, setAllCategories] = useState<Category[]>([]);
+    // 필터링된 카테고리 목록
+    const [filteredSecondCategories, setFilteredSecondCategories] = useState<Category[]>([]);
+    const [filteredThirdCategories, setFilteredThirdCategories] = useState<Category[]>([]);
+
+
+    // 백엔드에서 받아온 카테고리 목록을 저장할 상태(3차는 잘 불러와짐)
+    // const [categories, setCategories] = useState<Category[]>([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                // 이 API 경로는 백엔드에서 카테고리 목록을 제공하는 엔드포인트로 변경해야 합니다.
+                // 예를 들어, GET /api/categories 또는 GET /api/categories/list
+                const response = await axios.get('http://localhost:8080/api/post-categories');
+                setAllCategories(response.data);
+            } catch (error) {
+                console.error('카테고리 불러오기 실패:', error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    // --- 핸들러 함수 ---
     const toggleDeliveryMethod = (method: string) => {
         setDeliveryMethods(prev =>
             prev.includes(method)
-                ? prev.filter(m => m !== method) // 선택 해제
-                : [...prev, method] // 선택 추가
+                ? prev.filter(m => m !== method)
+                : [...prev, method]
         );
     };
-
-    const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
         const totalSelected = selectedImages.length + files.length;
-
         if (totalSelected > 5) {
             alert('이미지는 최대 5개까지 등록할 수 있습니다.');
             return;
         }
-
+        // URL.createObjectURL로 이미지 URL 생성
         const newImageUrls = files.map(file => URL.createObjectURL(file));
         setSelectedImages(prev => [...prev, ...newImageUrls]);
     };
 
     const handleRemoveImage = (indexToRemove: number) => {
-        setSelectedImages(prev => prev.filter((_, index) => index !== indexToRemove));
+        setSelectedImages(prev => {
+            const urlToRemove = prev[indexToRemove];
+            URL.revokeObjectURL(urlToRemove); // 메모리 누수 방지
+            return prev.filter((_, index) => index !== indexToRemove);
+        });
     };
+
+
+    // ⭐️ 1차 카테고리 변경 핸들러
+    const handleFirstCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedId = e.target.value;
+        setFirstCateId(selectedId);
+        setSecondCateId(''); // 1차 변경 시 2, 3차 초기화
+        setThirdCateId('');
+
+        if (selectedId) {
+            // 선택된 1차 카테고리에 속하는 2차 카테고리 필터링
+            const secondCates = allCategories.filter(
+                (category, index, self) =>
+                    category.firstCateId === parseInt(selectedId) &&
+                    self.findIndex(c => c.secondCateId === category.secondCateId) === index
+            );
+            setFilteredSecondCategories(secondCates);
+            setFilteredThirdCategories([]);
+        } else {
+            setFilteredSecondCategories([]);
+            setFilteredThirdCategories([]);
+        }
+    };
+
+    // ⭐️ 2차 카테고리 변경 핸들러
+    const handleSecondCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedId = e.target.value;
+        setSecondCateId(selectedId);
+        setThirdCateId(''); // 2차 변경 시 3차 초기화
+
+        if (selectedId) {
+            // 선택된 2차 카테고리에 속하는 3차 카테고리 필터링
+            const thirdCates = allCategories.filter(
+                category => category.secondCateId === parseInt(selectedId)
+            );
+            setFilteredThirdCategories(thirdCates);
+        } else {
+            setFilteredThirdCategories([]);
+        }
+    };
+
+    // ⭐️ 3차 카테고리 변경 핸들러
+    const handleThirdCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setThirdCateId(e.target.value);
+    };
+
+
+    // 카테고리 변경 핸들러 (3차 정상적으로 불러옴)
+    // const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //     setThirdCateId(e.target.value);
+    // };
+
+
+    // --- 백엔드 통신 로직 ---
+    const getTradeType = () => {
+        if (deliveryMethods.includes('direct') && deliveryMethods.includes('parcel')) {
+            return 'BOTH';
+        } else if (deliveryMethods.includes('direct')) {
+            return 'DIRECT';
+        } else if (deliveryMethods.includes('parcel')) {
+            return 'DELIVERY';
+        } else {
+            return '';
+        }
+    };
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault(); // 폼 제출 시 페이지 리로드 방지
+
+        // 이미지 파일들을 서버에 먼저 업로드하고 URL을 받아오는 로직이 필요합니다.
+        // 현재는 `URL.createObjectURL`로 임시 URL을 사용하고 있으므로,
+        // 실제 운영 환경에서는 `FormData`를 이용해 파일을 업로드해야 합니다.
+        // 여기서는 예시를 위해 `selectedImages` 배열을 그대로 사용합니다.
+
+        // 3차 카테고리가 선택되지 않았으면 알림
+        if (!thirdCateId) {
+            alert('카테고리를 모두 선택해 주세요.');
+            return;
+        }
+
+        // 1. FormData 객체 생성
+        const formData = new FormData();
+
+        // 2. 이미지 파일들을 FormData에 추가
+        selectedImages.forEach((file) => {
+            formData.append('images', file);
+        });
+
+        let imageUrls = [];
+        try {
+            // 이미지 파일을 먼저 서버에 업로드하고 URL들을 받아옴
+            const imageResponse = await axios.post(
+                'http://localhost:8080/api/images', // 이미지 업로드 전용 API 엔드포인트
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
+            imageUrls = imageResponse.data.imageUrls; // 백엔드에서 이미지 URL 배열을 응답으로 보낸다고 가정
+        } catch (error) {
+            const axiosError = error as any; // 또는 `AxiosError`
+            console.error('이미지 업로드 실패:', axiosError.response.data);
+            alert(`이미지 업로드에 실패했습니다: ${axiosError.response.data.message || '알 수 없는 오류'}`);
+            return;
+        }
+
+        // --- 게시글 데이터 구성 (백엔드 DTO에 맞게 수정) ---
+        const tradeType = getTradeType();
+        const postData = {
+            thirdCateId: thirdCateId ? parseInt(thirdCateId, 10) : null,
+            exchangePostTitle: productName,
+            postDescription: productDescription,
+            // 이 부분은 사용자의 실제 위치 데이터로 대체해야 합니다.
+            postLocationCode: '01',
+            postLocationName: '서울특별시',
+            postHopeRegion: '서울 강남구', // 직거래 시 사용자가 입력한 값
+            postTradeType: tradeType,
+            deliveryPriceNormal: parcelOptions.normalFee ? parseInt(parcelOptions.normalFee, 10) : null,
+
+            // 반값 택배를 선택했을 때만 금액과 옵션 정보를 전송
+            deliveryPriceHalf: (tradeType === 'DELIVERY' || tradeType === 'BOTH') && parcelOptions.halfOption === '가능'
+                ? parseInt(parcelOptions.halfDetailPrice, 10) : null,
+            halfDeliveryType: (tradeType === 'DELIVERY' || tradeType === 'BOTH') && parcelOptions.halfOption === '가능'
+                ? parcelOptions.halfDetailOption : null,
+
+            imageUrls: imageUrls, // 업로드된 이미지 URL 배열 사용
+        };
+
+
+        try {
+            const response = await axios.post(
+                'http://localhost:8080/api/exchange-posts',
+                postData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`, // 사용자 인증 토큰을 여기에 넣으세요.
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            alert('게시글 등록이 완료되었습니다.');
+            console.log('등록 성공:', response.data);
+            // 성공 시, 페이지 이동 또는 폼 초기화
+            // 예: window.location.href = `/posts/${response.data.postId}`;
+        } catch (error) {
+            const axiosError = error as any;
+            console.error('등록 실패:', axiosError.response.data);
+            alert(`게시글 등록에 실패했습니다: ${axiosError.response.data.message || '알 수 없는 오류'}`);
+        }
+    };
+
+    // 1차 카테고리 목록을 중복 없이 추출
+    const firstCategories = allCategories.filter(
+        (category, index, self) =>
+            self.findIndex(c => c.firstCateId === category.firstCateId) === index
+    );
 
     return (
         <S.Container>
@@ -53,10 +256,52 @@ const ExchangePost = () => {
             <S.SectionRow>
                 <S.Label>카테고리 등록</S.Label>
                 <S.CategoryGrid>
-                    <S.Select />
-                    <S.Select />
-                    <S.Select />
-                    <S.Select />
+                    {/* 3차 카테고리 선택을 위한 셀렉트 박스*/}
+                    {/* {categories.length > 0 && (
+                        <S.Select onChange={handleFirstCategoryChange} value={thirdCateId}>
+                            <option value="">카테고리 선택</option>
+                            {categories.map(category => (
+                                <option key={category.thirdCateId} value={category.thirdCateId}>
+                                    {category.thirdCateName}
+                                </option>
+                            ))}
+                        </S.Select>
+                    )} */}
+
+                    {/* ⭐️ 1차 카테고리 드롭다운 */}
+                    <S.Select onChange={handleFirstCategoryChange} value={firstCateId}>
+                        <option value="">1차 카테고리 선택</option>
+                        {firstCategories.map(category => (
+                            <option key={category.firstCateId} value={category.firstCateId}>
+                                {category.firstCateName}
+                            </option>
+                        ))}
+                    </S.Select>
+
+                    {/* ⭐️ 2차 카테고리 드롭다운 (1차 선택 시 활성화) */}
+
+                    <S.Select onChange={handleSecondCategoryChange} value={secondCateId}>
+                        <option value="">{firstCateId ? '2차 카테고리 선택' : '1차 카테고리 선택하세요.'}</option>
+                        {filteredSecondCategories.map(category => (
+                            <option key={category.secondCateId} value={category.secondCateId}>
+                                {category.secondCateName}
+                            </option>
+                        ))}
+                    </S.Select>
+
+
+                    {/* ⭐️ 3차 카테고리 드롭다운 (2차 선택 시 활성화) */}
+
+                    <S.Select onChange={handleThirdCategoryChange} value={thirdCateId}>
+                        <option value="">{secondCateId ? '3차 카테고리 선택' : '2차 카테고리 선택하세요.'}</option>
+                        {filteredThirdCategories.map(category => (
+                            <option key={category.thirdCateId} value={category.thirdCateId}>
+                                {category.thirdCateName}
+                            </option>
+                        ))}
+                    </S.Select>
+
+
                 </S.CategoryGrid>
             </S.SectionRow>
 
@@ -92,9 +337,9 @@ const ExchangePost = () => {
             <S.SectionRow>
                 <S.Label>이미지 등록 (필수)</S.Label>
                 <S.ImagePreviewWrapper>
-                    {selectedImages.map((img, index) => (
+                    {selectedImages.map((imageUrl, index) => (
                         <S.ImageBox key={index}>
-                            <img src={img} alt={`preview-${index}`} />
+                            <img src={imageUrl} alt={`preview-${index}`} />
                             <S.DeleteButton
                                 type="button"
                                 onClick={() => handleRemoveImage(index)}>
@@ -227,6 +472,8 @@ const ExchangePost = () => {
                     </S.SectionRow>
                 </S.ParcelTradeWrapper>
             )}
+
+            <button onClick={handleSubmit}>등록하기</button>
         </S.Container>
     );
 };
