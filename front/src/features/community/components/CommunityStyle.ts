@@ -91,6 +91,11 @@ export const EmptyMessageArea = styled.div`
         justify-content: center;
 `;
 
+export const RoomHeader = styled.div`
+        font-size: 14px;
+        color: #444;
+`;
+
 export const ChatMessageBubble = styled.div<{ isMine: boolean }>`
         max-width: 60%;
         background-color: ${({ isMine }) => (isMine ? '#D7C4F5' : '#e0e0e0')};
