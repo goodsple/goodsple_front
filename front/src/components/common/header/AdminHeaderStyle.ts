@@ -4,7 +4,6 @@ export const HeaderContainer = styled.header`
   width: 100%;
   background-color: #444444; 
   padding: 12px 24px;
-  
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -18,17 +17,18 @@ export const LogoImage = styled.img`
   cursor: pointer;
 `;
 
-export const LogoutButton = styled.button`
-  background-color: #F8FFC7; 
-  color: #444444; 
+export const ButtonGroup = styled.div`
+  display: flex;
+  gap: 8px;
+`;
 
-  font-size: 14px; 
-  font-weight: bold; 
-  
-  padding: 8px 16px;
+export const NavButton = styled.button`
+  background: #eee;
+  color: #444;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 14px;
   border: none;
-  border-radius: 5px; 
-  
   cursor: pointer;
   transition: opacity 0.2s ease-in-out;
 
@@ -37,16 +37,23 @@ export const LogoutButton = styled.button`
   }
 `;
 
-// export const MainContent = styled.main`
-//   padding-top: 100px; 
-//   width: 100%;
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-// `;
+export const LogoutButton = styled.button`
+  background-color: #997BEB; 
+  color: #fff; 
+
+  font-size: 14px; 
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px; 
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
 
 export const MainContent = styled.main`
-  // padding-top: 100px; 
   padding-left: 40px;
   padding-right: 40px;
   background-color: #FFFDFA;

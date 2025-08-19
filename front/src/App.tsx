@@ -61,9 +61,9 @@ import AdminNoticeList from './features/admin/notice/AdminNoticeList.tsx';
 import AdminProhibitedWordsPage from './features/admin/prohibitedWords/pages/AdminProhibitedWordsPage.tsx';
 import AdminReportPage from './features/admin/report/page/AdminReportPage.tsx';
 import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
+import AdminCategoryPage from './features/category/pages/AdminCategoryPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import ReportWrapper from './features/report/ReportWrapper.tsx';
-// import AdminCategoryPage from './features/category/pages/AdminCategoryPage.tsx';
 
 
 function App() {
@@ -117,7 +117,7 @@ function App() {
             <Route path="/admin/auctions" element={<AdminAuctionPage />} />
             <Route path="/admin/auctions/create" element={<AdminAuctionCreatePage />} />
             <Route path="/admin/auctions/edit/:auctionId" element={<AdminAuctionEditPage />} />
-            <Route path="/admin/auctions/result/:auctionId" element={<AdminAuctionResultPage />} />
+            <Route path="/admin/auctions/:auctionId/result" element={<AdminAuctionResultPage />} />
 
             <Route path="/admin/chatbot/logs" element={<AdminChatLogPage />} />
             <Route path="/admin/chatbot/logs/:logId" element={<AdminChatLogDetailPage />} />
@@ -133,7 +133,7 @@ function App() {
 
             <Route path="/admin/keyword" element={<AdminKeywordMonitoring />} />
 
-            {/* <Route path="/admin/category" element={<AdminCategoryPage />} /> */}
+             <Route path="/admin/category" element={<AdminCategoryPage />} />
           </Route>
 
           {/* Layout 없이 단독 페이지 */}

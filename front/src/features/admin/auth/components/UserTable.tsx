@@ -1,32 +1,52 @@
-// src/features/admin/users/components/UserTable.tsx
 import React from 'react';
 import * as S from './UserTableStyle';
-import type { AdminUser } from '../types/searchUser';
+import type { AdminUserSummary } from '../types/searchUser';
+import { formatJoinDateKo, formatLevelDisplay } from '../lib/adapters';
 
 interface Props {
-  users: AdminUser[];
+  users: AdminUserSummary[];
   loading: boolean;
   onDelete:  (userId: string) => void;
-  onRowClick?: (user: AdminUser) => void; 
+  onRowClick?: (user: AdminUserSummary) => void; 
+  sortKey?: 'levelScore' | 'joinDate' | null;
+  sortOrder?: 'asc' | 'desc';
+  onSort?: (key: 'levelScore' | 'joinDate') => void;
 }
 
-const UserTable: React.FC<Props> = ({ users, loading, onDelete, onRowClick }) => {
+const UserTable: React.FC<Props> = ({ users, loading, onDelete, onRowClick, sortKey, sortOrder, onSort }) => {
   if (loading) return <div>로딩 중...</div>;
   if (users.length === 0) return <div>조회된 회원이 없습니다.</div>;
+
+  // 화살표 텍스트
+  const arrow = (key: 'levelScore' | 'joinDate') =>
+  sortKey === key ? (sortOrder === 'asc' ? '▲' : '▼') : '';
 
   return (
     <S.Table>
       <thead>
         <tr>
-          <th>회원ID</th>
+          <th>회원번호</th>
           <th>닉네임</th>
           <th>작성 후기 수</th>
           <th>거래 횟수</th>
           <th>신고 건수</th>
-          <th>등급(점수)</th>
+          {/* 등급(점수) 정렬 가능 */}
+          <S.SortableTh
+            onClick={(e) => { e.stopPropagation(); onSort?.('levelScore'); }}
+            title="등급 점수 정렬"
+          >
+            등급(점수) {arrow('levelScore')}
+          </S.SortableTh>
           <th>회원 구분</th>
           <th>활동 상태</th>
-          <th>가입일</th>
+          {/* 가입일 정렬 가능 */}
+          <S.SortableTh
+            onClick={(e) => { e.stopPropagation(); onSort?.('joinDate'); }}
+            title="가입일 정렬"
+          >
+            가입일 {arrow('joinDate')}
+          </S.SortableTh>
+
           <th>관리</th>
         </tr>
       </thead>
@@ -38,16 +58,18 @@ const UserTable: React.FC<Props> = ({ users, loading, onDelete, onRowClick }) =>
             <td>{u.reviewCount}</td>
             <td>{u.transactionCount}</td>
             <td>{u.reportCount}</td>
-            <td>{u.level.label} ({u.level.score})</td>
+            <td>{formatLevelDisplay(u.level)}</td>
             <td>{u.role === 'ADMIN' ? '관리자' : '회원'}</td>
             <td>
               {u.status === 'ACTIVE' && '활동 중'}
               {u.status === 'SUSPENDED' && '정지'}
               {u.status === 'WITHDRAWN' && '탈퇴'}
             </td>
-            <td>{u.joinDate}</td>
+            <td>{formatJoinDateKo(u.joinDate)}</td>
             <td>
               <S.Button 
+                disabled={u.status !== 'WITHDRAWN'}
+                title={u.status !== 'WITHDRAWN' ? '탈퇴 상태에서만 삭제 가능' : ''}
                 onClick={e => {  e.stopPropagation();  onDelete(u.userId);}}>
                 삭제
               </S.Button>

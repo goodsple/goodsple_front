@@ -96,7 +96,7 @@ export const SignupButton = styled.button`
   border: none;
   border-radius: 5px;
   color : #fff;
-  width: 120px;
+  width: 100px;
   height: 42px;
   cursor: pointer;
 `;
@@ -109,6 +109,17 @@ export const LoginButton = styled.button`
   width:92px;
   height: 42px;
   cursor: pointer;
+`;
+
+export const LogoutButton = styled.button`
+    background: #997BEB;
+    border: none;
+    border-radius: 5px;
+    color : #fff;
+    width: 100px;
+    height: 42px;
+    margin-left: 10px;
+    cursor: pointer;
 `;
 
 export const IconBox = styled.div<IconBoxProps>`
@@ -155,22 +166,11 @@ export const ProfileIcon = styled.img<{ $isDefault?: boolean }>`
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    object-fit: contain;
+    object-fit: cover;
     ${({ $isDefault }) => $isDefault && `
     transform: translateY(16%);
     opacity: 0.8;
   `}
-`;
-
-export const LogoutButton = styled.button`
-    background: #997BEB;
-    border: none;
-    border-radius: 5px;
-    color : #fff;
-    width: 120px;
-    height: 42px;
-    margin-left: 10px;
-    cursor: pointer;
 `;
 
 export const Overlay = styled.div<{ $open: boolean }>`
