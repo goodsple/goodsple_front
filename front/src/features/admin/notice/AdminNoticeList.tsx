@@ -12,10 +12,6 @@ interface Notice {
     attachments?: number;
     author?: string;
     isPopup: boolean;
-    popupInfo?: {
-        popupStart: string;
-        popupEnd: string;
-    };
 }
 
 
@@ -60,7 +56,7 @@ const AdminNoticeList = () => {
     };
 
     // 공지사항 수정
-        const handleEdit = (noticeId: number) => {
+    const handleEdit = (noticeId: number) => {
         navigate(`/admin/notice/${noticeId}/edit`);
     };
 
@@ -126,7 +122,9 @@ const AdminNoticeList = () => {
                             <td>{item.author ?? '관리자'}</td>
                             <td>{item.isPopup ? 'Y' : 'N'}</td>
                             <td>
-                                {item.popupInfo ? `${item.popupInfo.popupStart} ~ ${item.popupInfo.popupEnd}` : '-'}
+                                {item.popupStart && item.popupEnd
+                                    ? `${item.popupStart} ~ ${item.popupEnd}`
+                                    : '-'}
                             </td>
                             <td>
                                 <S.ActionButton onClick={() => handleEdit(item.noticeId)}>수정</S.ActionButton>

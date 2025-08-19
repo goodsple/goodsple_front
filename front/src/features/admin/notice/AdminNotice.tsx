@@ -57,7 +57,7 @@ const AdminNotice = () => {
             // }
 
             // 3. POST 요청
-            await axios.post('/api/notices', noticeData, {
+            await axios.post('/api/admin/notices', noticeData, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
