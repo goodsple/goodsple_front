@@ -12,6 +12,8 @@ interface Notice {
     attachments?: number;
     author?: string;
     isPopup: boolean;
+    popupStart?: string;
+    popupEnd?: string;
 }
 
 
@@ -22,6 +24,23 @@ const AdminNoticeList = () => {
 
     const accessToken = localStorage.getItem('accessToken');
 
+    // 날짜를 YYYY-MM-DD 형식으로 포맷하는 헬퍼 함수
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    // 날짜를 (MM.DD) 형식으로 포맷하는 헬퍼 함수
+    const formatMonthDay = (dateString: string) => {
+        const date = new Date(dateString);
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `(${month}.${day})`;
+    };
+
     const fetchNotices = async (keyword: string = '') => {
         try {
             const response = await axios.get('/api/admin/notices', {
@@ -29,12 +48,15 @@ const AdminNoticeList = () => {
                     Authorization: `Bearer ${accessToken}`,
                 },
                 params: {
-                    keyword,    // 백엔드 NoticeListFilterDto의 keyword
-                    page: 0,
+                    title: keyword,    // 백엔드 NoticeListFilterDto의 keyword
+                    page: 1,
                     size: 20,
                 },
             });
-            setNotices(response.data);
+
+            setNotices(response.data.data); // 데이터 구조에 맞게 수정
+            console.log('공지사항 목록:', response.data.data);
+
         } catch (error) {
             console.error('공지사항 목록 불러오기 실패:', error);
         }
@@ -111,20 +133,21 @@ const AdminNoticeList = () => {
                             <td>{idx + 1}</td>
                             <td>{item.noticeTitle}</td>
                             <td>
-                                {new Date(item.noticeCreatedAt).toLocaleDateString(undefined, {
-                                    year: 'numeric',
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                })}
-                                {item.noticeUpdatedAt ? ` (${new Date(item.noticeUpdatedAt).getMonth() + 1}.${String(new Date(item.noticeUpdatedAt).getDate()).padStart(2, '0')})` : ''}
+                                {formatDate(item.noticeCreatedAt)}
+                                {item.noticeUpdatedAt ? ` ${formatMonthDay(item.noticeUpdatedAt)}` : ''}
                             </td>
                             <td>{item.attachments ?? 0}</td>
                             <td>{item.author ?? '관리자'}</td>
                             <td>{item.isPopup ? 'Y' : 'N'}</td>
                             <td>
-                                {item.popupStart && item.popupEnd
+                                {item.isPopup && item.popupStart && item.popupEnd ? (
+                                    `${formatDate(item.popupStart)} ~ ${formatDate(item.popupEnd)}`
+                                ) : (
+                                    '-'
+                                )}
+                                {/* {item.popupStart && item.popupEnd
                                     ? `${item.popupStart} ~ ${item.popupEnd}`
-                                    : '-'}
+                                    : '-'} */}
                             </td>
                             <td>
                                 <S.ActionButton onClick={() => handleEdit(item.noticeId)}>수정</S.ActionButton>
