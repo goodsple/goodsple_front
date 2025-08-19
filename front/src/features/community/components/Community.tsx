@@ -64,7 +64,10 @@ const Community: React.FC = () => {
     }
 
     try {
-      const res = await axiosInstance.get<ChatMessage[]>(`/chat/history/${roomId}`);
+      const res = await axiosInstance.get<ChatMessage[]>(
+        `/chat/history/${roomId}`,
+        { headers: { Authorization: `Bearer ${token}` } } // 🔑 토큰 헤더 직접 삽입
+      );
       setRoomMessages((prev) => ({ ...prev, [roomId]: res.data }));
     } catch (err: any) {
       if (err.response?.status === 401) {
@@ -88,11 +91,11 @@ const Community: React.FC = () => {
       stompClientRef.current.deactivate();
     }
 
-    const socket = new SockJS('/ws'); // 서버 주소는 프록시나 baseURL에 맞춰 상대경로 사용 가능
+    const socket = new SockJS('/ws'); // 프록시를 통해 Spring Boot 연결
     const stompClient = new Client({
       webSocketFactory: () => socket as any,
       reconnectDelay: 5000,
-      connectHeaders: { Authorization: `Bearer ${token}` },
+      connectHeaders: { Authorization: `Bearer ${token}` }, // 🔑 토큰 헤더
       onConnect: () => {
         stompClientRef.current = stompClient;
         setIsConnected(true);
@@ -105,9 +108,10 @@ const Community: React.FC = () => {
           }));
         });
 
-        onlineSubscriptionRef.current = stompClient.subscribe(`/topic/roomUsers/${roomId}`, (message: IMessage) => {
-          setOnlineCount(Number(message.body));
-        });
+        onlineSubscriptionRef.current = stompClient.subscribe(
+          `/topic/roomUsers/${roomId}`,
+          (message: IMessage) => setOnlineCount(Number(message.body))
+        );
 
         stompClient.publish({
           destination: `/app/join/${roomId}`,
@@ -223,8 +227,13 @@ const Community: React.FC = () => {
                       <s.TypeButton selected={messageType === 'announcement'} onClick={() => setMessageType('announcement')}>확성기</s.TypeButton>
                     </s.MessageTypeToggle>
 
-                    <s.ChatTextarea placeholder="메시지를 입력해주세요. (Shift + Enter 로 줄바꿈)"
-                                    value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} maxLength={200} />
+                    <s.ChatTextarea
+                      placeholder="메시지를 입력해주세요. (Shift + Enter 로 줄바꿈)"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      maxLength={200}
+                    />
 
                     <s.SendButton onClick={handleSend} disabled={!isConnected}>
                       <img src={sendIcon} alt="채팅 전송 버튼" />
