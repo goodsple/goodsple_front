@@ -28,7 +28,11 @@ const ExchangePost = () => {
         halfOption: '불가능',
         halfDetailOption: '둘다 가능',
     });
-    const [selectedImages, setSelectedImages] = useState<string[]>([]);
+
+    // 이미지 파일을 선택할 때 사용할 상태
+    const [selectedImages, setSelectedImages] = useState<File[]>([]);
+    // 이미지 미리보기를 위한 URL 상태 추가
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
     // 카테고리 선택을 위한 상태
     const [firstCateId, setFirstCateId] = useState('');
@@ -70,22 +74,28 @@ const ExchangePost = () => {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
+
         const totalSelected = selectedImages.length + files.length;
         if (totalSelected > 5) {
             alert('이미지는 최대 5개까지 등록할 수 있습니다.');
             return;
         }
-        // URL.createObjectURL로 이미지 URL 생성
+
+        // 실제 파일 객체들을 상태에 추가
+        setSelectedImages(prev => [...prev, ...files]);
+
+        //  // 미리보기를 위한 URL 생성
         const newImageUrls = files.map(file => URL.createObjectURL(file));
-        setSelectedImages(prev => [...prev, ...newImageUrls]);
+        setImagePreviews(prev => [...prev, ...newImageUrls]);
     };
 
     const handleRemoveImage = (indexToRemove: number) => {
-        setSelectedImages(prev => {
-            const urlToRemove = prev[indexToRemove];
-            URL.revokeObjectURL(urlToRemove); // 메모리 누수 방지
-            return prev.filter((_, index) => index !== indexToRemove);
-        });
+        // 미리보기 URL 상태에서만 제거하고 메모리 누수 방지
+        URL.revokeObjectURL(imagePreviews[indexToRemove]);
+        setImagePreviews(prev => prev.filter((_, index) => index !== indexToRemove));
+
+        // 실제 파일 객체 상태에서도 제거
+        setSelectedImages(prev => prev.filter((_, index) => index !== indexToRemove));
     };
 
 
@@ -172,14 +182,14 @@ const ExchangePost = () => {
 
         // 2. 이미지 파일들을 FormData에 추가
         selectedImages.forEach((file) => {
-            formData.append('images', file);
+            formData.append('file', file);
         });
 
         let imageUrls = [];
         try {
             // 이미지 파일을 먼저 서버에 업로드하고 URL들을 받아옴
             const imageResponse = await axios.post(
-                'http://localhost:8080/api/images', // 이미지 업로드 전용 API 엔드포인트
+                'http://localhost:8080/api/images/upload', // 이미지 업로드 전용 API 엔드포인트
                 formData,
                 {
                     headers: {
@@ -337,7 +347,7 @@ const ExchangePost = () => {
             <S.SectionRow>
                 <S.Label>이미지 등록 (필수)</S.Label>
                 <S.ImagePreviewWrapper>
-                    {selectedImages.map((imageUrl, index) => (
+                    {imagePreviews.map((imageUrl, index) => (
                         <S.ImageBox key={index}>
                             <img src={imageUrl} alt={`preview-${index}`} />
                             <S.DeleteButton
@@ -473,7 +483,7 @@ const ExchangePost = () => {
                 </S.ParcelTradeWrapper>
             )}
 
-            <button onClick={handleSubmit}>등록하기</button>
+            <button type="submit" onClick={handleSubmit} >등록하기</button>
         </S.Container>
     );
 };

@@ -23,12 +23,12 @@ export const Divider = styled.hr`
   margin: 16px 0;
 `;
 
-export const Section = styled.div`
-  margin-bottom: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
+// export const Section = styled.div`
+//   margin-bottom: 30px;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 12px;
+// `;
 
 export const SectionRow = styled.div`
   display: flex;
