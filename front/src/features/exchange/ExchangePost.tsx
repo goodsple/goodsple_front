@@ -45,6 +45,60 @@ const ExchangePost = () => {
     const [filteredSecondCategories, setFilteredSecondCategories] = useState<Category[]>([]);
     const [filteredThirdCategories, setFilteredThirdCategories] = useState<Category[]>([]);
 
+    const [location, setLocation] = useState('');
+
+    // --- 내 위치 버튼 핸들러 ---
+    const handleGetMyLocation = () => {
+        if (!navigator.geolocation) {
+            alert('브라우저가 위치 정보를 지원하지 않습니다.');
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                const { latitude, longitude } = pos.coords;
+
+                try {
+                    // 카카오 좌표→행정동 변환 API 호출
+                    const res = await axios.get(
+                        `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${longitude}&y=${latitude}`,
+                        {
+                            headers: {
+                                Authorization: `KakaoAK ${process.env.REACT_APP_KAKAO_REST_KEY}`,
+                            },
+                        }
+                    );
+
+                    if (res.data.documents && res.data.documents.length > 0) {
+                        const region = res.data.documents[0];
+                        // ex) 서울특별시 강남구 역삼동
+                        const fullAddress = `${region.region_2depth_name} ${region.region_3depth_name}`;
+                        setLocation(fullAddress);
+                    }
+                } catch (err) {
+                    console.error('위치 변환 실패:', err);
+                    alert('내 위치를 불러오는데 실패했습니다.');
+                }
+            },
+            (err) => {
+                console.error(err);
+                alert('위치 권한을 허용해야 내 위치를 사용할 수 있습니다.');
+            }
+        );
+    };
+
+    // --- 주소 검색 버튼 핸들러 ---
+    const handleSearchAddress = () => {
+        new (window as any).daum.Postcode({
+            oncomplete: function (data: any) {
+                // 전체 주소에서 시/구/동 추출
+                // (예: "서울특별시 강남구 역삼동 123-45" → "서울특별시 강남구 역삼동")
+                const match = data.address.match(/^[^ ]+시 [^ ]+구 [^ ]+동/);
+                const result = match ? match[0] : data.address;
+                setLocation(result);
+            },
+        }).open();
+    };
+
 
     // 백엔드에서 받아온 카테고리 목록을 저장할 상태(3차는 잘 불러와짐)
     // const [categories, setCategories] = useState<Category[]>([]);
@@ -363,12 +417,19 @@ const ExchangePost = () => {
             <S.LocationSectionRow>
                 <S.Label>내 위치</S.Label>
                 <S.ButtonRow>
-                    <S.Button>내 위치</S.Button>
-                    <S.Button>주소 검색</S.Button>
+                    <S.Button type='button' onClick={handleGetMyLocation}>
+                        내 위치
+                    </S.Button>
+                    <S.Button type="button" onClick={handleSearchAddress}>
+                        주소 검색
+                    </S.Button>
                 </S.ButtonRow>
             </S.LocationSectionRow>
             <S.LocationInputWrapper>
-                <S.AutoFilledInput placeholder="지역을 설정해 주세요." readOnly />
+                <S.AutoFilledInput
+                    placeholder="지역을 설정해 주세요."
+                    value={location}
+                    readOnly />
             </S.LocationInputWrapper>
 
             <S.SectionRow>
