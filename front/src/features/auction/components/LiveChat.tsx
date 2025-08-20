@@ -1,6 +1,7 @@
-// features/auction/components/LiveChat.tsx (수정본)
-
-import { useEffect, useRef, useState } from 'react';
+/**
+ * 파일 경로: src/features/auction/components/LiveChat.tsx
+ */
+import React, { useEffect, useRef, useState } from 'react'; // 1. React를 import 합니다.
 import type { ChatMessage } from '../types/auction';
 import * as S from './LiveChatStyle';
 
@@ -10,32 +11,29 @@ interface Props {
   onReport: (user: string) => void;
 }
 
-const LiveChat: React.FC<Props> = ({ chatHistory, onSendChat, onReport }) => {
+// 2. 기존 컴포넌트 로직을 별도의 상수로 분리합니다.
+const LiveChatComponent: React.FC<Props> = ({ chatHistory, onSendChat, onReport }) => {
   const [newMessage, setNewMessage] = useState('');
   const messageListRef = useRef<HTMLUListElement>(null);
   
-  // 기존에 잘 구현되어 있던 스크롤 로직입니다.
   useEffect(() => {
     const messageList = messageListRef.current;
     if (!messageList) return;
 
-    // 사용자가 직접 위로 스크롤해서 이전 내용을 보고 있을 때는 자동으로 내리지 않도록 처리
     const scrollBottom = messageList.scrollHeight - messageList.scrollTop;
-    const shouldScroll = scrollBottom <= messageList.clientHeight + 50; // 50px 정도 여유
+    const shouldScroll = scrollBottom <= messageList.clientHeight + 50;
 
     if (shouldScroll) {
-      // 새 메시지가 추가된 후, DOM이 업데이트될 시간을 주기 위해 setTimeout 사용
       setTimeout(() => {
         messageList.scrollTop = messageList.scrollHeight;
       }, 0);
     }
-  }, [chatHistory]); // chatHistory가 변경될 때마다 이 로직이 실행됩니다.
+  }, [chatHistory]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
     
-    // 부모 컴포넌트(LiveAuctionPage)로부터 받은 onSendChat 함수를 호출합니다.
     onSendChat(newMessage);
     setNewMessage('');
   };
@@ -67,4 +65,6 @@ const LiveChat: React.FC<Props> = ({ chatHistory, onSendChat, onReport }) => {
   );
 };
 
-export default LiveChat;
+// 3. React.memo로 컴포넌트를 감싸서 export 합니다.
+// 이렇게 하면 props가 변경되지 않는 한, 부모 컴포넌트가 리렌더링되어도 LiveChat은 리렌더링되지 않습니다.
+export default React.memo(LiveChatComponent);
