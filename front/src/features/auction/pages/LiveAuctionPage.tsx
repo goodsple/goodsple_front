@@ -56,7 +56,6 @@ const LiveAuctionPage = () => {
   // WebSocket으로 '경매 상태 업데이트' 메시지 수신 시 처리
   useEffect(() => {
     if (!auctionUpdate || !auctionData) return;
-
     setAuctionData(prev => {
       if (!prev) return null;
       return {
@@ -65,7 +64,7 @@ const LiveAuctionPage = () => {
           ...prev.status,
           currentPrice: auctionUpdate.currentPrice,
           highestBidderNickname: auctionUpdate.topBidderNickname,
-          endTime: auctionUpdate.extendedEndTime, // 여기서 endTime을 업데이트합니다.
+          endTime: auctionUpdate.extendedEndTime,
         },
         bidHistory: [auctionUpdate.newBid, ...prev.bidHistory],
       };
@@ -131,7 +130,6 @@ const LiveAuctionPage = () => {
         </S.LeftColumn>
         
         <S.CenterColumn>
-          {/* AuctionStatus는 이제 timeLeft prop이 필요 없습니다. */}
           <AuctionStatus status={auctionData.status} />
           <BidPanel
             status={auctionData.status}
