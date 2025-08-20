@@ -1,25 +1,12 @@
-import type { IMessage, StompSubscription } from '@stomp/stompjs';
-import { Client } from '@stomp/stompjs';
-import type React from 'react';
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
-import SockJS from 'sockjs-client';
-import axiosInstance from '../../../api/axiosInstance';
+// src/components/community/Community.tsx
+import { useState, type KeyboardEvent } from 'react';
 import Logo from '../../../assets/images/logo.png';
 import sendIcon from '../../../assets/images/send_purple.png';
 import SearchBox from '../../usermain/components/SearchBox';
+import type { ChatMessage, MessageType } from '../hooks/useWebSocket';
+import { useWebSocket } from '../hooks/useWebSocket';
 import * as s from './CommunityStyle';
 import CommUserInfoModal from './CommUserInfoModal';
-
-type MessageType = 'normal' | 'announcement';
-
-export interface ChatMessage {
-  userId: number;
-  roomId: string;
-  text: string;
-  type: MessageType;
-  userName: string;
-  userProfile: string;
-}
 
 export interface ChatRoom {
   id: string;
@@ -34,119 +21,18 @@ const Community: React.FC = () => {
     { id: 'ANIMATION', name: '애니메이션 채팅방' },
   ];
 
+  const myUserId = Number(localStorage.getItem('userId'));
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
-  const [roomMessages, setRoomMessages] = useState<{ [room: string]: ChatMessage[] }>({});
-  const [onlineCount, setOnlineCount] = useState<number>(0);
   const [input, setInput] = useState<string>('');
   const [messageType, setMessageType] = useState<MessageType>('normal');
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [selectedUserInfo, setSelectedUserInfo] = useState<{
-    userName: string;
-    userProfile: string;
-    badgeName: string;
-    badgeImage: string;
-  } | null>(null);
+  const [selectedUserInfo, setSelectedUserInfo] = useState<any>(null);
 
-  const myUserId = Number(localStorage.getItem('userId'));
-  const [isConnected, setIsConnected] = useState(false);
-  const stompClientRef = useRef<Client | null>(null);
-  const subscriptionRef = useRef<StompSubscription | null>(null);
-  const onlineSubscriptionRef = useRef<StompSubscription | null>(null);
+  const { roomMessages, onlineCount, isConnected, sendMessage } = useWebSocket(selectedRoom, myUserId);
 
-  // --- 채팅 기록 불러오기 ---
-  const fetchChatHistory = async (roomId: string) => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      alert('로그인이 필요합니다.');
-      localStorage.clear();
-      window.location.href = '/login';
-      return;
-    }
-
-    try {
-      const res = await axiosInstance.get<ChatMessage[]>(
-        `/chat/history/${roomId}`,
-        { headers: { Authorization: `Bearer ${token}` } } // 🔑 토큰 헤더 직접 삽입
-      );
-      setRoomMessages((prev) => ({ ...prev, [roomId]: res.data }));
-    } catch (err: any) {
-      if (err.response?.status === 401) {
-        alert('세션이 만료되었거나 로그인이 필요합니다.');
-        localStorage.clear();
-        window.location.href = '/login';
-      } else {
-        console.error('채팅 기록 불러오기 실패:', err);
-      }
-    }
-  };
-
-  // --- WebSocket 연결 ---
-  const connectWebSocket = (roomId: string) => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) return;
-
-    if (stompClientRef.current) {
-      subscriptionRef.current?.unsubscribe();
-      onlineSubscriptionRef.current?.unsubscribe();
-      stompClientRef.current.deactivate();
-    }
-
-    const socket = new SockJS('/ws'); // 프록시를 통해 Spring Boot 연결
-    const stompClient = new Client({
-      webSocketFactory: () => socket as any,
-      reconnectDelay: 5000,
-      connectHeaders: { Authorization: `Bearer ${token}` }, // 🔑 토큰 헤더
-      onConnect: () => {
-        stompClientRef.current = stompClient;
-        setIsConnected(true);
-
-        subscriptionRef.current = stompClient.subscribe(`/topic/${roomId}`, (message: IMessage) => {
-          const body = JSON.parse(message.body) as ChatMessage;
-          setRoomMessages((prev) => ({
-            ...prev,
-            [roomId]: [...(prev[roomId] || []), body],
-          }));
-        });
-
-        onlineSubscriptionRef.current = stompClient.subscribe(
-          `/topic/roomUsers/${roomId}`,
-          (message: IMessage) => setOnlineCount(Number(message.body))
-        );
-
-        stompClient.publish({
-          destination: `/app/join/${roomId}`,
-          body: JSON.stringify({ userName: localStorage.getItem('userName') || '익명' }),
-        });
-      },
-      onStompError: (frame) => console.error('STOMP Error:', frame.body),
-      onDisconnect: () => setIsConnected(false),
-    });
-
-    stompClient.activate();
-  };
-
-  // --- 방 변경 시 처리 ---
-  useEffect(() => {
-    if (selectedRoom) {
-      setIsConnected(false);
-      fetchChatHistory(selectedRoom);
-      connectWebSocket(selectedRoom);
-    }
-
-    return () => {
-      subscriptionRef.current?.unsubscribe();
-      onlineSubscriptionRef.current?.unsubscribe();
-      stompClientRef.current?.deactivate();
-    };
-  }, [selectedRoom]);
-
-  // --- 메시지 전송 ---
   const handleSend = () => {
-    const stompClient = stompClientRef.current;
-    if (!stompClient || !stompClient.connected || !selectedRoom) return;
-
-    const msg = { roomId: selectedRoom, text: input, type: messageType };
-    stompClient.publish({ destination: `/app/sendMessage/${selectedRoom}`, body: JSON.stringify(msg) });
+    if (!selectedRoom) return;
+    sendMessage(selectedRoom, { roomId: selectedRoom, text: input, type: messageType });
     setInput('');
   };
 
@@ -172,6 +58,7 @@ const Community: React.FC = () => {
       <SearchBox />
       <s.CommunityContainer>
         <s.CommunityChatLayout>
+          {/* --- 채팅방 목록 --- */}
           <s.ChatRoomList>
             <img src={Logo} alt="로고" />
             <s.StyledHr />
@@ -188,6 +75,7 @@ const Community: React.FC = () => {
             </ul>
           </s.ChatRoomList>
 
+          {/* --- 채팅 메시지 영역 --- */}
           <s.ChatMessageArea>
             {!selectedRoom ? (
               <s.EmptyMessageArea>채팅방을 눌러 채팅에 참여하세요!</s.EmptyMessageArea>
@@ -202,7 +90,11 @@ const Community: React.FC = () => {
                   {(roomMessages[selectedRoom] || []).map((msg, idx) => (
                     <s.ChatMessageItem key={idx} isMine={msg.userId === myUserId}>
                       <s.ProfileSection>
-                        <s.ProfileImage src={msg.userProfile} alt="프로필 이미지" onClick={() => handleProfileClick(msg)} />
+                        <s.ProfileImage
+                          src={msg.userProfile}
+                          alt="프로필 이미지"
+                          onClick={() => handleProfileClick(msg)}
+                        />
                         <s.UserName>{msg.userName}</s.UserName>
                       </s.ProfileSection>
                       <s.ChatMessageBubble isMine={msg.userId === myUserId}>{msg.text}</s.ChatMessageBubble>
@@ -210,6 +102,7 @@ const Community: React.FC = () => {
                   ))}
                 </s.ChatMessagesWrapper>
 
+                {/* --- 프로필 모달 --- */}
                 {profileModalOpen && selectedUserInfo && (
                   <CommUserInfoModal
                     userName={selectedUserInfo.userName}
@@ -220,11 +113,22 @@ const Community: React.FC = () => {
                   />
                 )}
 
+                {/* --- 입력창 --- */}
                 <s.ChatInputBox>
                   <s.InputRow>
                     <s.MessageTypeToggle>
-                      <s.TypeButton selected={messageType === 'normal'} onClick={() => setMessageType('normal')}>일반</s.TypeButton>
-                      <s.TypeButton selected={messageType === 'announcement'} onClick={() => setMessageType('announcement')}>확성기</s.TypeButton>
+                      <s.TypeButton
+                        selected={messageType === 'normal'}
+                        onClick={() => setMessageType('normal')}
+                      >
+                        일반
+                      </s.TypeButton>
+                      <s.TypeButton
+                        selected={messageType === 'announcement'}
+                        onClick={() => setMessageType('announcement')}
+                      >
+                        확성기
+                      </s.TypeButton>
                     </s.MessageTypeToggle>
 
                     <s.ChatTextarea
