@@ -46,13 +46,34 @@ const FolderCreationModal:React.FC<FolderCreationModalProps> = ({
         if(!isOpen) return null;
 
         const handleConfirm = () => {
-            if(!folderName.trim()) {
-                setErrorMessage('폴더 이름을 입력해주세요.');    
+            const trimmedName = folderName.trim();
+
+            // 폴더 이름 체크
+            if (!trimmedName) {
+                setErrorMessage('폴더 이름을 입력해주세요.');
                 return;
-            } 
+            }
+
+            // 폴더 이름 길이 체크 (20자 이하)
+            if (trimmedName.length > 20) {
+                setErrorMessage('폴더 이름은 20자 이내로 입력해주세요.');
+                return;
+            }
+
             setErrorMessage('');
             onSubmit(folderName.trim(), selectedColor);
-            onClose();
+        };
+
+        const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = e.target.value;
+            
+            if (value.length > 20) { // 20자 제한 적용
+                setFolderName(value.slice(0, 20));
+                setErrorMessage('폴더 이름은 20자 이내로 입력해주세요.');
+            } else {
+                setFolderName(value);
+                setErrorMessage('');
+            }
         };
 
         return (
@@ -65,10 +86,7 @@ const FolderCreationModal:React.FC<FolderCreationModalProps> = ({
                     <s.FolderNameInputBox
                             type="text"
                             value={folderName}
-                            onChange={(e) => {
-                                setFolderName(e.target.value);
-                                setErrorMessage('');
-                            }}
+                            onChange={handleChangeName}
                             placeholder="폴더 명을 입력해주세요."
                     />
                     <s.ErrorText>{errorMessage || '⠀'}</s.ErrorText>
@@ -83,7 +101,7 @@ const FolderCreationModal:React.FC<FolderCreationModalProps> = ({
                                         color={color}
                                         selected={selectedColor === color}
                                         onClick={() => setSelectedColor(color)}
-                                        checkImg={checkIcon}
+                                        $checkImg={checkIcon}
                                     />
                                 ))}
                         </s.ColorOptions>
