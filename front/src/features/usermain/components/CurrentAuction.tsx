@@ -78,5 +78,4 @@ const CurrentAuction: React.FC<Props> = ({ auction }) => {
     </div>
   );
 };
-
 export default CurrentAuction;
