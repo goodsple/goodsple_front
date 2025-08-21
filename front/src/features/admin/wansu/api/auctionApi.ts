@@ -38,8 +38,8 @@ export const getAdminAuctions = async (params: AuctionSearchParams): Promise<Pag
     content: response.data.content.map((auction: any) => ({
       id: auction.id,
       productName: auction.productName,
-      startTime: auction.startTime,
-      endTime: auction.endTime,
+      startTime: auction.startTime, // string | null
+      endTime: auction.endTime,     // string | null
       currentPrice: auction.currentPrice,
       status: auction.status,
       paymentStatus: auction.paymentStatus,
