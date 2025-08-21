@@ -69,7 +69,7 @@ const CurrentAuction: React.FC<Props> = ({ auction }) => {
             <p>{timeLeft}</p>
           </div>
         </div>
-        <Link to={`/auction/live/${auction.auctionId}`}>
+        <Link to={`/auction/live/${auction.auctionId}`} className={CSS.auctionLink}>
           <button className={CSS.auctionButton} disabled={isScheduled}>
             {isScheduled ? '대기중' : '참여하기'}
           </button>
