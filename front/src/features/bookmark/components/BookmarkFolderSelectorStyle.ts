@@ -66,3 +66,19 @@ export const CloseButton = styled.button`
         background-color: #adadadff;
     }
 `;
+
+export const AddFolderButton = styled.button`
+    margin-top: 15px;
+    width: 100%;
+    padding: 10px;
+    color: #444444;
+    background-color: #ccc;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+
+    &:hover {
+        background-color: #adadadff;
+    }
+`;

@@ -81,7 +81,7 @@ export const ColorDot = styled.div<{ color : string; selected : boolean, $checkI
           transform: translate(-50%, -50%);
           content: '';
           display: ${({ selected }) => (selected ? 'block' : 'none')};
-          background-image: ${({ checkImg }) => `url(${checkImg})`};
+          background-image: ${({ $checkImg }) => `url(${ $checkImg })`};
           background-size: contain;
           background-repeat: no-repeat;
           background-position: center;
