@@ -7,6 +7,7 @@ interface Folder {
     color: string;
 }
 
+
 const BookmarkManager: React.FC = () => {
     const [folders, setFolders] = useState<Folder[]>([
         { name: '기본폴더', color: '#FF4B4B' },
@@ -26,6 +27,7 @@ const BookmarkManager: React.FC = () => {
         const newFolder = { name, color };
         setFolders([...folders, newFolder]);
         setIsFolderModalOpen(false);
+
         handleSelectFolder(name); // 생성 후 자동 선택
     };
 
@@ -39,9 +41,9 @@ const BookmarkManager: React.FC = () => {
                 folders={folders}
                 onSelect={handleSelectFolder}
                 onAddFolder={() => {
-                    console.log('새 폴더 모달 열기');   // 확인용
-                    setIsSelectorOpen(false);           // 선택 모달 닫기
-                    setIsFolderModalOpen(true);         // 새 폴더 모달 열기
+                    console.log('새 폴더 모달 열기');   
+                    setIsSelectorOpen(false);           
+                    setIsFolderModalOpen(true);         
                 }}
             />
 

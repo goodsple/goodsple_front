@@ -37,17 +37,36 @@ export const FolderList = styled.ul`
 `;
 
 export const FolderItem = styled.li`
-    width: 255px;
+    width: 253px;
     padding: 15px 8px;
     cursor: pointer;
     color: #444444;
     border-bottom: 1px solid #A3A3A3;
     border-radius: 5px 5px 0 0;
-    font-size: 16px;
+    font-size: 17px;
 
 
     &:hover {
-        background-color: #adadadff;
+        background-color: #e7f1a5ff;
+    }
+`;
+
+export const AddFolderButton = styled.button`
+    margin-top: 15px;
+    width: 100%;
+    padding: 10px;
+    color: #444444;
+    background-color: #fff;
+    border: 2px solid #8a8a8aff;
+    border-style: dashed;
+    border-radius: 8px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 400;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #e7f1a5ff;
     }
 `;
 
@@ -60,6 +79,7 @@ export const CloseButton = styled.button`
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    font-size: 16px;
     font-weight: 500;
 
     &:hover {
@@ -67,18 +87,4 @@ export const CloseButton = styled.button`
     }
 `;
 
-export const AddFolderButton = styled.button`
-    margin-top: 15px;
-    width: 100%;
-    padding: 10px;
-    color: #444444;
-    background-color: #ccc;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
 
-    &:hover {
-        background-color: #adadadff;
-    }
-`;
