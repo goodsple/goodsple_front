@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// features/auction/pages/LiveAuctionPage.tsx (최종 수정본)
+
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 // 컴포넌트 임포트
-import ConfirmModal from '../../../components/common/modal/ConfirmModal'; // 범용 모달 경로 확인 필요
-import ReportModal from '../../../components/common/modal/ReportModal'; // ReportModal 경로 확인 필요
+import ConfirmModal from '../../../components/common/modal/ConfirmModal';
+import ReportModal from '../../../components/common/modal/ReportModal';
 import AuctionItemInfo from '../components/AuctionItemInfo';
 import AuctionStatus from '../components/AuctionStatus';
 import BidHistory from '../components/BidHistory';
@@ -11,100 +13,110 @@ import BidPanel from '../components/BidPanel';
 import LiveChat from '../components/LiveChat';
 import AuctionRulesModal from '../modals/AuctionRulesModal';
 
-// 스타일 및 목업 데이터 임포트
-import { AUCTION_EXTEND_THRESHOLD, AUCTION_EXTEND_TIME, mockAuctionPageData } from '../mock/auctionPageData';
-import type { Bid, ChatMessage } from '../types/auction';
-import * as S from './LiveAuctionPageStyle';
+// API 및 커스텀 훅 import
+import { getAuctionPageData } from '../api/auctionApi';
+import { useAuctionSocket } from '../hooks/useAuctionSocket';
 
-// 현재 로그인한 사용자 (테스트용)
-const CURRENT_USER_NICKNAME = '해린고양이';
+// 타입 import
+import type { AuctionPageData, ChatMessage } from '../types/auction';
+import * as S from './LiveAuctionPageStyle';
 
 const LiveAuctionPage = () => {
   const navigate = useNavigate();
-  // --- 상태 변수 정의 ---
-  const [auctionData, setAuctionData] = useState(mockAuctionPageData);
-  const [timeLeft, setTimeLeft] = useState(mockAuctionPageData.status.initialTimeLeft);
+  const { auctionId } = useParams();
+  
+  const [auctionData, setAuctionData] = useState<AuctionPageData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
-  const [isPausedModalOpen, setIsPausedModalOpen] = useState(false);
-  const [isPenaltyModalOpen, setIsPenaltyModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportingUser, setReportingUser] = useState<string | null>(null);
+  
+  const numericAuctionId = Number(auctionId);
+  const { auctionUpdate, chatMessage, sendBid, sendChat } = useAuctionSocket(numericAuctionId);
 
-  // --- useEffect 훅 ---
-  // 패널티 유저 확인
+  // 페이지 최초 로드 시 데이터 불러오기
   useEffect(() => {
-    if (auctionData.currentUser.isBanned) {
-      setIsPenaltyModalOpen(true);
-    }
-  }, [auctionData.currentUser.isBanned]);
+    if (!numericAuctionId) return;
+    const fetchInitialData = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getAuctionPageData(numericAuctionId);
+        setAuctionData(data);
+      } catch (error) {
+        console.error("Failed to fetch auction data:", error);
+        alert("경매 정보를 불러올 수 없습니다.");
+        navigate('/');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchInitialData();
+  }, [numericAuctionId, navigate]);
 
-  // 타이머
+  // WebSocket으로 '경매 상태 업데이트' 메시지 수신 시 처리
   useEffect(() => {
-    if (timeLeft <= 0 || isPausedModalOpen) return;
-    const timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
-    return () => clearInterval(timer);
-  }, [timeLeft, isPausedModalOpen]);
-
-  // 다른 사람의 입찰/채팅 및 경매 중지 시뮬레이션
-  useEffect(() => {
-    const simulationInterval = setInterval(() => {
-      // 새로운 입찰 시뮬레이션
-      if (Math.random() < 0.3) {
-        const newPrice = auctionData.status.currentPrice + Math.floor(Math.random() * 5 + 1) * 1000;
-        const newBid: Bid = { bidId: Date.now(), userNickname: '경쟁자' + Math.floor(Math.random() * 10), bidAmount: newPrice, timestamp: new Date().toISOString() };
-        
-        setAuctionData(prev => ({
-            ...prev,
-            status: { ...prev.status, currentPrice: newPrice, highestBidderNickname: newBid.userNickname },
-            bidHistory: [newBid, ...prev.bidHistory]
-        }));
-      }
-      // 새로운 채팅 시뮬레이션
-      if (Math.random() < 0.4) {
-        const newChat: ChatMessage = { chatId: Date.now(), userNickname: '구경꾼', message: '우와... 갖고 싶다', timestamp: new Date().toISOString() };
-        setAuctionData(prev => ({ ...prev, chatHistory: [...prev.chatHistory, newChat] }));
-      }
-      // 경매 중지 시뮬레이션
-      if (Math.random() < 0.05) {
-        setIsPausedModalOpen(true);
-      }
-    }, 5000);
-    return () => clearInterval(simulationInterval);
-  }, [auctionData.status.currentPrice]);
-
-  // --- 이벤트 핸들러 ---
-  const handlePlaceBid = (amount: number) => {
-    if (amount > auctionData.status.currentPrice) {
-      const newBid: Bid = { bidId: Date.now(), userNickname: CURRENT_USER_NICKNAME, bidAmount: amount, timestamp: new Date().toISOString() };
-      
-      setAuctionData(prev => ({
+    if (!auctionUpdate || !auctionData) return;
+    setAuctionData(prev => {
+      if (!prev) return null;
+      return {
         ...prev,
-        status: { ...prev.status, currentPrice: amount, highestBidderNickname: newBid.userNickname },
-        bidHistory: [newBid, ...prev.bidHistory]
-      }));
+        status: {
+          ...prev.status,
+          currentPrice: auctionUpdate.currentPrice,
+          highestBidderNickname: auctionUpdate.topBidderNickname,
+          endTime: auctionUpdate.extendedEndTime,
+        },
+        bidHistory: [auctionUpdate.newBid, ...prev.bidHistory],
+      };
+    });
+  }, [auctionUpdate]);
 
-      if (timeLeft < AUCTION_EXTEND_THRESHOLD) {
-        setTimeLeft(AUCTION_EXTEND_TIME);
-      }
+  // WebSocket으로 '채팅 메시지' 수신 시 처리
+  useEffect(() => {
+    if (!chatMessage || !auctionData) return;
+    const newChatMessage: ChatMessage = {
+        chatId: Date.now(),
+        userNickname: chatMessage.senderNickname,
+        message: chatMessage.message,
+        timestamp: chatMessage.timestamp,
+    };
+    setAuctionData(prev => prev ? ({
+      ...prev,
+      chatHistory: [...prev.chatHistory, newChatMessage],
+    }) : null);
+  }, [chatMessage]);
+
+  const handlePlaceBid = useCallback((amount: number) => {
+    if (!auctionData) return false;
+    if (amount > auctionData.status.currentPrice) {
+      sendBid(amount);
       return true;
     }
-    alert('현재가보다 높은 금액을 입력해야 합니다.');
+    alert(`현재가(${auctionData.status.currentPrice.toLocaleString()}원)보다 높은 금액을 입력해야 합니다.`);
     return false;
-  };
+  }, [auctionData, sendBid]);
+
+  const handleSendChat = useCallback((message: string) => {
+    sendChat(message);
+  }, [sendChat]);
+
+  const handleShare = useCallback(() => alert('경매 링크가 복사되었습니다! (기능 구현 필요)'), []);
   
-  const handleShare = () => alert('경매 링크가 복사되었습니다! (기능 구현 필요)');
-  
-  const handleReport = (user: string) => {
+  const handleReport = useCallback((user: string) => {
     setReportingUser(user);
     setIsReportModalOpen(true);
-  };
+  }, []);
 
-  const handleConfirmReport = (selectedReasons: string[], detailText: string) => {
-    console.log(`${reportingUser}님을 다음 사유로 신고:`, selectedReasons, detailText);
+  const handleConfirmReport = useCallback((selectedIds: number[], detailText: string) => {
+    console.log(`${reportingUser}님을 다음 사유로 신고:`, selectedIds, detailText);
     alert(`${reportingUser}님을 신고했습니다.`);
     setIsReportModalOpen(false);
     setReportingUser(null);
-  };
+  }, [reportingUser]);
+
+  if (isLoading || !auctionData) {
+    return <div>경매 정보를 불러오는 중입니다...</div>;
+  }
 
   return (
     <>
@@ -118,24 +130,22 @@ const LiveAuctionPage = () => {
         </S.LeftColumn>
         
         <S.CenterColumn>
-          <AuctionStatus 
-            status={auctionData.status}
-            timeLeft={timeLeft}
-          />
+          <AuctionStatus status={auctionData.status} />
           <BidPanel
             status={auctionData.status}
-            currentUserNickname={CURRENT_USER_NICKNAME}
+            currentUserNickname={auctionData.currentUser.nickname}
             onPlaceBid={handlePlaceBid}
           />
           <BidHistory
             bidHistory={auctionData.bidHistory}
-            currentUserNickname={CURRENT_USER_NICKNAME}
+            currentUserNickname={auctionData.currentUser.nickname}
           />
         </S.CenterColumn>
         
         <S.RightColumn>
           <LiveChat
             chatHistory={auctionData.chatHistory}
+            onSendChat={handleSendChat}
             onReport={handleReport}
           />
         </S.RightColumn>
@@ -145,9 +155,9 @@ const LiveAuctionPage = () => {
         isOpen={isRulesModalOpen} 
         onClose={() => setIsRulesModalOpen(false)} 
       />
-
+      
       <ConfirmModal
-        isOpen={isPausedModalOpen}
+        isOpen={false} 
         title="경매 일시 중지"
         content="관리자에 의해 경매가 잠시 중지되었습니다."
         confirmText="메인으로"
@@ -155,7 +165,7 @@ const LiveAuctionPage = () => {
       />
 
       <ConfirmModal
-        isOpen={isPenaltyModalOpen}
+        isOpen={auctionData.currentUser.isBanned}
         title="경매 참여 불가"
         content="회원님은 현재 경매 참여가 제한된 상태입니다."
         confirmText="메인으로"
