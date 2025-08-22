@@ -9,6 +9,7 @@ interface FolderCreationModalProps {
     mode: 'create' | 'edit';                                // 생성 또는 수정 모드
     initialFolderName?: string;                             // 수정 시 기존 폴더명 
     initialColor?: string;                                  // 수정 시 기존 색상
+    folders: { name: string; color: string }[];
     onSubmit: (name: string, color: string) => void;        // 확인 버튼 클릭 시 콜백
 }
 
@@ -27,6 +28,7 @@ const FolderCreationModal:React.FC<FolderCreationModalProps> = ({
                                                                     mode = 'create',
                                                                     initialFolderName = '',
                                                                     initialColor = colorOptions[0],
+                                                                    folders,
                                                                     onSubmit,
     }) => {
 
@@ -57,6 +59,11 @@ const FolderCreationModal:React.FC<FolderCreationModalProps> = ({
             // 폴더 이름 길이 체크 (20자 이하)
             if (trimmedName.length > 20) {
                 setErrorMessage('폴더 이름은 20자 이내로 입력해주세요.');
+                return;
+            }
+
+            if (folders.some((f) => f.name === trimmedName && f.name !== initialFolderName)) {
+                setErrorMessage("이미 같은 이름의 폴더가 있습니다.");
                 return;
             }
 
@@ -114,7 +121,7 @@ const FolderCreationModal:React.FC<FolderCreationModalProps> = ({
                     </s.FolderBtnGroup>
                 </s.ModalContainer>
             </s.Overlay>
-  );
+        );
 };
 
 export default FolderCreationModal;

@@ -11,6 +11,7 @@ interface BookmarkFolderSelectorProps {
     onClose: () => void;
     folders: Folder[];
     onSelect: (folderName: string) => void;
+    onAddFolder: () => void; // 새 폴더 추가 버튼
 }
 
 const BookmarkFolderSelector: React.FC<BookmarkFolderSelectorProps> = ({
@@ -18,6 +19,7 @@ const BookmarkFolderSelector: React.FC<BookmarkFolderSelectorProps> = ({
         onClose,
         folders,
         onSelect,
+        onAddFolder = () => console.warn('onAddFolder prop이 없습니다!')
     }) => {
 
         if (!isOpen) return null;
@@ -33,7 +35,21 @@ const BookmarkFolderSelector: React.FC<BookmarkFolderSelectorProps> = ({
                             </s.FolderItem>
                         ))}
                     </s.FolderList>
-                    {/* 임시버튼 => 닫기 버튼이 아니라 새폴더 추가버튼을 넣어야됨!!! */}
+
+                    <s.AddFolderButton
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            console.log('AddFolder 버튼 클릭'); // 여기 찍히는지 확인
+                            if (onAddFolder) {
+                                onAddFolder();
+                            } else {
+                                console.error('onAddFolder prop이 없습니다!');
+                            }
+                    }}
+                    >
+                        + 새 폴더 추가
+                    </s.AddFolderButton>
+
                     <s.CloseButton onClick={onClose}>닫기</s.CloseButton>
                 </s.ModalBox>
             </s.Overlay>

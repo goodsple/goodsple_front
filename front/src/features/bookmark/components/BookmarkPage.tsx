@@ -38,11 +38,10 @@ const BookmarkPage:React.FC = () => {
         // 초기 폴더 데이터 로딩
         const fetchFolders = async () => {
             try {
-                const token = localStorage.getItem('accesToken');
+                const token = localStorage.getItem('accessToken');
                 const res = await axiosInstance.get('/bookmark-folders', {
                     headers: { Authorization: `Bearer ${token}` } 
                 });
-                // res.data는 [{ folderId, folderName, folderColor }]
                 const mapped = res.data.map((f: any) => ({
                     folderId: f.folderId,
                     name: f.folderName,
@@ -162,6 +161,7 @@ const BookmarkPage:React.FC = () => {
                     mode={editIndex !== null ? "edit" : "create"}
                     initialFolderName={editFolder?.name}
                     initialColor={editFolder?.color || '#FF4B4B'} // 기본값 설정
+                    folders={folders}
                     onSubmit={(name, color) => {
                         if (editIndex !== null && editFolder?.folderId) {
                             handleEditFolder(editFolder.folderId, name, color);
@@ -185,6 +185,11 @@ const BookmarkPage:React.FC = () => {
                     onSelect={(folderName) => {
                         alert(`'${folderName}' 폴더에 북마크를 저장합니다.`);
                         setIsSelectorOpen(false);
+                    }}
+                    onAddFolder={() => {   
+                        console.log('새 폴더 모달 열기');
+                        setIsSelectorOpen(false); // 선택 모달 닫기
+                        setIsOpen(true);          // 폴더 생성 모달 열기
                     }}
                 />
 
