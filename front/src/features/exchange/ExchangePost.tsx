@@ -4,24 +4,39 @@ import * as S from './ExchangePost.styles';
 import deleteButton from '../../assets/images/delete-button.png'; // 이미지 삭제 버튼 아이콘
 import axios from 'axios';
 
+// 백엔드 DTO와 필드명이 동일하게 
+interface Category {
+    firstCateId: number;
+    firstCateName: string;
+    secondCateId: number;
+    secondCateName: string;
+    thirdCateId: number;
+    thirdCateName: string;
+}
 
 const ExchangePost = () => {
-
     const accessToken = localStorage.getItem('accessToken');
-    // 백엔드 DTO와 필드명이 동일하게 
-    interface Category {
-        firstCateId: number;
-        firstCateName: string;
-        secondCateId: number;
-        secondCateName: string;
-        thirdCateId: number;
-        thirdCateName: string;
-    }
 
-    // --- State 관리 ---
-    const [deliveryMethods, setDeliveryMethods] = useState<string[]>([]);
+    // 백엔드에서 받아온 전체 카테고리 목록
+    const [allCategories, setAllCategories] = useState<Category[]>([]);
+    // 1차, 2차, 3차 카테고리 선택 상태
+    const [firstCateId, setFirstCateId] = useState('');
+    const [secondCateId, setSecondCateId] = useState('');
+    const [thirdCateId, setThirdCateId] = useState('');
+    // 필터링된 카테고리 목록
+    const [filteredSecondCategories, setFilteredSecondCategories] = useState<Category[]>([]);
+    const [filteredThirdCategories, setFilteredThirdCategories] = useState<Category[]>([]);
+
+    // 상품명, 상품설명
     const [productName, setProductName] = useState('');
     const [productDescription, setProductDescription] = useState('');
+
+    // 이미지 파일을 선택할 때 사용할 상태
+    const [selectedImages, setSelectedImages] = useState<File[]>([]);
+    // 이미지 미리보기를 위한 URL 상태 추가
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
+    const [deliveryMethods, setDeliveryMethods] = useState<string[]>([]);
     const [parcelOptions, setParcelOptions] = useState({
         normalFee: '',
         halfDetailPrice: '',
@@ -29,80 +44,11 @@ const ExchangePost = () => {
         halfDetailOption: '둘다 가능',
     });
 
-    // 이미지 파일을 선택할 때 사용할 상태
-    const [selectedImages, setSelectedImages] = useState<File[]>([]);
-    // 이미지 미리보기를 위한 URL 상태 추가
-    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-
-    // 카테고리 선택을 위한 상태
-    const [firstCateId, setFirstCateId] = useState('');
-    const [secondCateId, setSecondCateId] = useState('');
-    const [thirdCateId, setThirdCateId] = useState('');
-
-    // 백엔드에서 받아온 전체 카테고리 목록
-    const [allCategories, setAllCategories] = useState<Category[]>([]);
-    // 필터링된 카테고리 목록
-    const [filteredSecondCategories, setFilteredSecondCategories] = useState<Category[]>([]);
-    const [filteredThirdCategories, setFilteredThirdCategories] = useState<Category[]>([]);
-
     const [location, setLocation] = useState('');
+    const [locationCode, setLocationCode] = useState('');
+    const [directTradePlace, setDirectTradePlace] = useState(''); // 직거래 장소 입력 상태
 
-    // --- 내 위치 버튼 핸들러 ---
-    const handleGetMyLocation = () => {
-        if (!navigator.geolocation) {
-            alert('브라우저가 위치 정보를 지원하지 않습니다.');
-            return;
-        }
-        navigator.geolocation.getCurrentPosition(
-            async (pos) => {
-                const { latitude, longitude } = pos.coords;
-
-                try {
-                    // 카카오 좌표→행정동 변환 API 호출
-                    const res = await axios.get(
-                        `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${longitude}&y=${latitude}`,
-                        {
-                            headers: {
-                                Authorization: `KakaoAK ${process.env.REACT_APP_KAKAO_REST_KEY}`,
-                            },
-                        }
-                    );
-
-                    if (res.data.documents && res.data.documents.length > 0) {
-                        const region = res.data.documents[0];
-                        // ex) 서울특별시 강남구 역삼동
-                        const fullAddress = `${region.region_2depth_name} ${region.region_3depth_name}`;
-                        setLocation(fullAddress);
-                    }
-                } catch (err) {
-                    console.error('위치 변환 실패:', err);
-                    alert('내 위치를 불러오는데 실패했습니다.');
-                }
-            },
-            (err) => {
-                console.error(err);
-                alert('위치 권한을 허용해야 내 위치를 사용할 수 있습니다.');
-            }
-        );
-    };
-
-    // --- 주소 검색 버튼 핸들러 ---
-    const handleSearchAddress = () => {
-        new (window as any).daum.Postcode({
-            oncomplete: function (data: any) {
-                // 전체 주소에서 시/구/동 추출
-                // (예: "서울특별시 강남구 역삼동 123-45" → "서울특별시 강남구 역삼동")
-                const match = data.address.match(/^[^ ]+시 [^ ]+구 [^ ]+동/);
-                const result = match ? match[0] : data.address;
-                setLocation(result);
-            },
-        }).open();
-    };
-
-
-    // 백엔드에서 받아온 카테고리 목록을 저장할 상태(3차는 잘 불러와짐)
-    // const [categories, setCategories] = useState<Category[]>([]);
-
+    // 카테고리 불러오기
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -117,43 +63,7 @@ const ExchangePost = () => {
         fetchCategories();
     }, []);
 
-    // --- 핸들러 함수 ---
-    const toggleDeliveryMethod = (method: string) => {
-        setDeliveryMethods(prev =>
-            prev.includes(method)
-                ? prev.filter(m => m !== method)
-                : [...prev, method]
-        );
-    };
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = Array.from(e.target.files || []);
-
-        const totalSelected = selectedImages.length + files.length;
-        if (totalSelected > 5) {
-            alert('이미지는 최대 5개까지 등록할 수 있습니다.');
-            return;
-        }
-
-        // 실제 파일 객체들을 상태에 추가
-        setSelectedImages(prev => [...prev, ...files]);
-
-        //  // 미리보기를 위한 URL 생성
-        const newImageUrls = files.map(file => URL.createObjectURL(file));
-        setImagePreviews(prev => [...prev, ...newImageUrls]);
-    };
-
-    const handleRemoveImage = (indexToRemove: number) => {
-        // 미리보기 URL 상태에서만 제거하고 메모리 누수 방지
-        URL.revokeObjectURL(imagePreviews[indexToRemove]);
-        setImagePreviews(prev => prev.filter((_, index) => index !== indexToRemove));
-
-        // 실제 파일 객체 상태에서도 제거
-        setSelectedImages(prev => prev.filter((_, index) => index !== indexToRemove));
-    };
-
-
-    // ⭐️ 1차 카테고리 변경 핸들러
+    // 1차 카테고리 변경 핸들러
     const handleFirstCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedId = e.target.value;
         setFirstCateId(selectedId);
@@ -175,7 +85,7 @@ const ExchangePost = () => {
         }
     };
 
-    // ⭐️ 2차 카테고리 변경 핸들러
+    // 2차 카테고리 변경 핸들러
     const handleSecondCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedId = e.target.value;
         setSecondCateId(selectedId);
@@ -192,16 +102,120 @@ const ExchangePost = () => {
         }
     };
 
-    // ⭐️ 3차 카테고리 변경 핸들러
+    // 3차 카테고리 변경 핸들러
     const handleThirdCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setThirdCateId(e.target.value);
     };
 
+    // --- 이미지 업로드 핸들러 ---
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
 
-    // 카테고리 변경 핸들러 (3차 정상적으로 불러옴)
-    // const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    //     setThirdCateId(e.target.value);
-    // };
+        const totalSelected = selectedImages.length + files.length;
+        // 선택된 이미지가 5개를 초과하면 경고 메시지 표시
+
+        if (totalSelected > 5) {
+            alert('이미지는 최대 5개까지 등록할 수 있습니다.');
+            return;
+        }
+
+        // 실제 파일 객체들을 상태에 추가
+        setSelectedImages(prev => [...prev, ...files]);
+
+        //  // 미리보기를 위한 URL 생성
+        const newImageUrls = files.map(file => URL.createObjectURL(file));
+        setImagePreviews(prev => [...prev, ...newImageUrls]);
+    };
+
+    // --- 이미지 제거 핸들러 ---
+    const handleRemoveImage = (indexToRemove: number) => {
+        // 미리보기 URL 상태에서만 제거하고 메모리 누수 방지
+        URL.revokeObjectURL(imagePreviews[indexToRemove]);
+        setImagePreviews(prev => prev.filter((_, index) => index !== indexToRemove));
+
+        // 실제 파일 객체 상태에서도 제거
+        setSelectedImages(prev => prev.filter((_, index) => index !== indexToRemove));
+    };
+
+    // --- 내 위치 버튼 핸들러 ---
+    const handleGetMyLocation = () => {
+        if (!navigator.geolocation) {
+            alert('브라우저가 위치 정보를 지원하지 않습니다.');
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                const { latitude, longitude } = pos.coords;
+
+                try {
+                    const res = await axios.get('http://localhost:8080/api/location/region', {
+                        params: { latitude, longitude }
+                    });
+
+                    if (res.data.documents && res.data.documents.length > 0) {
+                        const region = res.data.documents[0];
+                        // 시/구/동만 합치기
+                        const fullAddress = `${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`;
+                        setLocation(fullAddress);
+
+                        setLocationCode(region.code); // region.code가 실제 행정동 코드라고 가정
+                    }
+                } catch (err) {
+                    console.error('위치 변환 실패:', err);
+                    alert('내 위치를 불러오는데 실패했습니다.');
+                }
+            },
+            (err) => {
+                console.error(err);
+                alert('위치 권한을 허용해야 내 위치를 사용할 수 있습니다.');
+            }
+        );
+    };
+
+    // --- 주소 검색 버튼 핸들러 ---
+    const handleSearchAddress = () => {
+        new (window as any).daum.Postcode({
+            oncomplete: async function (data: any) {
+                try {
+                    // 1. 시/구/동 추출
+                    const city = data.sido;        // 시/도
+                    const district = data.sigungu; // 시/군/구
+                    const dong = data.bname;       // 읍/면/동
+                    const simpleAddress = `${city} ${district} ${dong}`;
+
+                    // 2. 주소 → 좌표 변환 (백엔드 API 호출)
+                    const coordRes = await axios.get("http://localhost:8080/api/location/coord", {
+                        params: { address: simpleAddress },
+                    });
+                    const { latitude, longitude } = coordRes.data;
+
+                    // 3. 좌표 → 행정동 코드 조회
+                    const regionRes = await axios.get("http://localhost:8080/api/location/region", {
+                        params: { latitude, longitude },
+                    });
+
+                    if (regionRes.data.documents && regionRes.data.documents.length > 0) {
+                        const region = regionRes.data.documents[0];
+                        const fullAddress = `${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`;
+
+                        // 4. state 업데이트
+                        setLocation(fullAddress);          // "서울특별시 중랑구 면목동"
+                        setLocationCode(region.code);      // "1138010200"
+                    }
+                } catch (error) {
+                    console.error("주소 검색 처리 실패:", error);
+                    alert("선택한 주소를 변환하는 데 실패했습니다.");
+                }
+            },
+        }).open();
+    };
+
+    // --- 거래 방식 토글 핸들러 ---
+    const toggleDeliveryMethod = (method: string) => {
+        setDeliveryMethods(prev =>
+            prev.includes(method) ? prev.filter(m => m !== method) : [...prev, method]
+        );
+    };
 
 
     // --- 백엔드 통신 로직 ---
@@ -220,14 +234,44 @@ const ExchangePost = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault(); // 폼 제출 시 페이지 리로드 방지
 
-        // 이미지 파일들을 서버에 먼저 업로드하고 URL을 받아오는 로직이 필요합니다.
-        // 현재는 `URL.createObjectURL`로 임시 URL을 사용하고 있으므로,
-        // 실제 운영 환경에서는 `FormData`를 이용해 파일을 업로드해야 합니다.
-        // 여기서는 예시를 위해 `selectedImages` 배열을 그대로 사용합니다.
-
         // 3차 카테고리가 선택되지 않았으면 알림
         if (!thirdCateId) {
             alert('카테고리를 모두 선택해 주세요.');
+            return;
+        }
+
+        if (!productName.trim()) {
+            alert('상품명을 입력해 주세요.');
+            return;
+        }
+
+        if (!productDescription.trim()) {
+            alert('상품 설명을 입력해 주세요.');
+            return;
+        }
+
+        if (selectedImages.length === 0) {
+            alert('이미지를 1장 이상 등록해 주세요.');
+            return;
+        }
+
+        if (!location.trim()) {
+            alert('지역을 설정해 주세요.');
+            return;
+        }
+
+        if (deliveryMethods.length === 0) {
+            alert('거래 방식을 선택해 주세요.');
+            return;
+        }
+
+        if (deliveryMethods.includes('parcel') && !parcelOptions.normalFee) {
+            alert('택배 거래 방식을 선택하셨다면 배송비를 입력해 주세요.');
+            return;
+        }
+
+        if (deliveryMethods.includes('parcel') && parcelOptions.halfOption === '가능' && !parcelOptions.halfDetailPrice) {
+            alert('반값 택배를 선택하셨다면 금액을 입력해 주세요.');
             return;
         }
 
@@ -239,38 +283,47 @@ const ExchangePost = () => {
             formData.append('file', file);
         });
 
-        let imageUrls = [];
-        try {
-            // 이미지 파일을 먼저 서버에 업로드하고 URL들을 받아옴
-            const imageResponse = await axios.post(
-                'http://localhost:8080/api/images/upload', // 이미지 업로드 전용 API 엔드포인트
-                formData,
-                {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        'Content-Type': 'multipart/form-data',
-                    },
-                }
-            );
+        const uploadImages = async (): Promise<string[]> => {
+            const urls: string[] = [];
+            for (const file of selectedImages) {
+                const formData = new FormData();
+                formData.append('file', file);
 
-            imageUrls = imageResponse.data.imageUrls; // 백엔드에서 이미지 URL 배열을 응답으로 보낸다고 가정
+                const res = await axios.post(
+                    'http://localhost:8080/api/images/upload',
+                    formData,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    }
+                );
+                urls.push(res.data); // 업로드된 이미지 URL을 배열에 추가
+            }
+            return urls;
+        };
+
+        let imageUrls: string[] = [];
+        try {
+            imageUrls = await uploadImages();
         } catch (error) {
-            const axiosError = error as any; // 또는 `AxiosError`
+            const axiosError = error as any;
             console.error('이미지 업로드 실패:', axiosError.response.data);
             alert(`이미지 업로드에 실패했습니다: ${axiosError.response.data.message || '알 수 없는 오류'}`);
             return;
         }
 
-        // --- 게시글 데이터 구성 (백엔드 DTO에 맞게 수정) ---
         const tradeType = getTradeType();
+
+        // 게시글 데이터 객체 생성
         const postData = {
             thirdCateId: thirdCateId ? parseInt(thirdCateId, 10) : null,
             exchangePostTitle: productName,
             postDescription: productDescription,
-            // 이 부분은 사용자의 실제 위치 데이터로 대체해야 합니다.
-            postLocationCode: '01',
-            postLocationName: '서울특별시',
-            postHopeRegion: '서울 강남구', // 직거래 시 사용자가 입력한 값
+            postLocationCode: locationCode,
+            postLocationName: location,
+            postHopeRegion: deliveryMethods.includes('direct') ? directTradePlace : '', // 직거래 시 사용자가 입력한 값
             postTradeType: tradeType,
             deliveryPriceNormal: parcelOptions.normalFee ? parseInt(parcelOptions.normalFee, 10) : null,
 
@@ -456,7 +509,10 @@ const ExchangePost = () => {
                     <S.Divider />
                     <S.SectionRow>
                         <S.Label>거래 희망 장소</S.Label>
-                        <S.Input placeholder="거래 희망 장소를 입력해 주세요. 예) 강남역 1번 출구 앞" />
+                        <S.Input placeholder="거래 희망 장소를 입력해 주세요. 예) 강남역 1번 출구 앞"
+                            value={directTradePlace}
+                            onChange={e => setDirectTradePlace(e.target.value)}
+                        />
                     </S.SectionRow>
                 </S.DirectTradeInputWrapper>
             )}
