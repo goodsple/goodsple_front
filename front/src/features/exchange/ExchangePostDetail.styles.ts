@@ -84,11 +84,11 @@ export const IndicatorWrapper = styled.div`
   margin-top: 15px;
 `;
 
-export const IndicatorDot = styled.div<{ active?: boolean }>`
+export const IndicatorDot = styled.div<{ $active?: boolean }>`
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: ${({ active }) => (active ? '#997BEB' : '#ccc')};
+  background-color: ${({ $active }) => ($active ? '#997BEB' : '#ccc')};
   transition: background-color 0.3s ease;
 `;
 
@@ -240,7 +240,11 @@ export const WriterProfile = styled.div`
   gap: 12px;
 `;
 
-export const ProfileImage = styled.div`
+interface ProfileImageProps {
+  isDefault?: boolean;
+}
+
+export const ProfileImage = styled.div<ProfileImageProps>`
   width: 48px;
   height: 48px;
   background-color: #ccc;
