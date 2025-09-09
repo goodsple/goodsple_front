@@ -1,5 +1,5 @@
-// src/components/community/Community.tsx
-import { useState, type KeyboardEvent } from 'react';
+import { useEffect, useState, type KeyboardEvent } from 'react';
+import axiosInstance from '../../../api/axiosInstance';
 import Logo from '../../../assets/images/logo.png';
 import sendIcon from '../../../assets/images/send_purple.png';
 import SearchBox from '../../usermain/components/SearchBox';
@@ -9,8 +9,8 @@ import * as s from './CommunityStyle';
 import CommUserInfoModal from './CommUserInfoModal';
 
 export interface ChatRoom {
-  id: string;
-  name: string;
+    id: string;
+    name: string;
 }
 
 const Community: React.FC = () => {
@@ -21,18 +21,33 @@ const Community: React.FC = () => {
     { id: 'ANIMATION', name: '애니메이션 채팅방' },
   ];
 
-  const myUserId = Number(localStorage.getItem('userId'));
+  const storedUserId = localStorage.getItem('userId'); 
+  const myUserId: number = storedUserId ? Number(storedUserId) : 0;
+
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [input, setInput] = useState<string>('');
-  const [messageType, setMessageType] = useState<MessageType>('normal');
+  const [messageType, setMessageType] = useState<MessageType>('GENERAL');
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [selectedUserInfo, setSelectedUserInfo] = useState<any>(null);
 
-  const { roomMessages, onlineCount, isConnected, sendMessage } = useWebSocket(selectedRoom, myUserId);
+  const { roomMessages, onlineCount, isConnected, sendMessage, megaphoneRemaining } =
+    useWebSocket(selectedRoom, myUserId);
 
   const handleSend = () => {
-    if (!selectedRoom) return;
-    sendMessage(selectedRoom, { roomId: selectedRoom, text: input, type: messageType });
+    if (!selectedRoom || !input.trim()) return;
+
+    if (messageType === 'MEGAPHONE' && megaphoneRemaining <= 0) { 
+      alert('이번 달 확성기 사용 횟수를 모두 사용했습니다.'); 
+      return; // 전송 차단됨
+    }
+
+    sendMessage(selectedRoom, { 
+      roomId: selectedRoom, 
+      content: input, 
+      type: messageType
+    });
+
+    setMessageType('GENERAL'); // 전송 후 기본값으로 초기화됨
     setInput('');
   };
 
@@ -43,22 +58,38 @@ const Community: React.FC = () => {
     }
   };
 
-  const handleProfileClick = (msg: ChatMessage) => {
-    setSelectedUserInfo({
-      userName: msg.userName,
-      badgeName: 'LV. 3 굿즈 수호자',
-      badgeImage: '/assets/images/sample_badge.png',
-      userProfile: msg.userProfile,
-    });
-    setProfileModalOpen(true);
+  const handleProfileClick = async (msg: ChatMessage) => {
+    try {
+      const res = await axiosInstance.get(`/chat/user/${msg.userId}`);
+
+      const userData = res.data;
+      setSelectedUserInfo({
+        nickname: userData.nickname || '익명',
+        userProfile: userData.userProfile || '/assets/images/default_profile.png',
+        badgeName: userData.badges?.[0]?.name || 'LV. 1 신규 유저',
+        badgeImage: userData.badges?.[0]?.image || '/assets/images/LV1.png',
+      });
+
+      setProfileModalOpen(true);
+    } catch (err: any) {
+      // 서버 응답 확인
+      console.error('사용자 정보 불러오기 실패', err.response?.status, err.response?.data);
+      alert(`사용자 정보를 불러오지 못했습니다. (${err.response?.status})`);
+    }
   };
+
+  // 방 변경 시 스크롤 자동 하단 이동
+  useEffect(() => {
+    const el = document.getElementById('chatMessagesWrapper');
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [selectedRoom, roomMessages]);
 
   return (
     <>
       <SearchBox />
       <s.CommunityContainer>
         <s.CommunityChatLayout>
-          {/* --- 채팅방 목록 --- */}
+          {/* 채팅방 목록 */}
           <s.ChatRoomList>
             <img src={Logo} alt="로고" />
             <s.StyledHr />
@@ -75,10 +106,12 @@ const Community: React.FC = () => {
             </ul>
           </s.ChatRoomList>
 
-          {/* --- 채팅 메시지 영역 --- */}
+          {/* 채팅 메시지 영역 */}
           <s.ChatMessageArea>
             {!selectedRoom ? (
-              <s.EmptyMessageArea>채팅방을 눌러 채팅에 참여하세요!</s.EmptyMessageArea>
+              <s.EmptyMessageArea>
+                채팅방을 눌러 채팅에 참여하세요!
+              </s.EmptyMessageArea>
             ) : (
               <>
                 <s.RoomHeader>
@@ -86,26 +119,37 @@ const Community: React.FC = () => {
                   <span>현재 접속자: {onlineCount}명</span>
                 </s.RoomHeader>
 
-                <s.ChatMessagesWrapper>
-                  {(roomMessages[selectedRoom] || []).map((msg, idx) => (
-                    <s.ChatMessageItem key={idx} isMine={msg.userId === myUserId}>
-                      <s.ProfileSection>
-                        <s.ProfileImage
-                          src={msg.userProfile}
-                          alt="프로필 이미지"
-                          onClick={() => handleProfileClick(msg)}
-                        />
-                        <s.UserName>{msg.userName}</s.UserName>
-                      </s.ProfileSection>
-                      <s.ChatMessageBubble isMine={msg.userId === myUserId}>{msg.text}</s.ChatMessageBubble>
-                    </s.ChatMessageItem>
-                  ))}
+                <s.ChatMessagesWrapper id="chatMessagesWrapper">
+                  {(roomMessages[selectedRoom] || []).map((msg, idx) => {
+                    const isMine = Number(msg.userId) === myUserId;
+
+                    return (
+                      <s.ChatMessageItem key={idx} $isMine={isMine}>
+                        {/* 상대방 메시지 프로필만 표시 */}
+                        {!isMine && (
+                          <s.ProfileSection>
+                            <s.ProfileImage
+                              src={msg.userProfile || '/assets/images/default_profile.png'}
+                              alt="프로필 이미지"
+                              onClick={() => handleProfileClick(msg)}
+                            />
+                            <s.UserName>{msg.nickname}</s.UserName>
+                          </s.ProfileSection>
+                        )}
+
+                        {/* 메시지 내용 */}
+                        <s.ChatMessageBubble $isMine={isMine}>
+                          {msg.content}
+                        </s.ChatMessageBubble>
+                      </s.ChatMessageItem>
+                    );
+                  })}
                 </s.ChatMessagesWrapper>
 
-                {/* --- 프로필 모달 --- */}
+                {/* 프로필 모달 */}
                 {profileModalOpen && selectedUserInfo && (
                   <CommUserInfoModal
-                    userName={selectedUserInfo.userName}
+                    nickname={selectedUserInfo.nickname}
                     badgeName={selectedUserInfo.badgeName}
                     badgeImage={selectedUserInfo.badgeImage}
                     userProfile={selectedUserInfo.userProfile}
@@ -113,19 +157,23 @@ const Community: React.FC = () => {
                   />
                 )}
 
-                {/* --- 입력창 --- */}
+                {/* 메시지 입력창 */}
                 <s.ChatInputBox>
                   <s.InputRow>
                     <s.MessageTypeToggle>
                       <s.TypeButton
-                        selected={messageType === 'normal'}
-                        onClick={() => setMessageType('normal')}
+                        selected={messageType === 'GENERAL'}
+                        onClick={() => setMessageType('GENERAL')}
                       >
                         일반
                       </s.TypeButton>
                       <s.TypeButton
-                        selected={messageType === 'announcement'}
-                        onClick={() => setMessageType('announcement')}
+                        selected={messageType === 'MEGAPHONE'}
+                        onClick={() => {
+                          if (megaphoneRemaining > 0) setMessageType('MEGAPHONE'); 
+                          else alert('이번 달 확성기 사용 횟수를 모두 사용했습니다.'); 
+                        }}
+                        disabled={megaphoneRemaining <= 0} // 수정됨✨
                       >
                         확성기
                       </s.TypeButton>
@@ -144,11 +192,15 @@ const Community: React.FC = () => {
                     </s.SendButton>
                   </s.InputRow>
 
-                  <s.AnnouncementCountMessage>
+                  <s.MegaPhoneCountMessage>
                     <ul>
-                      <li>확성기 사용 → 한달에 2번 사용가능</li>
+                      <li>
+                        {megaphoneRemaining > 0
+                          ? `확성기 사용 → 이번 달 ${megaphoneRemaining}번 남음`
+                          : '이번 달 확성기 사용 횟수를 모두 사용했습니다.'} 
+                      </li> 
                     </ul>
-                  </s.AnnouncementCountMessage>
+                  </s.MegaPhoneCountMessage>
                 </s.ChatInputBox>
               </>
             )}

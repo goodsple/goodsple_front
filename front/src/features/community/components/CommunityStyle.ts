@@ -80,6 +80,8 @@ export const ChatMessagesWrapper = styled.div`
         display: flex;
         flex-direction: column;
         overflow-y: auto;
+
+        scroll-behavior: smooth;  /* 자동 스크롤 애니메이션 */
 `;
 
 export const EmptyMessageArea = styled.div`
@@ -93,29 +95,29 @@ export const EmptyMessageArea = styled.div`
 
 export const RoomHeader = styled.div`
         font-size: 14px;
-        color: #444;
+        color: #616161ff;
 `;
 
-export const ChatMessageBubble = styled.div<{ isMine: boolean }>`
+export const ChatMessageItem = styled.div<{ $isMine: boolean }>`
+        margin: 6px 15px;
+        display: flex;
+        flex-direction: ${({ $isMine }) => ($isMine ? 'row-reverse' : 'row')};        
+        align-items: flex-end;
+        flex-wrap: nowrap;
+`;
+
+export const ChatMessageBubble = styled.div<{ $isMine: boolean }>`
         max-width: 60%;
-        background-color: ${({ isMine }) => (isMine ? '#D7C4F5' : '#e0e0e0')};
         padding: 11px 15px;
-        margin: 13px 16px;
+        margin: 18px ${({ $isMine }) => ($isMine ? '0 0 18px 16px' : '18px 16px 18px 0')};
+        background-color: ${({ $isMine }) => ($isMine ? '#D7C4F5' : '#e0e0e0')};
         font-size: 16px;
         border-radius: 15px;
-        align-self: ${({ isMine }) => (isMine ? 'flex-end' : 'flex-start')};
+        align-self: ${({ $isMine }) => ($isMine ? 'flex-end' : 'flex-start')};
         word-wrap: break-word;
-        word-break: break-word;
         white-space: pre-wrap;
 `;
 
-export const ChatMessageItem = styled.div<{ isMine: boolean }>`
-        margin: 6px 15px;
-        align-items: flex-end;
-        display: flex;
-        flex-direction: ${({ isMine }) => (isMine ? 'row-reverse' : 'row')};
-        flex-wrap: wrap;
-`;
 
 export const ProfileSection = styled.div`
         margin: 0 5px;
@@ -192,7 +194,7 @@ export const InputRow = styled.div`
         display: flex;
 `;
 
-export const AnnouncementCountMessage = styled.div`
+export const MegaPhoneCountMessage = styled.div`
         color: #997BEB;
         font-size: 16px;
         font-weight: 300;
