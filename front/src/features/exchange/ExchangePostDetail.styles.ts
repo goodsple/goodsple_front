@@ -242,6 +242,7 @@ export const WriterProfile = styled.div`
 
 interface ProfileImageProps {
   isDefault?: boolean;
+  imageUrl?: string | null;
 }
 
 export const ProfileImage = styled.div<ProfileImageProps>`
@@ -250,6 +251,13 @@ export const ProfileImage = styled.div<ProfileImageProps>`
   background-color: #ccc;
   border-radius: 50%;
   overflow: hidden;
+  
+  img {
+    width: 100%;
+    height: 110%;
+    object-fit: cover;   /* 비율 유지하며 꽉 채움 */
+    object-position: center;
+  }
 `;
 
 export const WriterName = styled.div`
