@@ -44,7 +44,7 @@ const CurrentAuction: React.FC<Props> = ({ auction }) => {
         {/* '예정' 상태일 때만 반투명 오버레이를 보여줍니다. */}
         {isScheduled && (
           <div className={CSS.scheduledOverlay}>
-            <p>경매 예정</p>
+            <span>경매 예정</span>
             {/* 'ko-KR' 옵션으로 한국 날짜/시간 형식으로 표시 */}
             <span>{new Date(auction.startTime).toLocaleString('ko-KR')} 시작</span>
           </div>

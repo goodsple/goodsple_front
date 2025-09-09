@@ -369,11 +369,13 @@ const KakaoInfo:React.FC = () => {
                     <s.SignUpLi>휴대폰 번호</s.SignUpLi>
                     <s.InputRow>
                         <s.SignUpInput
-                        type='number'
+                        type='tel'
                         name='phoneNumber'
                         value={formData.phoneNumber}
                         onChange={handleChange}
                         placeholder='휴대폰 번호를 입력해주세요.'
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                        />
                         <s.SignUpDupli
                             type="button"
