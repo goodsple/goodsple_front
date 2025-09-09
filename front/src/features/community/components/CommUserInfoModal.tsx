@@ -4,14 +4,14 @@ import * as s from './CommUserInfoModalStyle';
 
 
 interface Props {
-  userName: string;
+  nickname: string;
   badgeName: string;
   badgeImage: string;
   userProfile: string;
   onClose: () => void;
 }
 
-const CommUserInfoModal: React.FC<Props> = ({ userName, badgeName, badgeImage, userProfile, onClose }) => {
+const CommUserInfoModal: React.FC<Props> = ({ nickname, badgeName, badgeImage, userProfile, onClose }) => {
   return (
     <s.Overlay>
       <s.Modal>
@@ -22,7 +22,7 @@ const CommUserInfoModal: React.FC<Props> = ({ userName, badgeName, badgeImage, u
         <s.CenterBar>
             <s.ProfileImage src={userProfile} alt="유저 프로필" />
             <s.Info>
-                <s.UserName>{userName}</s.UserName>
+                <s.UserName>{nickname}</s.UserName>
                 <s.BadgeInfo>
                     <span>{badgeName}</span>
                     <s.BadgeImage src={badgeImage} alt="뱃지" />
