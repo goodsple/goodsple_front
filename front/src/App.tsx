@@ -96,7 +96,7 @@ function App() {
             <Route path="/notice" element={<NoticeList />} />
             <Route path="/notice/detail" element={<NoticeDetail />} />
             <Route path="/exchange/new" element={<ExchangePost />} />
-            <Route path="/exchange/detail" element={<ExchangePostDetail />} />
+            <Route path="/exchange/detail/:postId" element={<ExchangePostDetail />} />
             <Route path="/community" element={<Community />} />
             <Route path="/chatbot" element={<ChatBotPage />} />
             <Route path="/categories" element={<CategorySelect />} />
