@@ -7,13 +7,14 @@ import chatIcon from '../../assets/images/chatIcon.png';
 import lineIcon from '../../assets/images/line_purple.png';
 import dropdownArrow from '../../assets/images/dropdownArrow.png';
 import clockIcon from '../../assets/images/clock.png';
+import defaultProfile from '../../assets/images/default_profile.png';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
-// const loginUserId = 1;  // 로그인 사용자 ID (임시)
-// const postWriterId = 0; // 게시글 작성자 ID (임시) 1은 작성자, 0은 작성자 X
-
-// const mockImages = [sample1, sample2, sample3];
+interface JwtPayload {
+    userId: number;
+}
 
 interface Post {
     postId: number;
@@ -21,7 +22,7 @@ interface Post {
     category: string;
     description: string;
     status: string;
-    writerId: number;
+    // writerId: number;
     location: string;
     tradeType: 'DIRECT' | 'DELIVERY' | 'BOTH';
     delivery: {
@@ -31,6 +32,15 @@ interface Post {
     };
     images: string[];
     createdAt: string;
+    updatedAt: string;
+
+    writer: { // 💡 추가된 필드
+        id: number;
+        profileImageUrl: string | null;
+        nickname: string;
+        level: number;
+        badgeImageUrl: string | null;
+    }
 }
 
 interface User {
@@ -48,6 +58,8 @@ const ExchangePostDetail = () => {
 
     const [post, setPost] = useState<Post | null>(null);
     const [user, setUser] = useState<User | null>(null);
+    const [isWriter, setIsWriter] = useState<boolean>(false);
+
     const [showStatusOptions, setShowStatusOptions] = useState(false)
     const [currentIndex, setCurrentIndex] = useState(0);
     const sliderRef = useRef<HTMLDivElement>(null);
@@ -55,21 +67,123 @@ const ExchangePostDetail = () => {
     const accessToken = localStorage.getItem('accessToken'); // ✅ 토큰 불러오기
     const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
 
+    const navigate = useNavigate(); // 훅으로 navigate 함수 가져오기
+
+
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const postRes = await axios.get(`/api/posts/${postIdNum}`);
+    //             setPost(postRes.data);
+
+    //             const accessToken = localStorage.getItem('accessToken');
+    //             if (accessToken) {
+    //                 const userRes = await axios.get(`/api/users/me`, {
+    //                     headers: { Authorization: `Bearer ${accessToken}` }
+    //                 });
+    //                 setUser(userRes.data);
+    //             }
+    //         } catch (err) {
+    //             console.error(err);
+    //         }
+    //     };
+    //     fetchData();
+    // }, [postIdNum]);
+
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const accessToken = localStorage.getItem('accessToken');
+    //             let currentUser = null;
+    //             if (accessToken) {
+    //                 const userRes = await axios.get(`/api/users/me`, {
+    //                     headers: { Authorization: `Bearer ${accessToken}` }
+    //                 });
+    //                 currentUser = userRes.data;
+    //                 setUser(currentUser);
+    //             }
+
+    //             const postRes = await axios.get(`/api/posts/${postIdNum}`);
+    //             setPost(postRes.data);
+
+    //             // 💡 여기서 isWriter 상태를 업데이트
+    //             if (currentUser && postRes.data) {
+    //                 setIsWriter(currentUser.id === postRes.data.writer.id);
+    //             }
+
+    //         } catch (err) {
+    //             console.error(err);
+    //         }
+    //     };
+    //     fetchData();
+    // }, [postIdNum]); // 의존성 배열에 postIdNum만 유지
+
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const accessToken = localStorage.getItem('accessToken');
+
+    //             let currentUser = null;
+    //             if (accessToken) {
+    //                 const userRes = await axios.get(`/api/users/me`, {
+    //                     headers: { Authorization: `Bearer ${accessToken}` }
+    //                 });
+    //                 console.log('userRes.data:', userRes.data); // 유저 정보 확인
+    //                 currentUser = userRes.data;
+    //                 setUser(currentUser);
+    //             }
+
+    //             const postRes = await axios.get(`/api/posts/${postIdNum}`);
+    //             const postData = postRes.data;
+    //             console.log('postData:', postData); // 게시글 정보 확인
+    //             setPost(postData);
+
+    //             if (currentUser) {
+    //                 setIsWriter(String(currentUser.id) === String(postData.writer.id));
+    //                 console.log('isWriter 계산:', String(currentUser.id) === String(postData.writer.id));
+    //             }
+    //         } catch (err) {
+    //             console.error(err);
+    //         }
+    //     };
+    //     fetchData();
+
+    // }, [postIdNum]); // 의존성 배열에 postIdNum만 유지
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [postRes, userRes] = await Promise.all([
-                    axios.get(`/api/posts/${postIdNum}`, { headers }),
-                    axios.get(`/api/users/me`, { headers }),
-                ]);
-                setPost(postRes.data);
-                setUser(userRes.data);
+                const accessToken = localStorage.getItem('accessToken');
+
+                let currentUserId: number | null = null;
+                if (accessToken) {
+                    // JWT에서 id 추출
+                    const decoded = jwtDecode<any>(accessToken);
+                    console.log('decoded token:', decoded);
+                    currentUserId = Number(decoded.sub); // 여기서 sub 사용
+                }
+
+                const postRes = await axios.get(`/api/posts/${postIdNum}`);
+                const postData = postRes.data;
+                setPost(postData);
+
+                if (currentUserId && postData.writer) {
+                    setIsWriter(currentUserId === postData.writer.id);
+                    console.log('isWriter 계산:', currentUserId === postData.writer.id);
+                }
             } catch (err) {
                 console.error(err);
             }
         };
         fetchData();
     }, [postIdNum]);
+
+
+
+    if (!post) {
+        return <div>로딩중...</div>
+    }
+
 
     // const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     //     const scrollLeft = e.currentTarget.scrollLeft;
@@ -116,9 +230,11 @@ const ExchangePostDetail = () => {
         return `${Math.floor(diff / 31536000)}년 전`;
     };
 
-    if (!post || !user) return <div>로딩중...</div>;
-
-    const isWriter = user.id === post.writerId;
+    const statusMap: { [key: string]: string } = {
+        AVAILABLE: "거래가능",
+        IN_PROGRESS: "거래중",
+        DONE: "거래완료"
+    };
 
     // // 거래상태 드롭다운
     // const [showStatusOptions, setShowStatusOptions] = useState(false);
@@ -179,7 +295,7 @@ const ExchangePostDetail = () => {
                         {isWriter && (
                             <S.StatusDropdownWrapper>
                                 <S.StatusButton selected={post.status} onClick={toggleStatusOptions}>
-                                    {post.status}
+                                    {statusMap[post.status] || post.status}
                                     <S.DropdownIcon src={dropdownArrow} alt="드롭다운 화살표" />
                                 </S.StatusButton>
                                 {showStatusOptions && (
@@ -239,7 +355,10 @@ const ExchangePostDetail = () => {
 
                     {/* 버튼 */}
                     {isWriter ? (
-                        <S.ManageButton>내 거래글 관리</S.ManageButton>
+                        <S.ManageButton
+                            onClick={() => navigate('/exchange')}
+                        >내 거래글 관리
+                        </S.ManageButton>
                     ) : (
                         <S.ButtonGroup>
                             <S.ActionButton>
@@ -264,20 +383,21 @@ const ExchangePostDetail = () => {
 
             <S.WriterSection>
                 <S.WriterProfile>
-                    <S.ProfileImage $isDefault={!user.profileImageUrl}>
+                    <S.ProfileImage imageUrl={post.writer.profileImageUrl}>
                         <img
-                            src={user.profileImageUrl || '/assets/images/default_profile.png'}
-                            alt={user.profileImageUrl ? '업로드된 프로필 이미지' : '기본 프로필 이미지'}
+                            src={post.writer.profileImageUrl || defaultProfile}
+                            alt="작성자 프로필"
                         />
 
                     </S.ProfileImage>
                     <div>
-                        <S.WriterName>{user.nickname}</S.WriterName>
+                        <S.WriterName>{post.writer.nickname || '익명'}</S.WriterName>
                         {/* <S.WriterLevel>{user.level}</S.WriterLevel> 가져올 레벨 db 없음 */}
                         <S.WriterLevel>
+                            {/* Lv.{post.writer.level} */}
                             Lv.1 새싹 교환러
-                            {user.badgeImageUrl && (
-                                <img src={user.badgeImageUrl} alt="뱃지 이미지" />
+                            {post.writer.badgeImageUrl && (
+                                <img src={post.writer.badgeImageUrl} alt="뱃지 이미지" />
                             )}
                         </S.WriterLevel>
                     </div>
