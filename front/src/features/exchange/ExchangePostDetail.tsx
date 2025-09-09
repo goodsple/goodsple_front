@@ -30,6 +30,7 @@ interface Post {
         halfDeliveryType: string; // 'GS', 'CU', 'BOTH' 등 DB에서 받아오는 값
     };
     images: string[];
+    createdAt: string;
 }
 
 interface User {
@@ -101,6 +102,20 @@ const ExchangePostDetail = () => {
         }
     };
 
+    // "n분 전", "n시간 전" 등으로 변환
+    const getTimeAgo = (isoString: string) => {
+        const created = new Date(isoString); // new Date(ISOString)
+        if (isNaN(created.getTime())) return "-"; // 안전 처리
+
+        const diff = Math.floor((Date.now() - created.getTime()) / 1000);
+        if (diff < 60) return `${diff}초 전`;
+        if (diff < 3600) return `${Math.floor(diff / 60)}분 전`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
+        if (diff < 2592000) return `${Math.floor(diff / 86400)}일 전`;
+        if (diff < 31536000) return `${Math.floor(diff / 2592000)}달 전`;
+        return `${Math.floor(diff / 31536000)}년 전`;
+    };
+
     if (!post || !user) return <div>로딩중...</div>;
 
     const isWriter = user.id === post.writerId;
@@ -149,7 +164,7 @@ const ExchangePostDetail = () => {
                             <S.StatusInfo>찜 0   조회수 0
                                 <S.TimeWrapper>
                                     <S.StatusIcon src={clockIcon} alt="시계 아이콘" />
-                                    5분 전
+                                    {getTimeAgo(post.createdAt)}
                                 </S.TimeWrapper>
                             </S.StatusInfo>
                             {!isWriter && <S.ReportButton>신고하기</S.ReportButton>}
@@ -160,7 +175,7 @@ const ExchangePostDetail = () => {
                     <S.TagWrapper>
                         {post.tradeType === 'DIRECT' || post.tradeType === 'BOTH' ? <S.Tag>직거래</S.Tag> : null}
                         {post.tradeType === 'DELIVERY' || post.tradeType === 'BOTH' ? <S.Tag>택배거래</S.Tag> : null}
-                        
+
                         {isWriter && (
                             <S.StatusDropdownWrapper>
                                 <S.StatusButton selected={post.status} onClick={toggleStatusOptions}>
