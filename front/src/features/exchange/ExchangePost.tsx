@@ -587,7 +587,7 @@ const ExchangePost = () => {
                     </S.ParcelTradeWrapper>
                 )}
 
-                <button type="submit" >등록하기</button>
+                <S.SubmitButton type="submit" >등록하기</S.SubmitButton>
             </form>
         </S.Container>
     );
