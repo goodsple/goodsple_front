@@ -93,8 +93,8 @@ const MyPage:React.FC = () => {
                 <s.Activity>
                     <s.ActivityHeader>거래 관리</s.ActivityHeader>
                     <s.StyledHr />
-                    <s.ActivityLink to="/mypage">내 거래글</s.ActivityLink>
-                    <s.ActivityLink to="/mypage">거래 내역</s.ActivityLink>
+                    <s.ActivityLink to="/exchange">내 거래글</s.ActivityLink>
+                    <s.ActivityLink to="/exchange/history">거래 내역</s.ActivityLink>
                     <s.ActivityLink to="/mypage">줄서기 내역</s.ActivityLink>
                     <s.ActivityLink to="/mypage">나의 낙찰 목록</s.ActivityLink>
                 </s.Activity>
