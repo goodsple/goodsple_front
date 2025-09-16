@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as S from './AdminNotice.styles';
 import axios from 'axios';
 import ConfirmModal from '../../../components/common/modal/ConfirmModal';
-import { jwtDecode } from 'jwt-decode';
+import  jwtDecode from 'jwt-decode';
 
 const AdminNotice = () => {
     const [title, setTitle] = useState('');

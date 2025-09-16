@@ -10,7 +10,7 @@ import clockIcon from '../../assets/images/clock.png';
 import defaultProfile from '../../assets/images/default_profile.png';
 import axios from 'axios';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import JwtDecode from 'jwt-decode';
 
 interface JwtPayload {
     userId: number;
@@ -158,7 +158,7 @@ const ExchangePostDetail = () => {
                 let currentUserId: number | null = null;
                 if (accessToken) {
                     // JWT에서 id 추출
-                    const decoded = jwtDecode<any>(accessToken);
+                    const decoded = JwtDecode<any>(accessToken);
                     console.log('decoded token:', decoded);
                     currentUserId = Number(decoded.sub); // 여기서 sub 사용
                 }
