@@ -5,6 +5,7 @@ import Pagination from '../../../components/common/pagination/Pagination';
 import * as PC from '../../../components/common/pagination/PaginationStyle';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 
 const statusOptions = ['거래가능', '거래중', '거래완료'];
@@ -33,6 +34,8 @@ const MyExchangePosts = () => {
     const [data, setData] = useState<ExchangePost[]>([]);
     const [totalPages, setTotalPages] = useState(1);
     const itemsPerPage = 5;
+
+    const navigate = useNavigate();
 
     // 거래상태
     const statusMap: Record<string, string> = {
@@ -187,7 +190,8 @@ const MyExchangePosts = () => {
                 </thead>
                 <tbody>
                     {paginatedData.map(item => (
-                        <tr key={item.exchangePostId}>
+                        <tr key={item.exchangePostId}
+                        onClick={() => navigate(`/exchange/detail/${item.exchangePostId}`)} style={{ cursor: 'pointer' }}>
                             <td>
                                 <S.Thumbnail src={item.imageUrl} alt="상품 이미지" />
                             </td>
@@ -195,7 +199,10 @@ const MyExchangePosts = () => {
                             <td>
                                 <S.StatusDropdownWrapper>
                                     <S.StatusButton
-                                        onClick={() => toggleDropdown(item.exchangePostId)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();    // 드롭다운 클릭 시 행 클릭 이벤트 방지 (버블링)
+                                            toggleDropdown(item.exchangePostId)
+                                        }}
                                         selected={item.postTradeStatus}
                                     >
                                         {statusMap[item.postTradeStatus] || item.postTradeStatus}
