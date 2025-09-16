@@ -8,6 +8,7 @@ import jwtDecode from 'jwt-decode';
 
 
 const statusOptions = ['거래가능', '거래중', '거래완료'];
+
 const FILTERS = ['전체', ...statusOptions] as const;
 type FilterType = typeof FILTERS[number];
 
@@ -36,8 +37,8 @@ const MyExchangePosts = () => {
     // 거래상태
     const statusMap: Record<string, string> = {
         AVAILABLE: '거래가능',
-        IN_PROGRESS: '거래중',
-        DONE: '거래완료',
+        ONGOING: '거래중',
+        COMPLETED: '거래완료',
     };
 
     const statusReverseMap: Record<string, string> = {
@@ -52,6 +53,7 @@ const MyExchangePosts = () => {
         DELIVERY: '택배거래',
         BOTH: '직거래 • 택배거래',
     };
+
 
     // API 호출
     useEffect(() => {
@@ -105,16 +107,42 @@ const MyExchangePosts = () => {
         setOpenDropdownId(prev => (prev === id ? null : id));
     };
 
-    const handleStatusChange = (id: number, newStatus: string) => {
-        const englishStatus = statusReverseMap[newStatus as keyof typeof statusReverseMap];
+    const handleStatusChange = async (id: number, newStatusKor: string) => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) return;
 
-        setData(prev =>
-            prev.map(item =>
-                item.exchangePostId === id ? { ...item, postTradeStatus: englishStatus } : item
-            )
-        );
-        setOpenDropdownId(null);
+            const decoded = jwtDecode<TokenPayload>(token); // 여기서 다시 디코딩
+            const userId = Number(decoded.sub);
+
+            // 한글 상태 -> 서버에 전송할 영어 상태
+            const englishStatus = statusReverseMap[newStatusKor as keyof typeof statusReverseMap];
+
+            // 서버로 거래상태 변경 요청
+            await axios.patch(
+                `/api/my-exchange-posts/${id}/status`,
+                null,
+                {
+                    params: { userId, status: englishStatus },
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+
+            // 상태 변경 후 UI 갱신
+            setData(prev =>
+                prev.map(item =>
+                    item.exchangePostId === id 
+                    ? { ...item, postTradeStatus: newStatusKor } : item
+                )
+            );
+
+            setOpenDropdownId(null);
+        } catch (err) {
+            console.error(err);
+            alert('거래상태 변경에 실패했습니다.');
+        }
     };
+
 
     const handleFilterClick = (filter: FilterType) => {
         setActiveFilter(filter);
