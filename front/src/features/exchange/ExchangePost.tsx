@@ -264,6 +264,12 @@ const ExchangePost = () => {
             return;
         }
 
+        // 직거래 선택 시 희망 장소 체크
+        if (deliveryMethods.includes('direct') && !directTradePlace.trim()) {
+            alert('거래 희망 장소를 입력해 주세요.(선택)');
+            return;
+        }
+
         if (deliveryMethods.includes('parcel') && !parcelOptions.normalFee) {
             alert('택배 거래 방식을 선택하셨다면 배송비를 입력해 주세요.');
             return;

@@ -146,6 +146,29 @@ const MyExchangePosts = () => {
         }
     };
 
+    const handleDelete = async (postId: number) => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) return;
+
+            const decoded: TokenPayload = jwtDecode(token);
+            const userId = Number(decoded.sub);
+
+            await axios.delete(`/api/my-exchange-posts/${postId}`, {
+                params: { userId },
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            // 삭제 후 UI에서 해당 항목 제거
+            setData(prev => prev.filter(item => item.exchangePostId !== postId));
+            // 필요 시 totalPages 재계산
+            setTotalPages(prev => Math.ceil((prev * itemsPerPage - 1) / itemsPerPage));
+        } catch (err) {
+            console.error(err);
+            alert('삭제 실패');
+        }
+    };
+
 
     const handleFilterClick = (filter: FilterType) => {
         setActiveFilter(filter);
@@ -159,6 +182,8 @@ const MyExchangePosts = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedData = filteredData.slice(startIndex, endIndex);
+
+
 
     return (
         <S.Container>
@@ -231,7 +256,16 @@ const MyExchangePosts = () => {
                             <td>{item.updatedAt}</td>
                             <td>
                                 <S.ManageButton>수정</S.ManageButton>
-                                <S.ManageButton>삭제</S.ManageButton>
+                                <S.ManageButton
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // 행 클릭 이벤트 방지
+                                        if (window.confirm('정말 삭제하시겠습니까?')) {
+                                            handleDelete(item.exchangePostId);
+                                        }
+                                    }}
+                                >
+                                    삭제
+                                </S.ManageButton>
                             </td>
                         </tr>
                     ))}
