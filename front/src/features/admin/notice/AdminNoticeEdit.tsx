@@ -10,6 +10,8 @@ const AdminNoticeEdit = () => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [file, setFile] = useState<File | null>(null);
+
+    const [popupId, setPopupId] = useState<number | null>(null);
     const [popupEnabled, setPopupEnabled] = useState(false);
     const [popupStart, setPopupStart] = useState('');
     const [popupEnd, setPopupEnd] = useState('');
@@ -39,7 +41,9 @@ const AdminNoticeEdit = () => {
                 setTitle(data.noticeTitle);
                 setContent(data.noticeContent);
                 setPopupEnabled(data.isPopup);
-                if (data.isPopup && data.popupInfo) {
+
+                if (data.popupInfo) {
+                    setPopupId(data.popupInfo.popupId || null);
                     setPopupStart(data.popupInfo.popupStart || '');
                     setPopupEnd(data.popupInfo.popupEnd || '');
                     setPopupImage(null); // 실제 파일은 불러오기 힘들고 URL 표시만 가능
@@ -60,28 +64,13 @@ const AdminNoticeEdit = () => {
             // 팝업 체크 여부에 따라 popupInfo 처리
             const popupData = popupEnabled
                 ? {
+                    popupId, 
                     popupStart: popupStart || null,
                     popupEnd: popupEnd || null,
                     popupImageUrl: popupImage ? URL.createObjectURL(popupImage) : null,
                     popupSummary: popupSummary || null,
-                    popupId: null, // 기존 popupId는 불러올 때 세팅해주면 자동으로 update/insert 판단 가능
                 }
                 : null;
-
-            // try {
-            //     const noticeData = {
-            //         userId,
-            //         noticeTitle: title,
-            //         noticeContent: content,
-            //         isPopup: popupEnabled,
-            //         attachments: [], // 파일 업로드 필요 시 추가
-            //         popupInfo: {
-            //             popupStart: popupStart || null,
-            //             popupEnd: popupEnd || null,
-            //             popupImageUrl: popupImage ? URL.createObjectURL(popupImage) : null,
-            //             popupSummary: popupSummary || null,
-            //         },
-            //     };
 
             const noticeData = {
                 userId,
