@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import * as S from './AdminNoticeList.styles';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Pagination from '../../../components/common/pagination/Pagination'; // 경로 맞게 조정
+
 
 interface Notice {
     noticeId: number;
@@ -20,6 +22,10 @@ interface Notice {
 const AdminNoticeList = () => {
     const [notices, setNotices] = useState<Notice[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
     const navigate = useNavigate();
 
     const accessToken = localStorage.getItem('accessToken');
@@ -41,7 +47,7 @@ const AdminNoticeList = () => {
         return `(${month}.${day})`;
     };
 
-    const fetchNotices = async (keyword: string = '') => {
+    const fetchNotices = async (keyword: string = '', page: number = 1) => {
         try {
             const response = await axios.get('/api/admin/notices', {
                 headers: {
@@ -49,12 +55,17 @@ const AdminNoticeList = () => {
                 },
                 params: {
                     title: keyword,    // 백엔드 NoticeListFilterDto의 keyword
-                    page: 1,
-                    size: 20,
+                    page,
+                    size: 10,
                 },
             });
 
-            setNotices(response.data.data); // 데이터 구조에 맞게 수정
+            const { data, totalPages, page: current } = response.data;
+
+            setNotices(data); // 데이터 구조에 맞게 수정
+            setTotalPages(totalPages);
+            setCurrentPage(current);
+
             console.log('공지사항 목록:', response.data.data);
 
         } catch (error) {
@@ -68,7 +79,7 @@ const AdminNoticeList = () => {
 
     // 공지사항 검색
     const handleSearch = () => {
-        fetchNotices(searchTerm);
+        fetchNotices(searchTerm, 1);
         console.log('검색어:', searchTerm);
     };
 
@@ -130,7 +141,7 @@ const AdminNoticeList = () => {
                 <tbody>
                     {notices.map((item, idx) => (
                         <tr key={item.noticeId}>
-                            <td>{idx + 1}</td>
+                            <td>{(currentPage - 1) * 10 + (idx + 1)}</td>
                             <td>{item.noticeTitle}</td>
                             <td>
                                 {formatDate(item.noticeCreatedAt)}
@@ -157,6 +168,12 @@ const AdminNoticeList = () => {
                     ))}
                 </tbody>
             </S.Table>
+
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={page => fetchNotices(searchTerm, page)}
+            />
         </S.Container>
     );
 };
