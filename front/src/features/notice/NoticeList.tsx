@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import * as S from './NoticeList.styles';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 
 interface NoticeItem {
@@ -17,6 +18,8 @@ const NoticeList = () => {
     const [notices, setNotices] = useState<NoticeItem[]>([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         if (page === 1) setNotices([]);
@@ -30,7 +33,7 @@ const NoticeList = () => {
             });
             const fetchedNotices: NoticeItem[] = response.data;
 
-            setNotices(prev => [...prev, ...fetchedNotices]);  
+            setNotices(prev => [...prev, ...fetchedNotices]);
             setHasMore(fetchedNotices.length === PAGE_SIZE); // 한 페이지가 꽉 차면 더 불러올 가능성 있음
         } catch (error) {
             console.error('공지사항 조회 실패:', error);
@@ -52,7 +55,7 @@ const NoticeList = () => {
             <S.TitleHeader>공지사항</S.TitleHeader>
             {notices.map((notice, index) => (
                 <React.Fragment key={notice.noticeId}>
-                    <S.Row>
+                    <S.Row onClick={() => navigate(`/notice/detail/${notice.noticeId}`)}>
                         <S.Title>{notice.noticeTitle}</S.Title>
                         {/* <S.Date>{new Date(notice.noticeCreatedAt).toLocaleDateString()}</S.Date> */}
                         <S.Date>{formatDate(notice.noticeCreatedAt)}</S.Date>
