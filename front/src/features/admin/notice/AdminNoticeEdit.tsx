@@ -57,21 +57,41 @@ const AdminNoticeEdit = () => {
         e.preventDefault();
 
         try {
+            // 팝업 체크 여부에 따라 popupInfo 처리
+            const popupData = popupEnabled
+                ? {
+                    popupStart: popupStart || null,
+                    popupEnd: popupEnd || null,
+                    popupImageUrl: popupImage ? URL.createObjectURL(popupImage) : null,
+                    popupSummary: popupSummary || null,
+                    popupId: null, // 기존 popupId는 불러올 때 세팅해주면 자동으로 update/insert 판단 가능
+                }
+                : null;
+
+            // try {
+            //     const noticeData = {
+            //         userId,
+            //         noticeTitle: title,
+            //         noticeContent: content,
+            //         isPopup: popupEnabled,
+            //         attachments: [], // 파일 업로드 필요 시 추가
+            //         popupInfo: {
+            //             popupStart: popupStart || null,
+            //             popupEnd: popupEnd || null,
+            //             popupImageUrl: popupImage ? URL.createObjectURL(popupImage) : null,
+            //             popupSummary: popupSummary || null,
+            //         },
+            //     };
+
             const noticeData = {
                 userId,
                 noticeTitle: title,
                 noticeContent: content,
                 isPopup: popupEnabled,
                 attachments: [], // 파일 업로드 필요 시 추가
-                popupInfo: popupEnabled
-                    ? {
-                        popupStart: popupStart || null,
-                        popupEnd: popupEnd || null,
-                        popupImageUrl: popupImage ? URL.createObjectURL(popupImage) : null,
-                        popupSummary: popupSummary || null,
-                    }
-                    : null,
+                popupInfo: popupData,
             };
+
 
             await axios.put(`/api/admin/notices/${noticeId}`, noticeData, {
                 headers: {

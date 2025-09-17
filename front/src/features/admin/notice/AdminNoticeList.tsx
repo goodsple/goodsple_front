@@ -110,7 +110,6 @@ const AdminNoticeList = () => {
         }
     };
 
-    
 
     return (
         <S.Container>
