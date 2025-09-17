@@ -31,7 +31,7 @@ const BookmarkPage:React.FC = () => {
             navigate('/login');
             return;
         }
-    })
+    }, [navigate]);
     
 
     useEffect(() => {
@@ -115,7 +115,10 @@ const BookmarkPage:React.FC = () => {
                 <s.FolderCreationBox onClick={() => setIsOpen(true)}>+</s.FolderCreationBox>
 
                 {folders.map((folder, index) => (
-                    <s.FolderCard key={folder.folderId ?? index}>
+                    <s.FolderCard 
+                            key={folder.folderId ?? index}
+                            onClick={() => folder.folderId && navigate(`/bookmarkPage/folder/${folder.folderId}`)}
+                        >
                         <img src={colorToImageMap[folder.color]} alt={`${folder.name} 폴더`} />
 
                         <s.FolderCardHeader>
