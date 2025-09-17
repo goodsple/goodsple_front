@@ -61,6 +61,7 @@ import AdminNoticeList from './features/admin/notice/AdminNoticeList.tsx';
 import AdminProhibitedWordsPage from './features/admin/prohibitedWords/pages/AdminProhibitedWordsPage.tsx';
 import AdminReportPage from './features/admin/report/page/AdminReportPage.tsx';
 import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
+import BookmarkFolderPage from './features/bookmark/components/BookmarkFolderPage.tsx';
 import AdminCategoryPage from './features/category/pages/AdminCategoryPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import ReportWrapper from './features/report/ReportWrapper.tsx';
@@ -87,6 +88,7 @@ function App() {
 
             <Route path="/badgeguide" element={<BadgeGuide />} />
             <Route path="/bookmarkPage" element={<BookmarkPage />} />
+            <Route path="/bookmarkPage/folder/:folderId" element={<BookmarkFolderPage />} />
             <Route path="/auction/live/:auctionId" element={<LiveAuctionPage />} />
             <Route path="/mypage/bids" element={<MyBidsPage />} />
             <Route path="/payment" element={<PaymentPage />} />
