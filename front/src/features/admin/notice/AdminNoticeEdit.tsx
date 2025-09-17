@@ -65,11 +65,11 @@ const AdminNoticeEdit = () => {
                 attachments: [], // 파일 업로드 필요 시 추가
                 popupInfo: popupEnabled
                     ? {
-                          popupStart: popupStart || null,
-                          popupEnd: popupEnd || null,
-                          popupImageUrl: popupImage ? URL.createObjectURL(popupImage) : null,
-                          popupSummary: popupSummary || null,
-                      }
+                        popupStart: popupStart || null,
+                        popupEnd: popupEnd || null,
+                        popupImageUrl: popupImage ? URL.createObjectURL(popupImage) : null,
+                        popupSummary: popupSummary || null,
+                    }
                     : null,
             };
 
