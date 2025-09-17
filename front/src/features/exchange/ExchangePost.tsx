@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import * as S from './ExchangePost.styles';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // 백엔드 DTO와 필드명이 동일하게 
 interface Category {
@@ -46,6 +47,8 @@ const ExchangePost = () => {
     const [location, setLocation] = useState('');
     const [locationCode, setLocationCode] = useState('');
     const [directTradePlace, setDirectTradePlace] = useState(''); // 직거래 장소 입력 상태
+    const navigate = useNavigate();
+
 
     // 카테고리 불러오기
     useEffect(() => {
@@ -312,6 +315,7 @@ const ExchangePost = () => {
         let imageUrls: string[] = [];
         try {
             imageUrls = await uploadImages();
+
         } catch (error) {
             const axiosError = error as any;
             console.error('이미지 업로드 실패:', axiosError.response.data);
@@ -354,12 +358,20 @@ const ExchangePost = () => {
                 }
             );
             alert('게시글 등록이 완료되었습니다.');
-            console.log('등록 성공:', response.data);
+            // console.log('등록 성공:', response.data);
+
+            console.log('response.data:', response.data)
+
+            // const locationHeader = response.headers['location']; // "/api/exchange-posts/123"
+            const newPostId = response.data.postId;
+            navigate(`/exchange/detail/${newPostId}`);
+
             // 성공 시, 페이지 이동 또는 폼 초기화
             // 예: window.location.href = `/posts/${response.data.postId}`;
         } catch (error) {
             const axiosError = error as any;
             console.error('등록 실패:', axiosError.response.data);
+
             alert(`게시글 등록에 실패했습니다: ${axiosError.response.data.message || '알 수 없는 오류'}`);
         }
     };
