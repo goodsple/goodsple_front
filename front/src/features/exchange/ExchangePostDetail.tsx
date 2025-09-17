@@ -1,16 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
-import * as S from './ExchangePostDetail.styles';
-import locationIcon from '../../assets/images/placeholder.png';
-import deliveryIcon from '../../assets/images/shipping-fee.png';
+import axios from 'axios';
+import JwtDecode from 'jwt-decode';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axiosInstance from '../../api/axiosInstance';
+import bookmarkCheckIcon from '../../assets/images/bookmarkCheckIcon.png';
 import bookmarkIcon from '../../assets/images/bookmarkIcon.png';
 import chatIcon from '../../assets/images/chatIcon.png';
-import lineIcon from '../../assets/images/line_purple.png';
-import dropdownArrow from '../../assets/images/dropdownArrow.png';
 import clockIcon from '../../assets/images/clock.png';
 import defaultProfile from '../../assets/images/default_profile.png';
-import axios from 'axios';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import JwtDecode from 'jwt-decode';
+import dropdownArrow from '../../assets/images/dropdownArrow.png';
+import locationIcon from '../../assets/images/placeholder.png';
+import deliveryIcon from '../../assets/images/shipping-fee.png';
+import BookmarkFolderSelector from '../bookmark/components/BookmarkFolderSelector';
+import FolderCreationModal from '../bookmark/components/FolderCreationModal';
+import * as S from './ExchangePostDetail.styles';
 
 interface JwtPayload {
     userId: number;
@@ -41,6 +44,7 @@ interface Post {
         level: number;
         badgeImageUrl: string | null;
     }
+
 }
 
 interface User {
@@ -49,6 +53,12 @@ interface User {
     nickname: string;
     level: number;
     badgeImageUrl: string | null;
+}
+
+interface Folder {
+    folderId? : number;
+    name: string;
+    color: string;
 }
 
 
@@ -66,6 +76,13 @@ const ExchangePostDetail = () => {
 
     const accessToken = localStorage.getItem('accessToken'); // ✅ 토큰 불러오기
     const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+
+    const [folders, setFolders] = useState<Folder[]>([]);
+    const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+    const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+
+    const [bookmarkCount, setBookmarkCount] = useState<number>(0);
+    const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
 
     const navigate = useNavigate(); // 훅으로 navigate 함수 가져오기
 
@@ -171,6 +188,16 @@ const ExchangePostDetail = () => {
                     setIsWriter(currentUserId === postData.writer.id);
                     console.log('isWriter 계산:', currentUserId === postData.writer.id);
                 }
+
+                // 북마크 정보
+                if (accessToken) {
+                    const res = await axiosInstance.get(`/bookmarks/${postIdNum}/bookmark-info`, {
+                        headers: { Authorization: `Bearer ${accessToken}` },
+                    });
+                    setBookmarkCount(res.data.bookmarkCount ?? 0);
+                    setIsBookmarked(res.data.bookmarked ?? false);
+                }
+
             } catch (err) {
                 console.error(err);
             }
@@ -178,12 +205,32 @@ const ExchangePostDetail = () => {
         fetchData();
     }, [postIdNum]);
 
-
+    // 북마크 코드 ----------------------------------------------
+    useEffect(() => {
+        const fetchFolders = async () => {
+            try {
+                    const token = localStorage.getItem("accessToken");
+                    if (!token) return;
+                    const res = await axiosInstance.get("/bookmark-folders", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    const mapped = res.data.map((f: any) => ({
+                        folderId: f.folderId,
+                        name: f.folderName,
+                        color: f.folderColor,
+                    }));
+                    setFolders(mapped);
+                    } catch (err) {
+                        console.error("폴더 로딩 실패", err);
+                    }
+            };
+            fetchFolders();
+    }, []);
+    // 북마크 코드 ----------------------------------------------
 
     if (!post) {
         return <div>로딩중...</div>
     }
-
 
     // const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     //     const scrollLeft = e.currentTarget.scrollLeft;
@@ -250,6 +297,119 @@ const ExchangePostDetail = () => {
     //     // TODO: 서버 API 호출로 거래상태 업데이트 구현
     // };
 
+
+    // 북마크 코드 ----------------------------------------------
+
+    // 폴더 생성
+    const handleCreateFolder = async (name: string, color: string) => {
+        try {
+        const token = localStorage.getItem("accessToken");
+        const res = await axiosInstance.post(
+            "/bookmark-folders",
+            { folderName: name, folderColor: color },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const newFolder = { folderId: res.data.folderId, name, color };
+        setFolders((prev) => [...prev, newFolder]);
+        setIsFolderModalOpen(false);
+        } catch (err) {
+        console.error("폴더 생성 실패", err);
+        }
+    };
+
+    // 북마크 버튼 클릭 시
+    const handleSelectFolder = async (folderName: string) => {
+        if (!post) return;
+
+        try {
+            const folder = folders.find(f => f.name === folderName);
+            if (!folder?.folderId) {
+                alert("폴더 정보를 찾을 수 없습니다.");
+                return;
+            }
+
+            const token = localStorage.getItem("accessToken");
+            if (!token) {
+                alert("로그인이 필요합니다.");
+                return;
+            }
+
+            const payload = {
+                postId: postIdNum,
+                folderId: folder.folderId,
+            };
+
+            await axiosInstance.post("/bookmarks", payload, {
+                headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+            });
+
+            alert(`'${folderName}' 폴더에 북마크로 저장되었습니다.`);
+            setIsSelectorOpen(false);
+
+            // 북마크 상태 즉시 true로 업데이트
+            setIsBookmarked(true);
+
+            // 최신 북마크 수 가져오기
+            const infoRes = await axiosInstance.get(`/bookmarks/${postIdNum}/bookmark-info`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setBookmarkCount(infoRes.data.bookmarkCount ?? 0);
+
+        } catch (err: any) {
+            console.error("북마크 저장 실패:", err.response || err);
+            alert(err.response?.data?.message || "북마크 저장에 실패했습니다. 다시 시도해주세요.");
+        }
+    };
+
+    const handleBookmarkToggle = async () => {
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        try {
+            if (isBookmarked) {
+                // 1️⃣ 현재 게시글(postId)에 해당하는 북마크Id 가져오기
+                const userBookmarksRes = await axiosInstance.get("/bookmarks", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const userBookmarks: { bookmarkId: number; postId: number; postType: string }[] = userBookmarksRes.data;
+
+                // postId와 매칭되는 bookmark 찾기
+                const bookmarkToDelete = userBookmarks.find(b => b.postId === postIdNum);
+                if (!bookmarkToDelete) {
+                    alert("삭제할 북마크를 찾을 수 없습니다.");
+                    return;
+                }
+
+                // 2️⃣ 북마크 삭제
+                await axiosInstance.delete(`/bookmarks/${bookmarkToDelete.bookmarkId}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                // 3️⃣ 삭제 후 상태 업데이트
+                setIsBookmarked(false);
+
+                // 4️⃣ 최신 북마크 수 가져오기
+                const infoRes = await axiosInstance.get(`/bookmarks/${postIdNum}/bookmark-info`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setBookmarkCount(infoRes.data.bookmarkCount ?? 0);
+
+            } else {
+                // 북마크 추가 (폴더 선택 모달 호출)
+                setIsSelectorOpen(true);
+            }
+        } catch (err: any) {
+            console.error("북마크 토글 실패:", err.response || err);
+            alert(err.response?.data?.message || "북마크 처리에 실패했습니다.");
+        }
+    };
+
+
+    // 북마크 코드 ----------------------------------------------
+
     return (
         <S.Container>
             <S.TopSection>
@@ -277,7 +437,7 @@ const ExchangePostDetail = () => {
                         <S.Category>{post.category}</S.Category>
                         <S.Title>{post.title}</S.Title>
                         <S.StatusRow>
-                            <S.StatusInfo>찜 0   조회수 0
+                            <S.StatusInfo>찜 {bookmarkCount}   조회수 0
                                 <S.TimeWrapper>
                                     <S.StatusIcon src={clockIcon} alt="시계 아이콘" />
                                     {getTimeAgo(post.createdAt)}
@@ -361,10 +521,37 @@ const ExchangePostDetail = () => {
                         </S.ManageButton>
                     ) : (
                         <S.ButtonGroup>
-                            <S.ActionButton>
-                                <img src={bookmarkIcon} alt="찜하기 아이콘" />
+                            {/* <S.ActionButton onClick={() => setIsSelectorOpen(true)} style={{ cursor: "pointer" }}>
+                                <img src={isBookmarked ? bookmarkCheckIcon : bookmarkIcon} alt="찜하기 아이콘" />
+                                찜하기
+                            </S.ActionButton> */}
+
+                            <S.ActionButton onClick={handleBookmarkToggle} style={{ cursor: "pointer" }}>
+                                <img src={isBookmarked ? bookmarkCheckIcon : bookmarkIcon} alt="찜하기 아이콘" />
                                 찜하기
                             </S.ActionButton>
+
+
+                            {/* 폴더 선택 모달 */}
+                            <BookmarkFolderSelector
+                                isOpen={isSelectorOpen}
+                                onClose={() => setIsSelectorOpen(false)}
+                                folders={folders}
+                                onSelect={handleSelectFolder}
+                                onAddFolder={() => {
+                                setIsSelectorOpen(false);
+                                setIsFolderModalOpen(true);
+                            }}
+                            />
+
+                            {/* 새 폴더 추가 모달 */}
+                            <FolderCreationModal
+                                isOpen={isFolderModalOpen}
+                                onClose={() => setIsFolderModalOpen(false)}
+                                mode="create"
+                                folders={folders}
+                                onSubmit={handleCreateFolder}
+                            />
                             <S.ActionButton $main>
                                 <img src={chatIcon} alt="채팅하기 아이콘" />
                                 채팅하기
