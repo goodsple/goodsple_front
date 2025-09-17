@@ -64,6 +64,7 @@ import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
 import AdminCategoryPage from './features/category/pages/AdminCategoryPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import ReportWrapper from './features/report/ReportWrapper.tsx';
+import AdminNoticeEdit from './features/admin/notice/AdminNoticeEdit.tsx';
 
 
 function App() {
@@ -130,6 +131,7 @@ function App() {
 
             <Route path="/admin/notice" element={<AdminNoticeList />} />
             <Route path="/admin/notice/new" element={<AdminNotice />} />
+            <Route path="/admin/notice/:noticeId/edit" element={<AdminNoticeEdit />} />
 
             <Route path="/admin/keyword" element={<AdminKeywordMonitoring />} />
 
