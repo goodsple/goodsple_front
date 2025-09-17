@@ -134,8 +134,8 @@ const MyExchangePosts = () => {
             // 상태 변경 후 UI 갱신
             setData(prev =>
                 prev.map(item =>
-                    item.exchangePostId === id 
-                    ? { ...item, postTradeStatus: newStatusKor } : item
+                    item.exchangePostId === id
+                        ? { ...item, postTradeStatus: newStatusKor } : item
                 )
             );
 
@@ -191,7 +191,7 @@ const MyExchangePosts = () => {
                 <tbody>
                     {paginatedData.map(item => (
                         <tr key={item.exchangePostId}
-                        onClick={() => navigate(`/exchange/detail/${item.exchangePostId}`)} style={{ cursor: 'pointer' }}>
+                            onClick={() => navigate(`/exchange/detail/${item.exchangePostId}`)} style={{ cursor: 'pointer' }}>
                             <td>
                                 <S.Thumbnail src={item.imageUrl} alt="상품 이미지" />
                             </td>
@@ -214,7 +214,10 @@ const MyExchangePosts = () => {
                                                 <S.StatusOption
                                                     key={option}
                                                     $selected={statusMap[item.postTradeStatus] === option}
-                                                    onClick={() => handleStatusChange(item.exchangePostId, option)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleStatusChange(item.exchangePostId, option)
+                                                    }}
                                                 >
                                                     {option}
                                                 </S.StatusOption>
