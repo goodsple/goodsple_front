@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import * as S from './AdminNotice.styles';
 import axios from 'axios';
 import ConfirmModal from '../../../components/common/modal/ConfirmModal';
-import  jwtDecode from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 const AdminNotice = () => {
     const [title, setTitle] = useState('');
@@ -18,6 +19,8 @@ const AdminNotice = () => {
     const [modalMessage, setModalMessage] = useState('');  // 모달에 보여줄 메시지
 
     const accessToken = localStorage.getItem('accessToken');
+    const navigate = useNavigate();
+
     let userId = null;
 
     if (accessToken) {
@@ -155,9 +158,11 @@ const AdminNotice = () => {
             <ConfirmModal
                 isOpen={isModalOpen}
                 content={modalMessage}          // 메시지를 content로 전달
-                onConfirm={() => setIsModalOpen(false)} // 확인 버튼 누르면 모달 닫기
+                onConfirm={() => {
+                    setIsModalOpen(false);
+                    navigate('/admin/notice'); // 등록 완료 후 목록 페이지 이동
+                }} // 확인 버튼 누르면 모달 닫기
             />
-
         </>
     );
 };
