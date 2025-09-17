@@ -1,48 +1,63 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as S from './NoticeList.styles';
+import axios from 'axios';
+
 
 interface NoticeItem {
-    id: number;
-    title: string;
-    createdAt: string; // ex) '2025.07.30'
+    noticeId: number;
+    noticeTitle: string;
+    noticeContent: string;
+    noticeCreatedAt: string; // ISO 문자열로 받아서 변환 가능
+    noticeUpdatedAt: string;
 }
 
-const dummyNotices: NoticeItem[] = [
-    { id: 1, title: '[공지] 굿즈플 점검 안내', createdAt: '2025.07.30' },
-    { id: 2, title: '[공지] 거래 사기 예방 팁', createdAt: '2025.07.28' },
-    { id: 3, title: '[공지] 여름 휴가 일정 안내', createdAt: '2025.07.26' },
-    { id: 4, title: '[공지] 서비스 이용약관 변경 안내', createdAt: '2025.07.24' },
-    { id: 5, title: '[공지] 고객센터 운영시간 변경', createdAt: '2025.07.20' },
-    { id: 6, title: '[공지] 굿즈플 홈페이지 업데이트 안내', createdAt: '2025.07.18' },
-    { id: 7, title: '[공지] 신규 카테고리 추가 안내', createdAt: '2025.07.15' },
-    { id: 8, title: '[공지] 인기 검색어 기능 추가', createdAt: '2025.07.12' },
-    { id: 9, title: '[공지] 서버 이전 작업 안내', createdAt: '2025.07.10' },
-    { id: 10, title: '[공지] 거래 관련 보안 강화', createdAt: '2025.07.08' },
-    { id: 11, title: '[공지] 이벤트 당첨자 발표', createdAt: '2025.07.06' },
-    { id: 12, title: '[공지] 시스템 오류 수정', createdAt: '2025.07.04' },
-];
+const PAGE_SIZE = 10;
 
 const NoticeList = () => {
+    const [notices, setNotices] = useState<NoticeItem[]>([]);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
 
-    const [visibleCount, setVisibleCount] = useState(10);
+    useEffect(() => {
+        if (page === 1) setNotices([]);
+        fetchNotices(page);
+    }, [page]);
 
-    const handleLoadMore = () => {
-        setVisibleCount(prev => prev + 10);
+    const fetchNotices = async (pageNum: number) => {
+        try {
+            const response = await axios.get(`/api/user/notices`, {
+                params: { page: pageNum, size: PAGE_SIZE },
+            });
+            const fetchedNotices: NoticeItem[] = response.data;
+
+            setNotices(prev => [...prev, ...fetchedNotices]);  
+            setHasMore(fetchedNotices.length === PAGE_SIZE); // 한 페이지가 꽉 차면 더 불러올 가능성 있음
+        } catch (error) {
+            console.error('공지사항 조회 실패:', error);
+            alert('공지사항을 불러오지 못했습니다.');
+        }
     };
 
-    const visibleNotices = dummyNotices.slice(0, visibleCount);
-    const hasMore = visibleCount < dummyNotices.length;
+    const handleLoadMore = () => {
+        if (hasMore) setPage(prev => prev + 1);
+    };
+
+    const formatDate = (iso: string) => {
+        const d = new Date(iso);
+        return `${d.getFullYear()}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate().toString().padStart(2, '0')}`;
+    };
 
     return (
         <S.Container>
             <S.TitleHeader>공지사항</S.TitleHeader>
-            {visibleNotices.map((notice, index) => (
-                <React.Fragment key={notice.id}>
+            {notices.map((notice, index) => (
+                <React.Fragment key={notice.noticeId}>
                     <S.Row>
-                        <S.Title>{notice.title}</S.Title>
-                        <S.Date>{notice.createdAt}</S.Date>
+                        <S.Title>{notice.noticeTitle}</S.Title>
+                        {/* <S.Date>{new Date(notice.noticeCreatedAt).toLocaleDateString()}</S.Date> */}
+                        <S.Date>{formatDate(notice.noticeCreatedAt)}</S.Date>
                     </S.Row>
-                    {index !== visibleNotices.length - 1 && <S.Divider />}
+                    {index !== notices.length - 1 && <S.Divider />}
                 </React.Fragment>
             ))}
             {hasMore && (
