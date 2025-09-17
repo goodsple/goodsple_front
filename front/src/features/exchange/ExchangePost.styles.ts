@@ -321,6 +321,25 @@ export const DeleteButton = styled.button`
   cursor: pointer;
 `;
 
+export const SubmitButton = styled.button`
+  background-color: #997BEB;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  padding: 15px 100px; // 적당히 크게
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  display: block;
+  margin: 50px auto 80px; // 중앙 정렬
+  text-align: center;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #8757d8;
+  }
+`;
+
 
 // export const DeleteButton = styled.button`
 //   position: absolute;
