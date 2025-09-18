@@ -3,32 +3,36 @@ import BookmarkFolderSelector from './BookmarkFolderSelector';
 import FolderCreationModal from './FolderCreationModal';
 
 interface Folder {
-    name: string;
-    color: string;
+    folderId: number;     
+    folderName: string;    
+    folderColor: string;   
 }
 
+let folderIdCounter = 1; 
 
 const BookmarkManager: React.FC = () => {
     const [folders, setFolders] = useState<Folder[]>([
-        { name: '기본폴더', color: '#FF4B4B' },
+        { folderId: folderIdCounter++, folderName: '기본폴더', folderColor: '#FF4B4B' },
     ]);
 
     const [isSelectorOpen, setIsSelectorOpen] = useState(false);
     const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
 
     // 북마크 선택
-    const handleSelectFolder = (folderName: string) => {
-        console.log(`북마크가 '${folderName}' 폴더에 저장되었습니다.`);
+    const handleSelectFolder = (folderId: number, mode: 'add' | 'move') => {
+        const folder = folders.find(f => f.folderId === folderId);
+        if (!folder) return;
+        console.log(`북마크가 '${folder.folderName}' 폴더에 저장되었습니다.`);
         setIsSelectorOpen(false);
     };
 
     // 새 폴더 생성 후 자동 선택
     const handleAddFolder = (name: string, color: string) => {
-        const newFolder = { name, color };
+        const newFolder: Folder = { folderId: folderIdCounter++, folderName: name, folderColor: color };
         setFolders([...folders, newFolder]);
         setIsFolderModalOpen(false);
 
-        handleSelectFolder(name); // 생성 후 자동 선택
+        handleSelectFolder(newFolder.folderId, 'add'); 
     };
 
     return (
@@ -39,6 +43,7 @@ const BookmarkManager: React.FC = () => {
                 isOpen={isSelectorOpen}
                 onClose={() => setIsSelectorOpen(false)}
                 folders={folders}
+                mode="add"
                 onSelect={handleSelectFolder}
                 onAddFolder={() => {
                     console.log('새 폴더 모달 열기');   
@@ -50,7 +55,7 @@ const BookmarkManager: React.FC = () => {
             <FolderCreationModal
                 isOpen={isFolderModalOpen}
                 onClose={() => setIsFolderModalOpen(false)}
-                folders={folders}
+                folders={folders.map(f => ({ name: f.folderName, color: f.folderColor }))}
                 mode="create"
                 onSubmit={handleAddFolder}
             />
