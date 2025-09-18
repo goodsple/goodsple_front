@@ -57,7 +57,6 @@ import AdminCommunityDetailPage from './features/admin/community/pages/AdminComm
 import AdminCommunityPage from './features/admin/community/pages/AdminCommunityPage.tsx';
 import AdminKeywordMonitoring from './features/admin/keyword/AdminKeywordMonitoring.tsx';
 import AdminNotice from './features/admin/notice/AdminNotice.tsx';
-import AdminNoticeEdit from './features/admin/notice/AdminNoticeEdit.tsx';
 import AdminNoticeList from './features/admin/notice/AdminNoticeList.tsx';
 import AdminProhibitedWordsPage from './features/admin/prohibitedWords/pages/AdminProhibitedWordsPage.tsx';
 import AdminReportPage from './features/admin/report/page/AdminReportPage.tsx';
