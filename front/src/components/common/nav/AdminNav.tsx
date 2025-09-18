@@ -10,8 +10,8 @@ const MENU_ITEMS = [
     { label: "이벤트존 관리", path: "/admin" },
     { label: "경매 관리", path: "/admin/auctions" },
     { label: "카테고리 관리", path: "/admin" },
-    { label: "금칙어 필터링 관리", path: "/admin" },
-    { label: "커뮤니티 관리", path: "/admin" },
+    { label: "금칙어 필터링 관리", path: "/admin/prohibitedwords" },
+    { label: "커뮤니티 관리", path: "/admin/community" },
     {
         label: "챗봇 관리",
         children: [
