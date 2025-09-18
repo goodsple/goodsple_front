@@ -66,6 +66,7 @@ import AdminCategoryPage from './features/category/pages/AdminCategoryPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import ReportWrapper from './features/report/ReportWrapper.tsx';
 import AdminNoticeEdit from './features/admin/notice/AdminNoticeEdit.tsx';
+import ExchangePostEdit from './features/exchange/ExchangePostEdit.tsx';
 
 
 function App() {
@@ -100,6 +101,7 @@ function App() {
             <Route path="/notice/detail/:noticeId" element={<NoticeDetail />} />
             <Route path="/exchange/new" element={<ExchangePost />} />
             <Route path="/exchange/detail/:postId" element={<ExchangePostDetail />} />
+            <Route path="/exchange/edit/:postId" element={<ExchangePostEdit />} />
             <Route path="/community" element={<Community />} />
             <Route path="/chatbot" element={<ChatBotPage />} />
             <Route path="/categories" element={<CategorySelect />} />

@@ -154,7 +154,7 @@ const MyExchangePosts = () => {
             const decoded: TokenPayload = jwtDecode(token);
             const userId = Number(decoded.sub);
 
-            await axios.delete(`/api/my-exchange-posts/${postId}`, {
+            await axios.delete(`/api/exchange-posts/${postId}`, {
                 params: { userId },
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -247,7 +247,14 @@ const MyExchangePosts = () => {
                             <td>{item.likedCount}</td>
                             <td>{item.updatedAt}</td>
                             <td>
-                                <S.ManageButton>수정</S.ManageButton>
+                                <S.ManageButton
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // 행 클릭 이벤트 방지
+                                        navigate(`/exchange/edit/${item.exchangePostId}`);
+                                    }}
+                                >
+                                    수정
+                                </S.ManageButton>
                                 <S.ManageButton
                                     onClick={(e) => {
                                         e.stopPropagation(); // 행 클릭 이벤트 방지
