@@ -174,16 +174,8 @@ const MyExchangePosts = () => {
         setActiveFilter(filter);
     };
 
-    const filteredData =
-        activeFilter === '전체'
-            ? data
-            : data.filter(d => statusMap[d.postTradeStatus] === activeFilter);
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedData = filteredData.slice(startIndex, endIndex);
-
-
+    // 현재 페이지에 해당하는 데이터만 추출
+    const paginatedData = data; // 이미 서버에서 페이지네이션된 데이터를 받으므로 그대로 사용
 
     return (
         <S.Container>
