@@ -8,7 +8,7 @@ export default defineConfig({
     global: "window",
   },
   server: {
-    allowedHosts: ['d100498525be.ngrok-free.app'],
+    allowedHosts: ['d100498525be.ngrok-free.app'], // ngrok 도메인 허용 (추가)
     proxy: {
       
       '/api': {
