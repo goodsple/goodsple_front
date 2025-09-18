@@ -1,5 +1,6 @@
 // 백엔드의 MyBidsResponse DTO와 일치하는 타입
 export interface MyWonAuction {
+  orderId: number; // [추가] orderId 필드를 추가합니다.
   auctionId: number;
   productName: string;
   imageUrl: string;
