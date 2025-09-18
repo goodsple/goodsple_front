@@ -33,7 +33,7 @@ const MyExchangePosts = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [data, setData] = useState<ExchangePost[]>([]);
     const [totalPages, setTotalPages] = useState(1);
-    const itemsPerPage = 5;
+    const itemsPerPage = 5; // 페이지당 항목 수
 
     const navigate = useNavigate();
 
