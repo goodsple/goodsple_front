@@ -1,87 +1,99 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as S from './AdminNotice.styles';
 import axios from 'axios';
 import ConfirmModal from '../../../components/common/modal/ConfirmModal';
 import jwtDecode from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const AdminNotice = () => {
+const AdminNoticeEdit = () => {
+    const { noticeId } = useParams<{ noticeId: string }>();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [file, setFile] = useState<File | null>(null);
+
+    const [popupId, setPopupId] = useState<number | null>(null);
     const [popupEnabled, setPopupEnabled] = useState(false);
     const [popupStart, setPopupStart] = useState('');
     const [popupEnd, setPopupEnd] = useState('');
     const [popupImage, setPopupImage] = useState<File | null>(null);
     const [popupSummary, setPopupSummary] = useState('');
 
-    const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
-    const [modalMessage, setModalMessage] = useState('');  // 모달에 보여줄 메시지
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
     const accessToken = localStorage.getItem('accessToken');
     const navigate = useNavigate();
-
     let userId = null;
 
     if (accessToken) {
         const decoded: any = jwtDecode(accessToken);
-        console.log("Decoded Token:", decoded); // 실제 필드 확인
-        userId = decoded.userId || decoded.id || decoded.sub; // 실제 키 맞춰서 수정
+        userId = decoded.userId || decoded.id || decoded.sub;
     }
+
+    // 기존 공지사항 데이터 불러오기
+    useEffect(() => {
+        const fetchNotice = async () => {
+            try {
+                const response = await axios.get(`/api/admin/notices/${noticeId}`, {
+                    headers: { Authorization: `Bearer ${accessToken}` },
+                });
+                const data = response.data;
+                setTitle(data.noticeTitle);
+                setContent(data.noticeContent);
+                setPopupEnabled(data.isPopup);
+
+                if (data.popupInfo) {
+                    setPopupId(data.popupInfo.popupId || null);
+                    setPopupStart(data.popupInfo.popupStart || '');
+                    setPopupEnd(data.popupInfo.popupEnd || '');
+                    setPopupImage(null); // 실제 파일은 불러오기 힘들고 URL 표시만 가능
+                    setPopupSummary(data.popupInfo.popupSummary || '');
+                }
+            } catch (error) {
+                console.error('공지사항 불러오기 실패:', error);
+                alert('공지사항 불러오기에 실패했습니다.');
+            }
+        };
+        if (noticeId) fetchNotice();
+    }, [noticeId]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
-            // 1. 공지사항 데이터 기본
+            // 팝업 체크 여부에 따라 popupInfo 처리
+            const popupData = popupEnabled
+                ? {
+                    popupId, 
+                    popupStart: popupStart || null,
+                    popupEnd: popupEnd || null,
+                    popupImageUrl: popupImage ? URL.createObjectURL(popupImage) : null,
+                    popupSummary: popupSummary || null,
+                }
+                : null;
+
             const noticeData = {
                 userId,
                 noticeTitle: title,
                 noticeContent: content,
-                noticeCreatedAt: new Date().toISOString(),
                 isPopup: popupEnabled,
-                attachments: [], // 파일은 Multipart 처리 예정
-                popupInfo: popupEnabled ? {
-                    popupStart: popupStart || null,
-                    popupEnd: popupEnd || null,
-                    popupImageUrl: popupImage ? URL.createObjectURL(popupImage) : null, // 실제 저장 후 URL 넣어야 함
-                    popupSummary: popupSummary || null,
-                } : null,
+                attachments: [], // 파일 업로드 필요 시 추가
+                popupInfo: popupData,
             };
 
-            // 2. FormData로 파일 포함해서 보내기 (추후 다시 추가 예정)
-            // const formData = new FormData();
-            // formData.append('noticeDto', new Blob([JSON.stringify(noticeData)], { type: "application/json" }));
-            // if (file) {
-            //     formData.append('attachments', file);
-            // }
-            // if (popupEnabled && popupImage) {
-            //     formData.append('attachments', popupImage);
-            // }
 
-            // 3. POST 요청
-            await axios.post('/api/admin/notices', noticeData, {
+            await axios.put(`/api/admin/notices/${noticeId}`, noticeData, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
             });
 
-            setModalMessage('공지사항이 등록되었습니다.');
+            setModalMessage('공지사항이 수정되었습니다.');
             setIsModalOpen(true);
-
-            setTitle('');
-            setContent('');
-            setFile(null);
-            setPopupEnabled(false);
-            setPopupStart('');
-            setPopupEnd('');
-            setPopupImage(null);
-            setPopupSummary('');
-
         } catch (error) {
-            console.error('공지사항 등록 실패:', error);
-            alert('공지사항 등록 중 오류가 발생했습니다.');
+            console.error('공지사항 수정 실패:', error);
+            alert('공지사항 수정 중 오류가 발생했습니다.');
         }
     };
 
@@ -93,7 +105,7 @@ const AdminNotice = () => {
                     <S.Input
                         maxLength={40}
                         value={title}
-                        onChange={e => setTitle(e.target.value)}
+                        onChange={(e) => setTitle(e.target.value)}
                     />
                     <S.CharCount>{title.length}/40</S.CharCount>
                 </S.FormGroup>
@@ -103,14 +115,14 @@ const AdminNotice = () => {
                     <S.Textarea
                         maxLength={2000}
                         value={content}
-                        onChange={e => setContent(e.target.value)}
+                        onChange={(e) => setContent(e.target.value)}
                     />
                     <S.CharCount>{content.length}/2000</S.CharCount>
                 </S.FormGroup>
 
                 <S.FormGroup>
                     <S.Label>첨부 파일</S.Label>
-                    <S.FileInput type="file" onChange={e => setFile(e.target.files?.[0] || null)} />
+                    <S.FileInput type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} />
                 </S.FormGroup>
 
                 <S.Divider />
@@ -127,15 +139,15 @@ const AdminNotice = () => {
                         <S.FormGroup>
                             <S.Label>팝업 노출기간</S.Label>
                             <S.DateRangeWrapper>
-                                <S.Input type="date" value={popupStart} onChange={e => setPopupStart(e.target.value)} />
+                                <S.Input type="date" value={popupStart} onChange={(e) => setPopupStart(e.target.value)} />
                                 <span>~</span>
-                                <S.Input type="date" value={popupEnd} onChange={e => setPopupEnd(e.target.value)} />
+                                <S.Input type="date" value={popupEnd} onChange={(e) => setPopupEnd(e.target.value)} />
                             </S.DateRangeWrapper>
                         </S.FormGroup>
 
                         <S.FormGroup>
                             <S.Label>팝업용 이미지</S.Label>
-                            <S.FileInput type="file" onChange={e => setPopupImage(e.target.files?.[0] || null)} />
+                            <S.FileInput type="file" onChange={(e) => setPopupImage(e.target.files?.[0] || null)} />
                         </S.FormGroup>
 
                         <S.FormGroup>
@@ -143,7 +155,7 @@ const AdminNotice = () => {
                             <S.Textarea
                                 maxLength={203}
                                 value={popupSummary}
-                                onChange={e => setPopupSummary(e.target.value)}
+                                onChange={(e) => setPopupSummary(e.target.value)}
                             />
                             <S.CharCount>{popupSummary.length}/203</S.CharCount>
                         </S.FormGroup>
@@ -151,20 +163,20 @@ const AdminNotice = () => {
                 )}
 
                 <S.SubmitWrapper>
-                    <S.SubmitButton type="submit">등록하기</S.SubmitButton>
+                    <S.SubmitButton type="submit">수정하기</S.SubmitButton>
                 </S.SubmitWrapper>
             </S.FormContainer>
 
             <ConfirmModal
                 isOpen={isModalOpen}
-                content={modalMessage}          // 메시지를 content로 전달
+                content={modalMessage}
                 onConfirm={() => {
                     setIsModalOpen(false);
-                    navigate('/admin/notice'); // 등록 완료 후 목록 페이지 이동
-                }} // 확인 버튼 누르면 모달 닫기
+                    navigate('/admin/notice'); // 수정 완료 후 목록 페이지 이동
+                }}
             />
         </>
     );
 };
 
-export default AdminNotice;
+export default AdminNoticeEdit;

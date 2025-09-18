@@ -65,6 +65,7 @@ import BookmarkFolderPage from './features/bookmark/components/BookmarkFolderPag
 import AdminCategoryPage from './features/category/pages/AdminCategoryPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import ReportWrapper from './features/report/ReportWrapper.tsx';
+import AdminNoticeEdit from './features/admin/notice/AdminNoticeEdit.tsx';
 
 
 function App() {
@@ -96,7 +97,7 @@ function App() {
             <Route path="/payment/failure" element={<PaymentFailurePage />} />
             <Route path="/map" element={<MapViewPage />} />
             <Route path="/notice" element={<NoticeList />} />
-            <Route path="/notice/detail" element={<NoticeDetail />} />
+            <Route path="/notice/detail/:noticeId" element={<NoticeDetail />} />
             <Route path="/exchange/new" element={<ExchangePost />} />
             <Route path="/exchange/detail/:postId" element={<ExchangePostDetail />} />
             <Route path="/community" element={<Community />} />
@@ -132,6 +133,7 @@ function App() {
 
             <Route path="/admin/notice" element={<AdminNoticeList />} />
             <Route path="/admin/notice/new" element={<AdminNotice />} />
+            <Route path="/admin/notice/:noticeId/edit" element={<AdminNoticeEdit />} />
 
             <Route path="/admin/keyword" element={<AdminKeywordMonitoring />} />
 
