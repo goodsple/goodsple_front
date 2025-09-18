@@ -33,7 +33,7 @@ const MyExchangePosts = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [data, setData] = useState<ExchangePost[]>([]);
     const [totalPages, setTotalPages] = useState(1);
-    const itemsPerPage = 5;
+    const itemsPerPage = 5; // 페이지당 항목 수
 
     const navigate = useNavigate();
 
@@ -134,8 +134,8 @@ const MyExchangePosts = () => {
             // 상태 변경 후 UI 갱신
             setData(prev =>
                 prev.map(item =>
-                    item.exchangePostId === id 
-                    ? { ...item, postTradeStatus: newStatusKor } : item
+                    item.exchangePostId === id
+                        ? { ...item, postTradeStatus: newStatusKor } : item
                 )
             );
 
@@ -146,19 +146,36 @@ const MyExchangePosts = () => {
         }
     };
 
+    const handleDelete = async (postId: number) => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) return;
+
+            const decoded: TokenPayload = jwtDecode(token);
+            const userId = Number(decoded.sub);
+
+            await axios.delete(`/api/my-exchange-posts/${postId}`, {
+                params: { userId },
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            // 삭제 후 UI에서 해당 항목 제거
+            setData(prev => prev.filter(item => item.exchangePostId !== postId));
+            // 필요 시 totalPages 재계산
+            setTotalPages(prev => Math.ceil((prev * itemsPerPage - 1) / itemsPerPage));
+        } catch (err) {
+            console.error(err);
+            alert('삭제 실패');
+        }
+    };
+
 
     const handleFilterClick = (filter: FilterType) => {
         setActiveFilter(filter);
     };
 
-    const filteredData =
-        activeFilter === '전체'
-            ? data
-            : data.filter(d => statusMap[d.postTradeStatus] === activeFilter);
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedData = filteredData.slice(startIndex, endIndex);
+    // 현재 페이지에 해당하는 데이터만 추출
+    const paginatedData = data; // 이미 서버에서 페이지네이션된 데이터를 받으므로 그대로 사용
 
     return (
         <S.Container>
@@ -191,7 +208,7 @@ const MyExchangePosts = () => {
                 <tbody>
                     {paginatedData.map(item => (
                         <tr key={item.exchangePostId}
-                        onClick={() => navigate(`/exchange/detail/${item.exchangePostId}`)} style={{ cursor: 'pointer' }}>
+                            onClick={() => navigate(`/exchange/detail/${item.exchangePostId}`)} style={{ cursor: 'pointer' }}>
                             <td>
                                 <S.Thumbnail src={item.imageUrl} alt="상품 이미지" />
                             </td>
@@ -214,7 +231,10 @@ const MyExchangePosts = () => {
                                                 <S.StatusOption
                                                     key={option}
                                                     $selected={statusMap[item.postTradeStatus] === option}
-                                                    onClick={() => handleStatusChange(item.exchangePostId, option)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleStatusChange(item.exchangePostId, option)
+                                                    }}
                                                 >
                                                     {option}
                                                 </S.StatusOption>
@@ -228,7 +248,16 @@ const MyExchangePosts = () => {
                             <td>{item.updatedAt}</td>
                             <td>
                                 <S.ManageButton>수정</S.ManageButton>
-                                <S.ManageButton>삭제</S.ManageButton>
+                                <S.ManageButton
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // 행 클릭 이벤트 방지
+                                        if (window.confirm('정말 삭제하시겠습니까?')) {
+                                            handleDelete(item.exchangePostId);
+                                        }
+                                    }}
+                                >
+                                    삭제
+                                </S.ManageButton>
                             </td>
                         </tr>
                     ))}
