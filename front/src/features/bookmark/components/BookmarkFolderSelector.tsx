@@ -10,9 +10,9 @@ interface BookmarkFolderSelectorProps {
   isOpen: boolean;
   onClose: () => void;
   folders: Folder[];
-  mode: "add" | "move"; // 폴더 추가 / 이동 모드 구분
-  onSelect: (folderId: number, mode: "add" | "move") => void; // 폴더 ID + 모드 전달
-  onAddFolder: () => void; // 새 폴더 추가 버튼
+  mode: "add" | "move"; 
+  onSelect: (folderId: number, mode: "add" | "move") => void; 
+  onAddFolder: () => void; 
 }
 
 const BookmarkFolderSelector: React.FC<BookmarkFolderSelectorProps> = ({
@@ -40,7 +40,7 @@ const BookmarkFolderSelector: React.FC<BookmarkFolderSelectorProps> = ({
           {folders.map((folder) => (
             <s.FolderItem
               key={folder.folderId}
-              onClick={() => onSelect(folder.folderId, mode)} // ✅ 모드까지 함께 전달
+              onClick={() => onSelect(folder.folderId, mode)} 
             >
               {folder.folderName}
             </s.FolderItem>

@@ -6,15 +6,13 @@ import BookmarkFolderSelector from './BookmarkFolderSelector';
 import * as s from './BookmarkPageStyle';
 import FolderCreationModal from './FolderCreationModal';
 
-
 interface Folder {
-    folderId? : number;
-    name: string;
-    color: string;
+    folderId: number;
+    folderName: string;
+    folderColor: string;
 }
 
-const BookmarkPage:React.FC = () => {
-
+const BookmarkPage: React.FC = () => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [isSelectorOpen, setIsSelectorOpen] = useState(false);
@@ -23,34 +21,31 @@ const BookmarkPage:React.FC = () => {
     const [editIndex, setEditIndex] = useState<number | null>(null);
     const [editFolder, setEditFolder] = useState<Folder | null>(null);
 
+    // 로그인 체크
     useEffect(() => {
-        // 로그인 여부 체크
         const token = localStorage.getItem('accessToken');
-        if(!token) {
+        if (!token) {
             alert('로그인 후 이용 가능합니다.');
             navigate('/login');
-            return;
         }
     }, [navigate]);
-    
 
+    // 폴더 리스트 불러오기
     useEffect(() => {
-        // 초기 폴더 데이터 로딩
         const fetchFolders = async () => {
             try {
                 const token = localStorage.getItem('accessToken');
                 const res = await axiosInstance.get('/bookmark-folders', {
-                    headers: { Authorization: `Bearer ${token}` } 
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 const mapped = res.data.map((f: any) => ({
                     folderId: f.folderId,
-                    name: f.folderName,
-                    color: f.folderColor
+                    folderName: f.folderName,
+                    folderColor: f.folderColor,
                 }));
                 setFolders(mapped);
             } catch (err) {
                 console.error(err);
-                // alert('폴더 로딩 실패');
             }
         };
         fetchFolders();
@@ -63,10 +58,9 @@ const BookmarkPage:React.FC = () => {
             const res = await axiosInstance.post(
                 '/bookmark-folders',
                 { folderName: name, folderColor: color },
-                { headers: { Authorization: `Bearer ${token}` } } 
+                { headers: { Authorization: `Bearer ${token}` } }
             );
-            // 새 폴더 반환값에 folderId가 포함되어 있다면 바로 추가
-            const newFolder = { folderId: res.data.folderId, name, color };
+            const newFolder = { folderId: res.data.folderId, folderName: name, folderColor: color };
             setFolders(prev => [...prev, newFolder]);
         } catch (err) {
             console.error(err);
@@ -81,14 +75,9 @@ const BookmarkPage:React.FC = () => {
             await axiosInstance.put(
                 `/bookmark-folders/${folderId}`,
                 { folderName: name, folderColor: color },
-                { headers: { Authorization: `Bearer ${token}` } } 
+                { headers: { Authorization: `Bearer ${token}` } }
             );
-            setFolders(prev => {
-                const updated = [...prev];
-                const index = updated.findIndex(f => f.folderId === folderId);
-                if (index !== -1) updated[index] = { folderId, name, color };
-                return updated;
-            });
+            setFolders(prev => prev.map(f => (f.folderId === folderId ? { folderId, folderName: name, folderColor: color } : f)));
         } catch (err) {
             console.error(err);
             alert('폴더 수정 실패');
@@ -100,7 +89,7 @@ const BookmarkPage:React.FC = () => {
         try {
             const token = localStorage.getItem('accessToken');
             await axiosInstance.delete(`/bookmark-folders/${folderId}`, {
-                headers: { Authorization: `Bearer ${token}` } 
+                headers: { Authorization: `Bearer ${token}` },
             });
             setFolders(prev => prev.filter(f => f.folderId !== folderId));
         } catch (err) {
@@ -109,28 +98,49 @@ const BookmarkPage:React.FC = () => {
         }
     };
 
-   return (
+    // 폴더 선택 (북마크 추가/이동)
+    const handleSelectFolder = (folderId: number, mode: 'add' | 'move') => {
+        const folder = folders.find(f => f.folderId === folderId);
+        if (!folder) return;
+        alert(`'${folder.folderName}' 폴더에 북마크를 ${mode === 'add' ? '저장' : '이동'}합니다.`);
+        setIsSelectorOpen(false);
+    };
+
+    return (
         <s.BookmarkPageContainer>
             <s.BookmarkPageSection>
-                <s.FolderCreationBox onClick={() => setIsOpen(true)}>+</s.FolderCreationBox>
+                {/* 폴더 생성 버튼 */}
+                <s.FolderCreationBox onClick={() => {
+                    setEditIndex(null);
+                    setEditFolder(null);
+                    setIsOpen(true);
+                }}>+</s.FolderCreationBox>
 
+                {/* 폴더 카드 리스트 */}
                 {folders.map((folder, index) => (
-                    <s.FolderCard 
-                            key={folder.folderId ?? index}
-                            onClick={() => folder.folderId && navigate(`/bookmarkPage/folder/${folder.folderId}`)}
-                        >
-                        <img src={colorToImageMap[folder.color]} alt={`${folder.name} 폴더`} />
-
+                    <s.FolderCard
+                        key={folder.folderId ?? index}
+                        onClick={() => navigate(`/bookmarkPage/folder/${folder.folderId}`)}
+                    >
+                        <img src={colorToImageMap[folder.folderColor]} alt={`${folder.folderName} 폴더`} />
                         <s.FolderCardHeader>
-                            <p>{folder.name}</p>
-                            <s.DropdownToggle onClick={() => setDropdownOpenIndex(dropdownOpenIndex === index ? null : index)}>
+                            <p>{folder.folderName}</p>
+                            {/* 드롭다운 토글 */}
+                            <s.DropdownToggle
+                                onClick={(e) => {
+                                    e.stopPropagation(); 
+                                    setDropdownOpenIndex(dropdownOpenIndex === index ? null : index);
+                                }}
+                            >
                                 v
                             </s.DropdownToggle>
 
+                            {/* 드롭다운 메뉴 */}
                             {dropdownOpenIndex === index && (
                                 <s.DropdownMenu>
                                     <s.MenuItem
-                                        onClick={() => {
+                                        onClick={(e) => {
+                                            e.stopPropagation();
                                             setEditIndex(index);
                                             setEditFolder(folder);
                                             setIsOpen(true);
@@ -141,8 +151,9 @@ const BookmarkPage:React.FC = () => {
                                     </s.MenuItem>
                                     <s.StyledHr />
                                     <s.DeleteItem
-                                        onClick={() => {
-                                            if(folder.folderId) handleDeleteFolder(folder.folderId); 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteFolder(folder.folderId);
                                             setDropdownOpenIndex(null);
                                         }}
                                     >
@@ -154,6 +165,7 @@ const BookmarkPage:React.FC = () => {
                     </s.FolderCard>
                 ))}
 
+                {/* 폴더 생성/수정 모달 */}
                 <FolderCreationModal
                     isOpen={isOpen}
                     onClose={() => {
@@ -161,10 +173,10 @@ const BookmarkPage:React.FC = () => {
                         setEditIndex(null);
                         setEditFolder(null);
                     }}
-                    mode={editIndex !== null ? "edit" : "create"}
-                    initialFolderName={editFolder?.name}
-                    initialColor={editFolder?.color || '#FF4B4B'} // 기본값 설정
-                    folders={folders}
+                    mode={editIndex !== null ? 'edit' : 'create'}
+                    initialFolderName={editFolder?.folderName}
+                    initialColor={editFolder?.folderColor || '#FF4B4B'}
+                    folders={folders.map(f => ({ name: f.folderName, color: f.folderColor }))}
                     onSubmit={(name, color) => {
                         if (editIndex !== null && editFolder?.folderId) {
                             handleEditFolder(editFolder.folderId, name, color);
@@ -177,29 +189,26 @@ const BookmarkPage:React.FC = () => {
                     }}
                 />
 
-                <s.AddBookmark onClick={() => setIsSelectorOpen(true)}>
-                    북마크 추가
-                </s.AddBookmark>
+                {/* 북마크 추가 버튼 */}
+                <s.AddBookmark onClick={() => setIsSelectorOpen(true)}>북마크 추가</s.AddBookmark>
 
+                {/* 폴더 선택 모달 */}
                 <BookmarkFolderSelector
                     isOpen={isSelectorOpen}
                     onClose={() => setIsSelectorOpen(false)}
                     folders={folders}
-                    onSelect={(folderName) => {
-                        alert(`'${folderName}' 폴더에 북마크를 저장합니다.`);
+                    mode="add"
+                    onSelect={handleSelectFolder}
+                    onAddFolder={() => {
                         setIsSelectorOpen(false);
-                    }}
-                    onAddFolder={() => {   
-                        console.log('새 폴더 모달 열기');
-                        setIsSelectorOpen(false); // 선택 모달 닫기
-                        setIsOpen(true);          // 폴더 생성 모달 열기
+                        setEditIndex(null);
+                        setEditFolder(null);
+                        setIsOpen(true);
                     }}
                 />
-
             </s.BookmarkPageSection>
         </s.BookmarkPageContainer>
     );
 };
-
 
 export default BookmarkPage;

@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'; // [추가] useNavigate 훅 import
 import type { MyWonAuction } from '../../mybids/types/mybids'; // [수정] 타입을 새로 만든 것으로 변경
 import CountdownTimer from './CountdownTimer';
 import * as S from './MyBidCardStyle';
@@ -17,6 +18,8 @@ const translatePaymentStatus = (status: string) => {
 };
 
 const MyBidCard: React.FC<Props> = ({ auction }) => {
+  const navigate = useNavigate(); // [추가] navigate 함수 생성
+
   const paymentStatusKo = translatePaymentStatus(auction.paymentStatus);
 
   const getStatusClass = () => {
@@ -28,7 +31,14 @@ const MyBidCard: React.FC<Props> = ({ auction }) => {
   const getButton = () => {
     switch (paymentStatusKo) {
       case '미결제':
-        return <S.PayButton>결제하기</S.PayButton>;
+        return (
+          <S.PayButton 
+            // [수정] auction.auctionId -> auction.orderId 로 변경합니다.
+            onClick={() => navigate(`/payment/${auction.orderId}`)}
+          >
+            결제하기
+          </S.PayButton>
+        );
       case '미결제(기한초과)':
         return <S.PayButton className="expired" disabled>결제 기한 만료</S.PayButton>;
       case '결제 완료':
