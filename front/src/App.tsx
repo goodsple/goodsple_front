@@ -57,6 +57,7 @@ import AdminCommunityDetailPage from './features/admin/community/pages/AdminComm
 import AdminCommunityPage from './features/admin/community/pages/AdminCommunityPage.tsx';
 import AdminKeywordMonitoring from './features/admin/keyword/AdminKeywordMonitoring.tsx';
 import AdminNotice from './features/admin/notice/AdminNotice.tsx';
+import AdminNoticeEdit from './features/admin/notice/AdminNoticeEdit.tsx';
 import AdminNoticeList from './features/admin/notice/AdminNoticeList.tsx';
 import AdminProhibitedWordsPage from './features/admin/prohibitedWords/pages/AdminProhibitedWordsPage.tsx';
 import AdminReportPage from './features/admin/report/page/AdminReportPage.tsx';
@@ -93,7 +94,7 @@ function App() {
             <Route path="/bookmarkPage/folder/:folderId" element={<BookmarkFolderPage />} />
             <Route path="/auction/live/:auctionId" element={<LiveAuctionPage />} />
             <Route path="/mypage/bids" element={<MyBidsPage />} />
-            <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/payment/:orderId" element={<PaymentPage />} />
             <Route path="/payment/success" element={<PaymentSuccessPage />} />
             <Route path="/payment/failure" element={<PaymentFailurePage />} />
             <Route path="/map" element={<MapViewPage />} />

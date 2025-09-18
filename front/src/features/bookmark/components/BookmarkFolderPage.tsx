@@ -245,8 +245,8 @@ const BookmarkFolderPage: React.FC = () => {
                 isOpen={isSelectorOpen}
                 onClose={() => setIsSelectorOpen(false)}
                 folders={folders}
-                mode="move" // ✅ BookmarkFolderSelector와 맞춤
-                onSelect={(folderId) => handleMove(folderId)} // ✅ folderId만 받도록
+                mode="move" 
+                onSelect={(folderId) => handleMove(folderId)} 
                 onAddFolder={() => alert("새 폴더 추가 기능 준비중")}
             />
         </s.BookmarkFolderPageContainer>
