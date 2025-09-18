@@ -68,10 +68,11 @@ export const useWebSocket = (selectedRoom: string | null, myUserId: number) => {
       stompClientRef.current.deactivate();
     }
 
-    // const socket = new SockJS('/ws');   // 기존 코드
+    const socket = new SockJS('/ws');   // 기존 코드
 
-    const NGROK_HOST = 'https://d100498525be.ngrok-free.app';
-    const socket = new SockJS(`${NGROK_HOST}/ws`);
+    // ngrok 터널링 주소로 변경(테스트용으로 추가)
+    // const NGROK_HOST = 'https://33cf56de0ac8.ngrok-free.app';
+    // const socket = new SockJS(`${NGROK_HOST}/ws`);
 
     const stompClient = new Client({
       webSocketFactory: () => socket as any,
