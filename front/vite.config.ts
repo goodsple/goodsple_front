@@ -8,7 +8,9 @@ export default defineConfig({
     global: "window",
   },
   server: {
+    allowedHosts: ['d100498525be.ngrok-free.app'],
     proxy: {
+      
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
