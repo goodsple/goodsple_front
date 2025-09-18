@@ -1,7 +1,91 @@
-import { mockPaymentResultData } from '../mock/paymentResultData';
-import * as S from './PaymentResultPageStyle'; // 공통 스타일 사용
+// PaymentSuccessPage.tsx
+
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { confirmPayment } from '../api/paymentApi'; // API 함수 import
+import * as S from './PaymentResultPageStyle';
 
 const PaymentSuccessPage = () => {
+  const [searchParams] = useSearchParams();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const hasBeenCalled = useRef(false); // [추가] API 호출 여부를 추적하기 위한 ref
+  
+  // [추가] 실제 주문 정보를 담을 상태
+  const [orderInfo, setOrderInfo] = useState({
+    orderId: '',
+    productName: '', // 백엔드에서 productName을 받아올 수 있다면 추가
+    totalPrice: 0,
+  });
+
+  useEffect(() => {
+
+    // [추가] 이미 API가 호출되었다면, 두 번째 실행을 막습니다.
+    if (hasBeenCalled.current) {
+      return;
+    }
+
+    const processPayment = async () => {
+      // 1. URL 쿼리 스트링에서 결제 정보 추출
+      const paymentKey = searchParams.get('paymentKey');
+      const tossOrderId = searchParams.get('orderId'); // 예: "ORD_3_1758..."
+      const amount = searchParams.get('amount');
+
+      // [수정] tossOrderId에서 우리 시스템의 orderId를 추출합니다.
+      const ourOrderId = tossOrderId ? tossOrderId.split('_')[1] : null;
+
+      if (!paymentKey || !ourOrderId || !tossOrderId || !amount) { // tossOrderId 유효성 검사 추가
+        setError('잘못된 결제 정보입니다.');
+        setIsLoading(false);
+        return;
+      }
+
+      // [추가] API를 호출하기 직전에, 호출했다는 사실을 기록합니다.
+      hasBeenCalled.current = true;
+
+      try {
+      await confirmPayment({
+        paymentKey,
+        orderId: ourOrderId,
+        tossOrderId: tossOrderId, // [추가] tossOrderId를 함께 보냅니다.
+        amount: Number(amount),
+          shippingInfo: { name: '', phone: '', postalCode: '', address: '', message: '' }
+        });
+
+        // 3. 승인 성공 시, 화면에 표시할 정보 설정
+        setOrderInfo({
+            orderId: ourOrderId,
+            productName: "주문 상품", // 백엔드 API가 상품명을 반환하도록 수정하면 더 좋음
+            totalPrice: Number(amount),
+        });
+
+      } catch (err: any) {
+        console.error("결제 승인 실패:", err);
+        setError(err.response?.data?.message || '결제 승인에 실패했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    processPayment();
+  }, [searchParams]);
+
+  if (isLoading) {
+    return <div>결제 승인 중...</div>;
+  }
+
+  if (error) {
+    return (
+      <S.PageWrapper>
+        <S.ResultCard className="failure">
+            <S.Icon>⚠️</S.Icon>
+            <S.Title>결제 승인에 실패했습니다.</S.Title>
+            <S.Message>{error}</S.Message>
+        </S.ResultCard>
+      </S.PageWrapper>
+    );
+  }
+
   return (
     <S.PageWrapper>
       <S.ResultCard>
@@ -15,15 +99,15 @@ const PaymentSuccessPage = () => {
         <S.OrderSummary>
           <S.SummaryRow>
             <span>주문 번호</span>
-            <span>{mockPaymentResultData.orderId}</span>
+            <span>{orderInfo.orderId}</span>
           </S.SummaryRow>
           <S.SummaryRow>
             <span>상품명</span>
-            <span>{mockPaymentResultData.productName}</span>
+            <span>{orderInfo.productName}</span>
           </S.SummaryRow>
           <S.SummaryRow className="total">
             <span>최종 결제 금액</span>
-            <span>{mockPaymentResultData.totalPrice.toLocaleString()}원</span>
+            <span>{orderInfo.totalPrice.toLocaleString()}원</span>
           </S.SummaryRow>
         </S.OrderSummary>
 
