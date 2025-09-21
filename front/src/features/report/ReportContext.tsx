@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { OpenReportParams, ReportPayload, ReportReason } from "./types/report";
+import { toDbTargetType } from "./types/report"; 
 import axios from "../../api/axiosInstance";
 import ReportModal from "../../components/common/modal/ReportModal";
 
@@ -65,32 +66,45 @@ export function ReportProvider({ children }: { children: React.ReactNode }){
     // ─────────────────────────────────────────────────────────────
     const submitReport = useCallback(
         async (selectedIds: number[], detailText: string): Promise<boolean> => {
-          if (!target) return false
-          if (selectedIds.length === 0) return false
+          if (!target) return false;
+          if (selectedIds.length === 0) return false;
+      
           try {
-            setSubmitting(true)
+            setSubmitting(true);
+      
             const payload: ReportPayload = {
-              reportTargetUserId: target.reportTargetUserId ?? null,
-              targetType: target.targetType,
-              targetId: target.targetId,
-              reportDescription: detailText,
-            }
-            await axios.post('/reports', payload, { params: { reasonIds: selectedIds } })
-            return true
+              reportTargetUserId:
+                target.reportTargetUserId != null ? Number(target.reportTargetUserId) : null,
+                targetType: toDbTargetType(target.targetType),  
+              targetId: Number(target.targetId),
+              reportDescription: (detailText ?? '').trim(),
+            };
+      
+            console.log('[REPORT] payload', payload, 'reasonIds', selectedIds);
+      
+            // reasonIds=1&reasonIds=3 형태로 직접 붙이기 (paramsSerializer 영향 회피)
+            const qs = selectedIds
+              .map((id) => `reasonIds=${encodeURIComponent(String(id))}`)
+              .join('&');
+      
+            await axios.post(`/reports?${qs}`, payload);
+      
+            return true;
           } catch (err: any) {
-            console.error(err)
-            const status = err?.response?.status
-            if (status === 409) alert('이미 접수된 신고입니다.')
-            else if (status === 401) alert('로그인이 필요합니다.')
-            else if (status === 400) alert('잘못된 요청입니다.')
-            else alert('신고 중 오류가 발생했습니다.')
-            return false
+            console.error('[REPORT] error', err?.response?.status, err?.response?.data);
+            const status = err?.response?.status;
+            if (status === 409) alert('이미 접수된 신고입니다.');
+            else if (status === 401) alert('로그인이 필요합니다.');
+            else if (status === 400) alert(err?.response?.data?.message || '잘못된 요청입니다.');
+            else alert('신고 중 오류가 발생했습니다.');
+            return false;
           } finally {
-            setSubmitting(false)
+            setSubmitting(false);
           }
         },
         [target]
-    )
+      );
+      
         
     // 컨텍스트 값 메모이제이션(불필요 리렌더 방지)
     const value = useMemo(() => ({ openReport, closeReport }), [openReport, closeReport])

@@ -14,6 +14,7 @@ import deliveryIcon from '../../assets/images/shipping-fee.png';
 import BookmarkFolderSelector from '../bookmark/components/BookmarkFolderSelector';
 import FolderCreationModal from '../bookmark/components/FolderCreationModal';
 import * as S from './ExchangePostDetail.styles';
+import { useReport } from '../report/ReportContext';
 
 interface JwtPayload {
     userId: number;
@@ -86,6 +87,16 @@ const ExchangePostDetail = () => {
 
     const navigate = useNavigate(); // 훅으로 navigate 함수 가져오기
 
+    const {openReport} = useReport();
+
+    const handleOpenReport = () => {
+        if (!post) return;
+        openReport({
+          targetType: 'POST',               
+          targetId: post.postId,            
+          reportTargetUserId: post.writer?.id ?? null,
+        });
+    };
 
     // useEffect(() => {
     //     const fetchData = async () => {
@@ -462,7 +473,7 @@ const ExchangePostDetail = () => {
                                     {getTimeAgo(post.createdAt)}
                                 </S.TimeWrapper>
                             </S.StatusInfo>
-                            {!isWriter && <S.ReportButton>신고하기</S.ReportButton>}
+                            {!isWriter && <S.ReportButton onClick={handleOpenReport}>신고하기</S.ReportButton>}
                         </S.StatusRow>
                     </S.TitleRow>
 
