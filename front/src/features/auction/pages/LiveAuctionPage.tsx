@@ -31,9 +31,19 @@ const LiveAuctionPage = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportingUser, setReportingUser] = useState<string | null>(null);
   
-  const numericAuctionId = Number(auctionId);
-  const { auctionUpdate, chatMessage, sendBid, sendChat } = useAuctionSocket(numericAuctionId);
+  // [추가] 모달의 상태를 관리할 새로운 state
+  const [modalInfo, setModalInfo] = useState({
+    isOpen: false,
+    title: '',
+    content: '',
+    onConfirm: () => {},
+  });
 
+  const numericAuctionId = Number(auctionId);
+  // [수정] 훅에서 systemMessage를 받아옵니다.
+  const { auctionUpdate, chatMessage, systemMessage, sendBid, sendChat } = useAuctionSocket(numericAuctionId);
+
+  
   // 페이지 최초 로드 시 데이터 불러오기
   useEffect(() => {
     if (!numericAuctionId) return;
@@ -85,6 +95,27 @@ const LiveAuctionPage = () => {
       chatHistory: [...prev.chatHistory, newChatMessage],
     }) : null);
   }, [chatMessage]);
+
+  // [추가] 시스템 메시지를 수신했을 때 모달을 띄우는 useEffect
+  useEffect(() => {
+    if (!systemMessage) return;
+
+    if (systemMessage.type === 'AUCTION_CANCELLED') {
+      setModalInfo({
+        isOpen: true,
+        title: '경매 중지',
+        content: systemMessage.message,
+        onConfirm: () => navigate('/'), // 확인 버튼 누르면 메인으로 이동
+      });
+    } else if (systemMessage.type === 'AUCTION_ENDED') {
+      setModalInfo({
+        isOpen: true,
+        title: '경매 종료',
+        content: systemMessage.message,
+        onConfirm: () => navigate('/'), // 확인 버튼 누르면 메인으로 이동
+      });
+    }
+  }, [systemMessage, navigate]);
 
   const handlePlaceBid = useCallback((amount: number) => {
     if (!auctionData) return false;
@@ -156,22 +187,26 @@ const LiveAuctionPage = () => {
         onClose={() => setIsRulesModalOpen(false)} 
       />
       
+      {/* 
+        ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 이 부분이 핵심 수정 사항입니다. ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+        기존에 있던 2개의 ConfirmModal을 아래 1개로 통합합니다.
+        이제 이 모달은 '경매 참여 불가' 알림과 '경매 중지/종료' 알림을 모두 처리합니다.
+      */}
       <ConfirmModal
-        isOpen={false} 
-        title="경매 일시 중지"
-        content="관리자에 의해 경매가 잠시 중지되었습니다."
+        // [수정] 참여 불가 상태이거나, 또는 시스템 메시지로 인해 모달이 열려야 할 때 isOpen은 true가 됩니다.
+        isOpen={auctionData.currentUser.isBanned || modalInfo.isOpen}
+        
+        // [수정] 시스템 메시지 모달이 우선적으로 표시되고, 그렇지 않으면 참여 불가 메시지가 표시됩니다.
+        title={modalInfo.isOpen ? modalInfo.title : "경매 참여 불가"}
+        content={modalInfo.isOpen ? modalInfo.content : "회원님은 현재 경매 참여가 제한된 상태입니다."}
+        
         confirmText="메인으로"
-        onConfirm={() => navigate('/')}
+        
+        // [수정] 확인 버튼 클릭 시 동작도 동적으로 결정됩니다.
+        onConfirm={modalInfo.isOpen ? modalInfo.onConfirm : () => navigate('/')}
       />
-
-      <ConfirmModal
-        isOpen={auctionData.currentUser.isBanned}
-        title="경매 참여 불가"
-        content="회원님은 현재 경매 참여가 제한된 상태입니다."
-        confirmText="메인으로"
-        onConfirm={() => navigate('/')}
-      />
-
+      
+      {/* 신고 모달 (기존과 동일) */}
       {isReportModalOpen && (
         <ReportModal
           onConfirm={handleConfirmReport}

@@ -99,13 +99,13 @@ export const StatusOptions = styled.ul`
   z-index: 10;
 `;
 
-export const StatusOption = styled.li<{ selected?: boolean }>`
+export const StatusOption = styled.li<{ $selected?: boolean }>`
   padding: 8px 10px;
   font-size: 14px;
   color: #444;
   cursor: pointer;
   text-align: left;  
-  font-weight: ${({ selected }) => (selected ? 'bold' : 'normal')};
+  font-weight: ${({ $selected }) => ($selected ? 'bold' : 'normal')};
 
   &:hover {
     background-color: #997BEB;

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import * as S from './ExchangePost.styles';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // 백엔드 DTO와 필드명이 동일하게 
 interface Category {
@@ -46,6 +47,8 @@ const ExchangePost = () => {
     const [location, setLocation] = useState('');
     const [locationCode, setLocationCode] = useState('');
     const [directTradePlace, setDirectTradePlace] = useState(''); // 직거래 장소 입력 상태
+    const navigate = useNavigate();
+
 
     // 카테고리 불러오기
     useEffect(() => {
@@ -264,6 +267,12 @@ const ExchangePost = () => {
             return;
         }
 
+        // 직거래 선택 시 희망 장소 체크
+        if (deliveryMethods.includes('direct') && !directTradePlace.trim()) {
+            alert('거래 희망 장소를 입력해 주세요.(선택)');
+            return;
+        }
+
         if (deliveryMethods.includes('parcel') && !parcelOptions.normalFee) {
             alert('택배 거래 방식을 선택하셨다면 배송비를 입력해 주세요.');
             return;
@@ -306,6 +315,7 @@ const ExchangePost = () => {
         let imageUrls: string[] = [];
         try {
             imageUrls = await uploadImages();
+
         } catch (error) {
             const axiosError = error as any;
             console.error('이미지 업로드 실패:', axiosError.response.data);
@@ -348,12 +358,20 @@ const ExchangePost = () => {
                 }
             );
             alert('게시글 등록이 완료되었습니다.');
-            console.log('등록 성공:', response.data);
+            // console.log('등록 성공:', response.data);
+
+            console.log('response.data:', response.data)
+
+            // const locationHeader = response.headers['location']; // "/api/exchange-posts/123"
+            const newPostId = response.data.postId;
+            navigate(`/exchange/detail/${newPostId}`);
+
             // 성공 시, 페이지 이동 또는 폼 초기화
             // 예: window.location.href = `/posts/${response.data.postId}`;
         } catch (error) {
             const axiosError = error as any;
             console.error('등록 실패:', axiosError.response.data);
+
             alert(`게시글 등록에 실패했습니다: ${axiosError.response.data.message || '알 수 없는 오류'}`);
         }
     };
@@ -587,7 +605,7 @@ const ExchangePost = () => {
                     </S.ParcelTradeWrapper>
                 )}
 
-                <button type="submit" >등록하기</button>
+                <S.SubmitButton type="submit" >등록하기</S.SubmitButton>
             </form>
         </S.Container>
     );

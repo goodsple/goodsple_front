@@ -1,60 +1,66 @@
-// 북마크를 어느 폴더에 추가/이동할것인지? 모달창
-import type React from 'react';
-import * as s from './BookmarkFolderSelectorStyle';
+import React from "react";
+import * as s from "./BookmarkFolderSelectorStyle";
 
 interface Folder {
-    name: string;
+  folderId: number;
+  folderName: string;
 }
 
 interface BookmarkFolderSelectorProps {
-    isOpen: boolean;
-    onClose: () => void;
-    folders: Folder[];
-    onSelect: (folderName: string) => void;
-    onAddFolder: () => void; // 새 폴더 추가 버튼
+  isOpen: boolean;
+  onClose: () => void;
+  folders: Folder[];
+  mode: "add" | "move"; 
+  onSelect: (folderId: number, mode: "add" | "move") => void; 
+  onAddFolder: () => void; 
 }
 
 const BookmarkFolderSelector: React.FC<BookmarkFolderSelectorProps> = ({
-        isOpen,
-        onClose,
-        folders,
-        onSelect,
-        onAddFolder = () => console.warn('onAddFolder prop이 없습니다!')
-    }) => {
+  isOpen,
+  onClose,
+  folders,
+  mode,
+  onSelect,
+  onAddFolder,
+}) => {
+  if (!isOpen) return null;
 
-        if (!isOpen) return null;
+  return (
+    <s.Overlay onClick={onClose}>
+      <s.ModalBox onClick={(e) => e.stopPropagation()}>
+        {/* 모드에 따라 안내 문구 다르게 */}
+        <s.Title>
+          {mode === "add"
+            ? "어떤 폴더에 북마크를 추가하시겠습니까?"
+            : "어떤 폴더로 북마크를 이동하시겠습니까?"}
+        </s.Title>
 
-        return(
-            <s.Overlay onClick={onClose}>
-                <s.ModalBox onClick={(e) => e.stopPropagation()}>
-                    <s.Title>어떤 폴더에 추가하시겠습니까?</s.Title>
-                    <s.FolderList>
-                        {folders.map((folder, idx) => (
-                            <s.FolderItem key={idx} onClick={() => onSelect(folder.name)}>
-                                {folder.name}
-                            </s.FolderItem>
-                        ))}
-                    </s.FolderList>
+        {/* 폴더 리스트 */}
+        <s.FolderList>
+          {folders.map((folder) => (
+            <s.FolderItem
+              key={folder.folderId}
+              onClick={() => onSelect(folder.folderId, mode)} 
+            >
+              {folder.folderName}
+            </s.FolderItem>
+          ))}
+        </s.FolderList>
 
-                    <s.AddFolderButton
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            console.log('AddFolder 버튼 클릭'); // 여기 찍히는지 확인
-                            if (onAddFolder) {
-                                onAddFolder();
-                            } else {
-                                console.error('onAddFolder prop이 없습니다!');
-                            }
-                    }}
-                    >
-                        + 새 폴더 추가
-                    </s.AddFolderButton>
+        {/* 새 폴더 추가 버튼 */}
+        <s.AddFolderButton
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddFolder();
+          }}
+        >
+          + 새 폴더 추가
+        </s.AddFolderButton>
 
-                    <s.CloseButton onClick={onClose}>닫기</s.CloseButton>
-                </s.ModalBox>
-            </s.Overlay>
-        )
-}
-
+        <s.CloseButton onClick={onClose}>닫기</s.CloseButton>
+      </s.ModalBox>
+    </s.Overlay>
+  );
+};
 
 export default BookmarkFolderSelector;

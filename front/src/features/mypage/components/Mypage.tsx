@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { UserInfo } from '../types/myProfile';
 import axiosInstance from '../../../api/axiosInstance';
+import type { UserInfo } from '../types/myProfile';
 
 import profileImg from '../../../assets/images/default_profile.png';
 import badge from '../../../assets/images/LV1.png';
@@ -87,14 +87,14 @@ const MyPage:React.FC = () => {
                     <s.ActivityLink to="/mypage">후기</s.ActivityLink>
                     <s.ActivityLink to="/mypage">이벤트존 활동 내역</s.ActivityLink>
                     <s.ActivityLink to="/mypage">내 알림</s.ActivityLink>
-                    <s.ActivityLink to="/mypage">찜 목록</s.ActivityLink>
+                    <s.ActivityLink to="/bookmarkPage">찜 목록</s.ActivityLink>
                 </s.Activity>
 
                 <s.Activity>
                     <s.ActivityHeader>거래 관리</s.ActivityHeader>
                     <s.StyledHr />
-                    <s.ActivityLink to="/mypage">내 거래글</s.ActivityLink>
-                    <s.ActivityLink to="/mypage">거래 내역</s.ActivityLink>
+                    <s.ActivityLink to="/exchange">내 거래글</s.ActivityLink>
+                    <s.ActivityLink to="/exchange/history">거래 내역</s.ActivityLink>
                     <s.ActivityLink to="/mypage">줄서기 내역</s.ActivityLink>
                     <s.ActivityLink to="/mypage">나의 낙찰 목록</s.ActivityLink>
                 </s.Activity>
