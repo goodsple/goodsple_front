@@ -1,8 +1,11 @@
-.adminCatePage {
+.adminCatePage,
+.tableWrapper {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    /* justify-content: flex-end; */
+    /* justify-content: space-between; */
     margin-top: 20px;
+    margin-bottom: 40px;
 }
 
 .searchButton img {
@@ -10,3 +13,4 @@
     height: 18px;
     transform: translateX(-30px);
 }
+

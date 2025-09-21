@@ -4,7 +4,7 @@ import axios from 'axios';
 
 interface secCateProps {
   cateName: string;
-  firstCateId: bigint;
+  firstCateId: number;
 }
 
 // 기존

@@ -1,3 +1,349 @@
+import * as S from '../../admin/auth/components/SearchControlsStyle.ts';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { createSecCategory, createThiCategory, fetchAllSecCate, fetchAllThiCate, fetchSecCate } from '../../../api/category/categoryAPICalls.ts';
+import type { AppDispatch } from '../../../store/Store.ts';
+
+interface CateModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function CateModal({ isOpen, onClose }: CateModalProps) {
+  if (!isOpen) return null;
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  // ✅ Redux 전체 카테고리 상태 사용
+  const allSecondCates = useSelector((state: any) => state.category.allSecCate);
+  const allThirdCates = useSelector((state: any) => state.category.allThiCate);
+
+  const [firstCate, setFirstCate] = useState(0);
+  const [secondCate, setSecondCate] = useState(0);
+  const [thirdCate, setThirdCate] = useState(0);
+
+  const [newSecondCate, setNewSecondCate] = useState('');
+  const [newThirdCate, setNewThirdCate] = useState('');
+  const [subText, setSubText] = useState('');
+
+  // 1차 선택 시 2차/3차 카테고리 fetch
+  useEffect(() => {
+    if (firstCate > 0) {
+      dispatch(fetchSecCate(firstCate)); // 2차 카테고리 fetch
+      setSecondCate(0);
+      setThirdCate(0);
+    }
+  }, [firstCate]);
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!firstCate) return alert('1차 카테고리를 선택해주세요');
+    if (secondCate === 0 && !newSecondCate) return alert('2차 카테고리를 입력해주세요');
+    if (thirdCate === 0 && !newThirdCate) return alert('3차 카테고리를 입력해주세요');
+
+    try {
+      let finalSecondCateId = secondCate;
+
+      if (secondCate === -1) {
+        const payload = { cateName: newSecondCate, firstCateId: firstCate };
+        const res: any = await dispatch(createSecCategory(payload) as any).unwrap();
+
+        if (!res.secondCateId) {
+          return alert('2차 카테고리 등록 실패: 서버에서 ID를 반환하지 않음');
+        }
+
+        finalSecondCateId = res.secondCateId;
+      }
+
+      const thirdPayload = {
+        secondCateId: finalSecondCateId,
+        cateName: newThirdCate,
+        subText,
+      };
+
+      await dispatch(createThiCategory(thirdPayload) as any).unwrap();
+
+      // ✅ 등록 후 Redux 상태 바로 갱신
+      await dispatch(fetchAllSecCate() as any).unwrap();
+      await dispatch(fetchAllThiCate() as any).unwrap();
+
+      alert('카테고리가 등록되었습니다.');
+      resetForm();
+      onClose();
+    } catch (error: any) {
+      console.error(error);
+      alert(`저장 실패: ${error.response?.data?.message || '알 수 없는 오류'}`);
+    }
+  };
+
+  const resetForm = () => {
+    setFirstCate(0);
+    setSecondCate(0);
+    setThirdCate(0);
+    setNewSecondCate('');
+    setNewThirdCate('');
+    setSubText('');
+  };
+
+  return (
+    <S.ModalBackground>
+      <S.Modal onSubmit={handleSave}>
+        <p>카테고리 등록</p>
+
+        {/* 1차 */}
+        <S.ModalRow>
+          <p>1차 카테고리</p>
+          <select value={firstCate} onChange={e => setFirstCate(Number(e.target.value))}>
+            <option value={0}>선택</option>
+            <option value={1}>K-pop</option>
+            <option value={2}>영화/드라마</option>
+            <option value={3}>애니메이션</option>
+            <option value={4}>게임</option>
+          </select>
+        </S.ModalRow>
+
+        {/* 2차 */}
+        <S.ModalRow>
+          <p>2차 카테고리</p>
+          <select value={secondCate} onChange={e => setSecondCate(Number(e.target.value))}>
+            <option value={0}>선택</option>
+            <option value={-1}>★2차 등록</option>
+            {allSecondCates
+              .filter((c: any) => c.firstCateId === firstCate) // 선택한 1차에 맞는 2차만 표시
+              .map((c: any) => (
+                <option key={c.secondCateId} value={c.secondCateId}>{c.cateName}</option>
+              ))}
+          </select>
+          {secondCate === -1 && (
+            <input type="text" value={newSecondCate} onChange={e => setNewSecondCate(e.target.value)} placeholder="새 2차 카테고리 입력" />
+          )}
+        </S.ModalRow>
+
+        {/* 3차 */}
+        <S.ModalRow>
+          <p>3차 카테고리</p>
+          <select value={thirdCate} onChange={e => setThirdCate(Number(e.target.value))}>
+            <option value={0}>선택</option>
+            <option value={-1}>★3차 등록</option>
+            {allThirdCates
+              .filter((c: any) => {
+                const secondMatch = allSecondCates.find((s: any) => s.secondCateId === c.secondCateId);
+                return secondMatch?.firstCateId === firstCate; // 1차 선택 필터링
+              })
+              .map((tc: any) => (
+                <option key={tc.thirdCateId} value={tc.thirdCateId}>{tc.cateName}</option>
+              ))}
+          </select>
+          {thirdCate === -1 && (
+            <input type="text" value={newThirdCate} onChange={e => setNewThirdCate(e.target.value)} placeholder="새 3차 카테고리 입력" />
+          )}
+        </S.ModalRow>
+
+        {/* 서브 텍스트 */}
+        <S.ModalRow>
+          <p>서브 텍스트</p>
+          <input type="text" value={subText} onChange={e => setSubText(e.target.value)} placeholder="서브 텍스트 입력" />
+        </S.ModalRow>
+
+        {/* 버튼 */}
+        <S.ModalRow2>
+          <button type="submit">저장하기</button>
+          <button type="button" onClick={() => { resetForm(); onClose(); }}>취소</button>
+        </S.ModalRow2>
+      </S.Modal>
+    </S.ModalBackground>
+  );
+}
+
+export default CateModal;
+
+
+
+// 파일 미업로드용 - 2차,3차 등록하면 목록에 안뜸 / 기존거 참고해서 등록하면 등록됨
+// import * as S from '../../admin/auth/components/SearchControlsStyle.ts';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { useEffect, useState } from 'react';
+// import { createSecCategory, createThiCategory, fetchAllSecCate, fetchAllThiCate, fetchSecCate } from '../../../api/category/categoryAPICalls.ts';
+// import type { AppDispatch } from '../../../store/Store.ts';
+// import axios from 'axios';
+
+// interface CateModalProps {
+//   isOpen: boolean;
+//   onClose: () => void;
+// }
+
+// function CateModal({ isOpen, onClose }: CateModalProps) {
+//   if (!isOpen) return null;
+
+//   const dispatch = useDispatch<AppDispatch>();
+//   const secondCates = useSelector((state: any) => state.category.secondCate);
+
+//   const [firstCate, setFirstCate] = useState(0);
+//   const [secondCate, setSecondCate] = useState(0);
+//   const [thirdCate, setThirdCate] = useState(0);
+
+//   const [newSecondCate, setNewSecondCate] = useState('');
+//   const [newThirdCate, setNewThirdCate] = useState('');
+//   const [subText, setSubText] = useState('');
+
+//   // --- 3차 카테고리 상태 추가 ---
+//   const [thirdCatesList, setThirdCatesList] = useState<any[]>([]);
+
+//   // 1차 선택 시 2차/3차 카테고리 fetch
+//   useEffect(() => {
+//     if (firstCate > 0) {
+//       // 2차 fetch
+//       dispatch(fetchSecCate(firstCate));
+//       setSecondCate(0);
+
+//       // 3차 전체 fetch
+//       const fetchThirdCates = async () => {
+//         try {
+//           const token = localStorage.getItem('accessToken');
+//           const res = await axios.get(`/api/admin/category/third/all?firstCateId=${firstCate}`, {
+//             headers: {
+//               Authorization: `Bearer ${token}`,
+//             },
+//           });
+//           setThirdCatesList(res.data);
+//         } catch (err) {
+//           console.error('3차 카테고리 조회 실패', err);
+//         }
+//       };
+
+//       fetchThirdCates();
+//       setThirdCate(0);
+//     }
+//   }, [firstCate]);
+
+//   const handleSave = async (e: React.FormEvent) => {
+//     e.preventDefault();
+
+//     if (!firstCate) return alert('1차 카테고리를 선택해주세요');
+//     if (secondCate === 0 && !newSecondCate) return alert('2차 카테고리를 입력해주세요');
+//     if (thirdCate === 0 && !newThirdCate) return alert('3차 카테고리를 입력해주세요');
+
+//     try {
+//       if (secondCate === 0 || secondCate === -1) {
+//         // 2차 카테고리 등록
+//         await dispatch(createSecCategory({ cateName: newSecondCate, firstCateId: firstCate }) as any).unwrap();
+//       } else {
+//         // 3차 카테고리 등록
+//         const payload = {
+//           secondCateId: secondCate,
+//           cateName: newThirdCate,
+//           subText: subText,
+//         };
+//         await dispatch(createThiCategory(payload) as any).unwrap();
+//       }
+
+//       alert('카테고리가 등록되었습니다.');
+//       resetForm();
+//       onClose();
+
+//       // --- 등록 후 목록 갱신 ---
+//       await dispatch(fetchAllSecCate() as any).unwrap();
+//       await dispatch(fetchAllThiCate() as any).unwrap();
+
+//     } catch (error: any) {
+//       console.error(error);
+//       alert(`저장 실패: ${error.response?.data?.message || '알 수 없는 오류'}`);
+//     }
+//   };
+
+
+//   const resetForm = () => {
+//     setFirstCate(0);
+//     setSecondCate(0);
+//     setThirdCate(0);
+//     setNewSecondCate('');
+//     setNewThirdCate('');
+//     setSubText('');
+//     // 파일 업로드 관련 주석 처리
+//     // setMainImage(null);
+//     // setSubImage(null);
+//   };
+
+//   return (
+//     <S.ModalBackground>
+//       <S.Modal onSubmit={handleSave}>
+//         <p>카테고리 등록</p>
+
+//         {/* 1차 카테고리 */}
+//         <S.ModalRow>
+//           <p>1차 카테고리</p>
+//           <select value={firstCate} onChange={e => setFirstCate(Number(e.target.value))}>
+//             <option value={0}>선택</option>
+//             <option value={1}>K-pop</option>
+//             <option value={2}>영화/드라마</option>
+//             <option value={3}>애니메이션</option>
+//             <option value={4}>게임</option>
+//           </select>
+//         </S.ModalRow>
+
+//         {/* 2차 카테고리 */}
+//         <S.ModalRow>
+//           <p>2차 카테고리</p>
+//           <select value={secondCate} onChange={e => setSecondCate(Number(e.target.value))}>
+//             <option value={0}>선택</option>
+//             <option value={-1}>★2차 등록</option>
+//             {secondCates?.map((c: any) => (
+//               <option key={c.secondCateId} value={c.secondCateId}>{c.cateName}</option>
+//             ))}
+//           </select>
+//           {secondCate === -1 && (
+//             <input type="text" value={newSecondCate} onChange={e => setNewSecondCate(e.target.value)} placeholder="새 2차 카테고리 입력" />
+//           )}
+//         </S.ModalRow>
+
+//         {/* 3차 카테고리 */}
+//         <S.ModalRow>
+//           <p>3차 카테고리</p>
+//           <select value={thirdCate} onChange={e => setThirdCate(Number(e.target.value))}>
+//             <option value={0}>선택</option>
+//             <option value={-1}>★3차 등록</option>
+//             {thirdCatesList.map(tc => (
+//               <option key={tc.thirdCateId} value={tc.thirdCateId}>
+//                 {tc.cateName}
+//               </option>
+//             ))}
+//           </select>
+//           {thirdCate === -1 && (
+//             <input
+//               type="text"
+//               value={newThirdCate}
+//               onChange={e => setNewThirdCate(e.target.value)}
+//               placeholder="새 3차 카테고리 입력"
+//             />
+//           )}
+//         </S.ModalRow>
+
+//         {/* 서브 텍스트 */}
+//         <S.ModalRow>
+//           <p>서브 텍스트</p>
+//           <input type="text" value={subText} onChange={e => setSubText(e.target.value)} placeholder="서브 텍스트 입력" />
+//         </S.ModalRow>
+
+//         {/* 버튼 */}
+//         <S.ModalRow2>
+//           <button type="submit">저장하기</button>
+//           <button type="button" onClick={() => { resetForm(); onClose(); }}>취소</button>
+//         </S.ModalRow2>
+//       </S.Modal>
+//     </S.ModalBackground>
+//   );
+// }
+
+// export default CateModal;
+
+
+
+
+
+
+
+
 // import * as S from '../../admin/auth/components/SearchControlsStyle.ts';
 // import { useDispatch, useSelector } from 'react-redux';
 // import { useEffect, useState } from 'react';
@@ -462,177 +808,4 @@
 // export default CateModal;
 
 
-
-
-// 파일 미업로드용
-import * as S from '../../admin/auth/components/SearchControlsStyle.ts';
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
-import { createSecCategory, createThiCategory, fetchSecCate } from '../../../api/category/categoryAPICalls.ts';
-import type { AppDispatch } from '../../../store/Store.ts';
-import axios from 'axios';
-
-interface CateModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-function CateModal({ isOpen, onClose }: CateModalProps) {
-  if (!isOpen) return null;
-
-  const dispatch = useDispatch<AppDispatch>();
-  const secondCates = useSelector((state: any) => state.category.secondCate);
-
-  const [firstCate, setFirstCate] = useState(0);
-  const [secondCate, setSecondCate] = useState(0);
-  const [thirdCate, setThirdCate] = useState(0);
-
-  const [newSecondCate, setNewSecondCate] = useState('');
-  const [newThirdCate, setNewThirdCate] = useState('');
-  const [subText, setSubText] = useState('');
-
-  // --- 3차 카테고리 상태 추가 ---
-  const [thirdCatesList, setThirdCatesList] = useState<any[]>([]);
-
-  // 1차 선택 시 2차/3차 카테고리 fetch
-  useEffect(() => {
-    if (firstCate > 0) {
-      // 2차 fetch
-      dispatch(fetchSecCate(firstCate));
-      setSecondCate(0);
-
-      // 3차 전체 fetch
-      const fetchThirdCates = async () => {
-        try {
-          const token = localStorage.getItem('accessToken');
-          const res = await axios.get(`/api/admin/category/third/all?firstCateId=${firstCate}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          setThirdCatesList(res.data);
-        } catch (err) {
-          console.error('3차 카테고리 조회 실패', err);
-        }
-      };
-
-      fetchThirdCates();
-      setThirdCate(0);
-    }
-  }, [firstCate]);
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!firstCate) return alert('1차 카테고리를 선택해주세요');
-    if (secondCate === 0 && !newSecondCate) return alert('2차 카테고리를 입력해주세요');
-    if (thirdCate === 0 && !newThirdCate) return alert('3차 카테고리를 입력해주세요');
-
-    try {
-      if (secondCate === 0 || secondCate === -1) {
-        // 2차 카테고리 등록
-        await dispatch(createSecCategory({ cateName: newSecondCate, firstCateId: firstCate }) as any).unwrap();
-      } else {
-        // 3차 카테고리 등록
-        const payload = {
-          secondCateId: secondCate,
-          cateName: newThirdCate,
-          subText: subText,
-        };
-        await dispatch(createThiCategory(payload) as any).unwrap();
-      }
-
-      alert('카테고리가 등록되었습니다.');
-      resetForm();
-      onClose();
-    } catch (error: any) {
-      console.error(error);
-      alert(`저장 실패: ${error.response?.data?.message || '알 수 없는 오류'}`);
-    }
-  };
-
-
-  const resetForm = () => {
-    setFirstCate(0);
-    setSecondCate(0);
-    setThirdCate(0);
-    setNewSecondCate('');
-    setNewThirdCate('');
-    setSubText('');
-    // 파일 업로드 관련 주석 처리
-    // setMainImage(null);
-    // setSubImage(null);
-  };
-
-  return (
-    <S.ModalBackground>
-      <S.Modal onSubmit={handleSave}>
-        <p>카테고리 등록</p>
-
-        {/* 1차 카테고리 */}
-        <S.ModalRow>
-          <p>1차 카테고리</p>
-          <select value={firstCate} onChange={e => setFirstCate(Number(e.target.value))}>
-            <option value={0}>선택</option>
-            <option value={1}>K-pop</option>
-            <option value={2}>영화/드라마</option>
-            <option value={3}>애니메이션</option>
-            <option value={4}>게임</option>
-          </select>
-        </S.ModalRow>
-
-        {/* 2차 카테고리 */}
-        <S.ModalRow>
-          <p>2차 카테고리</p>
-          <select value={secondCate} onChange={e => setSecondCate(Number(e.target.value))}>
-            <option value={0}>선택</option>
-            {secondCates?.map((c: any) => (
-              <option key={c.secondCateId} value={c.secondCateId}>{c.cateName}</option>
-            ))}
-            <option value={-1}>2차 등록</option>
-          </select>
-          {secondCate === -1 && (
-            <input type="text" value={newSecondCate} onChange={e => setNewSecondCate(e.target.value)} placeholder="새 2차 카테고리 입력" />
-          )}
-        </S.ModalRow>
-
-        {/* 3차 카테고리 */}
-        <S.ModalRow>
-          <p>3차 카테고리</p>
-          <select value={thirdCate} onChange={e => setThirdCate(Number(e.target.value))}>
-            <option value={0}>선택</option>
-            {thirdCatesList.map(tc => (
-              <option key={tc.thirdCateId} value={tc.thirdCateId}>
-                {tc.cateName}
-              </option>
-            ))}
-            <option value={-1}>3차 등록</option>
-          </select>
-          {thirdCate === -1 && (
-            <input
-              type="text"
-              value={newThirdCate}
-              onChange={e => setNewThirdCate(e.target.value)}
-              placeholder="새 3차 카테고리 입력"
-            />
-          )}
-        </S.ModalRow>
-
-        {/* 서브 텍스트 */}
-        <S.ModalRow>
-          <p>서브 텍스트</p>
-          <input type="text" value={subText} onChange={e => setSubText(e.target.value)} placeholder="서브 텍스트 입력" />
-        </S.ModalRow>
-
-        {/* 버튼 */}
-        <S.ModalRow2>
-          <button type="submit">저장하기</button>
-          <button type="button" onClick={() => { resetForm(); onClose(); }}>취소</button>
-        </S.ModalRow2>
-      </S.Modal>
-    </S.ModalBackground>
-  );
-}
-
-export default CateModal;
 
