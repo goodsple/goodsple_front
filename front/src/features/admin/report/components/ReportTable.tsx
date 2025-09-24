@@ -1,10 +1,10 @@
 import React from 'react';
 import * as S from './ReportTableStyle';
-import {   
+import {
   ReportTargetTypeLabels,
   ReportActionLabels,
   ReportStatusLabels,
-  type AdminReport 
+  type AdminReport,
 } from '../types/adminReport';
 
 interface Props {
@@ -14,21 +14,22 @@ interface Props {
   onRowClick: (r: AdminReport) => void;
 }
 
-const ReportTable: React.FC<Props> = ({ reports, loading, onRowClick }) => {
+const ReportTable: React.FC<Props> = ({ reports, loading, onProcess, onRowClick }) => {
   if (loading) return <div>로딩 중…</div>;
   if (!reports.length) return <div>조회된 신고가 없습니다.</div>;
 
-function formatLocalDateTime(iso?: string) {
-  if (!iso) return '-';
-  const d = new Date(iso);
-  const yyyy = d.getFullYear();
-  const mm   = String(d.getMonth() + 1).padStart(2, '0');
-  const dd   = String(d.getDate()).padStart(2, '0');
-  const hh   = String(d.getHours()).padStart(2, '0');
-  const min  = String(d.getMinutes()).padStart(2, '0');
-  const ss   = String(d.getSeconds()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
-}
+  // 공통: ISO → yyyy-MM-dd HH:mm:ss
+  function formatLocalDateTime(iso?: string) {
+    if (!iso) return '-';
+    const d = new Date(iso);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    const ss = String(d.getSeconds()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
+  }
 
   return (
     <S.Table>
@@ -46,41 +47,60 @@ function formatLocalDateTime(iso?: string) {
         </tr>
       </thead>
       <tbody>
-        {reports.map(r => (
-          <tr key={r.reportId} onClick={() => onRowClick(r)}>
-            <td>{r.reportId}</td>
+        {reports.map((r) => {
+          // 혹시 대문자 상태가 들어와도 안전하게 처리
+          const statusKey =
+            (r.status as any) === 'PENDING'
+              ? 'pending'
+              : (r.status as any) === 'PROCESSED'
+              ? 'processed'
+              : r.status as 'pending' | 'processed';
 
-            {/* 신고 대상: POST/REVIEW/... → "게시글 신고" 등 */}
-            <td>{ReportTargetTypeLabels[r.targetType]}</td>
+          // 처리여부는 status OR handledAt 중 하나라도 참이면 처리로 간주
+          const isProcessed = statusKey === 'processed' || !!r.handledAt;
 
-            {/* 신고 사유 */}
-            <td className="ellipsis">{r.reason}</td>
+           // 화면 표시용 상태키(처리일이 있으면 '처리'로 보여줌)
+          const displayStatusKey: 'pending' | 'processed' = isProcessed ? 'processed' : 'pending';
 
-            {/* 신고 유형: 동일하게 `targetTypeLabel` 이 있다면 그걸 써도 됩니다 */}
-            <td>{r.targetTypeLabel}</td>
+          return (
+            <tr key={r.reportId} onClick={() => onRowClick(r)}>
+              <td>{r.reportId}</td>
+              <td>{r.targetName}</td>
 
-            {/* 처리 상태: PENDING/PROCESSED → “미처리”/“처리됨” */}
-            <td>{ReportStatusLabels[r.status]}</td>
+              {/* 신고 사유: 여러 개면 콤마로 합쳐진 문자열 */}
+              <td className="ellipsis" title={r.reportTypeLabel}>
+                {r.reportTypeLabel}
+              </td>
 
-            {/* 조치 내용: WARNING 등 → “경고” 등 */}
-            <td>{r.action ? ReportActionLabels[r.action] : '-'}</td>
+              {/* 신고 유형: 타입 라벨 (게시글 신고/유저 신고/…) */}
+              <td>{ReportTargetTypeLabels[r.targetType]}</td>
 
-            <td>{r.reportedAt}</td>
-            <td>{formatLocalDateTime(r.handledAt)}</td>
-            <td>
-              {r.status === 'PENDING' && (
+              {/* 처리 상태 */}
+              <td>{ReportStatusLabels[statusKey]}</td>
+
+              {/* 조치 내용: 없으면 '-' */}
+              <td>{r.action ? ReportActionLabels[r.action] : '-'}</td>
+
+              {/* 날짜 포맷 통일 */}
+              <td>{formatLocalDateTime(r.reportedAt)}</td>
+              <td>{formatLocalDateTime(r.handledAt)}</td>
+
+              <td>
                 <S.Button
-                  onClick={e => {
+                  type="button"
+                  disabled={isProcessed}
+                  onClick={(e) => {
                     e.stopPropagation();
-                    onRowClick(r);
+                    if (!isProcessed) onProcess(r.reportId); // ← 버튼은 '처리' 플로우로
                   }}
+                  title={isProcessed ? '이미 처리되었습니다' : undefined}
                 >
                   처리
                 </S.Button>
-              )}
-            </td>
-          </tr>
-        ))}
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </S.Table>
   );
