@@ -6,7 +6,8 @@ const ALLOWED_PARAM_KEYS = new Set([
   "roles", "statuses",
   "page", "size",
   "status","productName","startDate","endDate",
-  "type","value" // 추가
+  "type","value",
+  "roomId", "commRoomId", "date"
 ]);
 
 const normalizeArrayParam = (v: any) => {
