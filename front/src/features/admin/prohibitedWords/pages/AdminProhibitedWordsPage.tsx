@@ -88,6 +88,17 @@ const AdminProhibitedWordsPage: React.FC = () => {
     }
   };
 
+  // 금칙어 활성화/비활성화 토글 
+  const handleToggleActive = async (id: number) => { 
+    try {
+      await axiosInstance.put(`/admin/prohibited-words/${id}/toggle`); 
+      await fetchWords(); 
+    } catch (err) {
+      console.error('금칙어 활성화/비활성화 실패', err); 
+      alert('상태 변경에 실패했습니다. 다시 시도해주세요.'); 
+    } 
+  };
+
   return (
     <s.PageWrapper>
       <ProhibitedWordsFilter
@@ -112,6 +123,7 @@ const AdminProhibitedWordsPage: React.FC = () => {
         selectedIds={selectedIds}
         onSelect={handleSelect}
         onSelectAll={handleSelectAll}
+        onToggleActive={handleToggleActive}
       />
 
       {totalPages > 1 && (
