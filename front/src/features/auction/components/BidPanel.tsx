@@ -40,7 +40,7 @@ const BidPanel: React.FC<Props> = ({ status, currentUserNickname, onPlaceBid }) 
           type="number" 
           value={myBidAmount} 
           onChange={(e) => setMyBidAmount(e.target.value)} 
-          placeholder={`${(Number(status.currentPrice) + status.minBidUnit).toLocaleString()}원 이상`} // 여기도 Number()로 감싸주면 더 안전합니다.
+          placeholder={`${(Number(status.currentPrice) + Number(status.minBidUnit)).toLocaleString()}원 이상`}
           step="1000"
         />
         <S.BidButton type="submit">입찰하기</S.BidButton>
