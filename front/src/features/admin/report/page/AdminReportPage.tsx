@@ -1,141 +1,183 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import SearchControls from '../components/SearchControls';
 import ReportTable from '../components/ReportTable';
 import Pagination from '../../../../components/common/pagination/Pagination';
-import type { AdminReport } from '../types/adminReport';
-import type { SearchCriteria } from '../types/adminReport';
-import { mockReports } from '../mock/mockReports';
-import * as S from './AdminReportPageStyle';
-import axiosInstance from '../../../../api/axiosInstance';
 import ReportDetailModal from '../modal/ReportDetailModal';
 import ConfirmModal from '../../../../components/common/modal/ConfirmModal';
+import * as S from './AdminReportPageStyle';
+import axiosInstance from '../../../../api/axiosInstance';
+import { buildStatusUpdateRequest, frontActionToServerLabel } from '../types/adminReport';
+
+import {
+  // UI 모델
+  type AdminReport,
+  type SearchCriteria,
+  // 서버 DTO & 매퍼
+  type AdminReportListItemDTO,
+  mapListItemToAdminReport,
+  frontTargetToServer
+} from '../types/adminReport';
+
+const PAGE_SIZE = 10;
+
+interface AdminReportListResponseDTO {
+  items: AdminReportListItemDTO[];
+  total: number; // 전체 건수
+  page: number;  // 0-base
+  size: number;
+}
 
 const AdminReportPage: React.FC = () => {
-  const [reports, setReports]   = useState<AdminReport[]>([]);
-  const [loading, setLoading]   = useState(false);
-  const [page, setPage]         = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
- 
+  // 목록/검색 상태
+  const [reports, setReports] = useState<AdminReport[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // 페이지는 UI에서 1-base로 관리(서버는 0-base라고 가정)
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+
   const [criteria, setCriteria] = useState<SearchCriteria>({
-      keyword: '',
-      fromDate: '',
-      toDate: '',
-      targetTypes: [],
-      statuses: [],
+    keyword: '',
+    fromDate: '',
+    toDate: '',
+    targetTypes: [],
+    statuses: [],
   });
 
-  const [isModalOpen, setIsModalOpen]       = useState(false);
-  
-  // 상세 모달 관리
+  // 상세 모달 상태
   const [selectedReport, setSelectedReport] = useState<AdminReport | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-  // 저장 후 결과 모달
-  const [showResult, setShowResult]   = useState(false);
+  // 결과 알림 모달
+  const [showResult, setShowResult] = useState(false);
   const [resultMessage, setResultMessage] = useState('');
 
-  
-  const fetchReports = async () => {
-      setLoading(true);
-      try {
-      // 실제 API 있으면 이 부분 사용
-      // const res = await axiosInstance.get<{ items: AdminReport[]; totalPages: number }>('/admin/reports', {
-      //   params: { page, size: 10, ...criteria }
-      // });
-      // setReports(res.data.items);
-      // setTotalPages(res.data.totalPages);
+  // 총 페이지 계산
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(total / PAGE_SIZE));
+  }, [total]);
 
-      // 지금은 mock
-      setReports(mockReports);
-      setTotalPages(1);
-      } finally {
-      setLoading(false);
+  // 목록 조회
+  const fetchReports = async () => {
+    setLoading(true);
+    try {
+      const params: any = {
+        page: page - 1, // 서버 0-base
+        size: PAGE_SIZE,
+      };
+
+      if (criteria.keyword) params.keyword = criteria.keyword;
+      if (criteria.fromDate) params.createdFrom = criteria.fromDate;
+      if (criteria.toDate) params.createdTo = criteria.toDate;
+      if (criteria.targetTypes && criteria.targetTypes.length) {
+        params.targetTypes = criteria.targetTypes.map(frontTargetToServer);
       }
+      if (criteria.statuses && criteria.statuses.length) {
+        const set = new Set<string>();
+        for (const s of criteria.statuses) {
+          if (s === 'pending') {
+            set.add('pending');
+            set.add('processing');
+          } else if (s === 'processed') {
+            set.add('resolved');
+            set.add('rejected');
+          }
+        }
+        params.statuses = Array.from(set); // ['pending','processing'] / ['resolved','rejected'] / 둘 다
+      }
+      if (criteria.actions && criteria.actions.length) {
+        params.actions = criteria.actions
+          .map(frontActionToServerLabel)  // 'WARNING' -> 'warning'
+          .filter(Boolean);
+      }
+      const res = await axiosInstance.get<AdminReportListResponseDTO>('/admin/reports', { params });
+      const list = res.data.items.map(mapListItemToAdminReport);
+      setReports(list);
+      setTotal(res.data.total ?? list.length);
+    } catch (e: any) {
+      console.error(e);
+      alert(e?.response?.data?.message ?? '신고 목록 조회 중 오류가 발생했습니다.');
+      setReports([]);
+      setTotal(0);
+    } finally {
+      setLoading(false);
+    }
   };
 
-    useEffect(() => {
-        fetchReports();
-        }, [page, criteria]);
+  useEffect(() => {
+    fetchReports();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, JSON.stringify(criteria)]);
 
-    const handleSearch = (c: SearchCriteria) => {
-        setCriteria(c); 
-        setPage(1);
-    };
+  // 검색 폼에서 검색 실행
+  const handleSearch = (c: SearchCriteria) => {
+    setCriteria(c);
+    setPage(1);
+  };
 
-    const handleProcess = async (id: string) => {
-        // 실제 처리 API 호출
-        // await axiosInstance.put(`/admin/reports/${id}/process`);
-        // 임시로 mock 상태 변경
-        setReports(rs => 
-          rs.map(r =>
-            r.reportId === id 
-            ? { ...r, status: 'PROCESSED',
-             handledAt: new Date().toISOString() } : r));
-    };
+  // 테이블 “처리” 버튼 → 상세 모달 열기(조치 선택 유도)
+  const handleProcess = (id: string) => {
+    const target = reports.find(r => r.reportId === id);
+    if (!target) return;
+    setSelectedReport(target);
+    setIsDetailOpen(true);
+  };
 
-    // 테이블에서 행 클릭 → 상세 모달 열기
-    const handleRowClick = (report: AdminReport) => {
-        // 상세 모달 열기 로직
-        setSelectedReport(report);
-        setIsDetailOpen(true);
-    };
+  // 테이블 행 클릭 → 상세 모달 열기
+  const handleRowClick = (report: AdminReport) => {
+    setSelectedReport(report);
+    setIsDetailOpen(true);
+  };
 
-    // 상세 모달에서 저장
-    const handleSave = async ({
-      reportId,
-      status,
-      action,
-    }: {
-      reportId: string;
-      status: AdminReport['status'];
-      action: AdminReport['action'];
-    }) => {
-      // 실제 API
-      // await axiosInstance.put(`/admin/reports/${reportId}`, { status, action });
-      // 목록 갱신
-      setReports(rs =>
-        rs.map(r =>
-          r.reportId === reportId
-            ? { ...r, status, action, handledAt: new Date().toISOString() }
-            : r,
-        ),
-      );
+  // 상세 모달 저장(상태/조치 업데이트)
+
+  const handleSave = async ({
+    reportId, status, action,
+  }: {
+    reportId: string;
+    status: AdminReport['status'];
+    action?: AdminReport['action'];
+  }) => {
+    try {
+      const body = buildStatusUpdateRequest(status, action); // DB 라벨 변환까지 포함
+      await axiosInstance.put(`/admin/reports/${reportId}/status`, body);
+
+      // 서버 값(action_taken/processed_at) 반영하려면 재조회가 정답
+      await fetchReports();
+
       setIsDetailOpen(false);
-  
       setResultMessage('변경 사항이 저장되었습니다.');
       setShowResult(true);
-    };
+    } catch (e: any) {
+      console.error(e);
+      alert(e?.response?.data?.message ?? '상태 변경 중 오류가 발생했습니다.');
+    }
+  };
 
-    const handleResultConfirm = () => {
-      setShowResult(false);
-    };
 
   return (
     <S.Container>
       <SearchControls onSearch={handleSearch} />
-
       <S.TableWrap>
         <ReportTable
-            reports={reports}
-            loading={loading}
-            onProcess={handleProcess}
-            onRowClick={handleRowClick}
+          reports={reports}
+          loading={loading}
+          onProcess={handleProcess}
+          onRowClick={handleRowClick}
         />
       </S.TableWrap>
-     
+
       <S.PaginationWrap>
-        <Pagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-        />
+        <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
       </S.PaginationWrap>
+
       <ReportDetailModal
         isOpen={isDetailOpen}
         report={selectedReport}
         onClose={() => setIsDetailOpen(false)}
         onSave={handleSave}
       />
+
       <ConfirmModal
         isOpen={showResult}
         content={resultMessage}
