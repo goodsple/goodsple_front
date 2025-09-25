@@ -10,6 +10,7 @@ const ALLOWED_PARAM_KEYS = new Set([
   "keyword", "createdFrom", "createdTo", 
   "targetTypes",
   "actions",
+  "roomId", "commRoomId", "date"
 ]);
 
 const normalizeArrayParam = (v: any) => {

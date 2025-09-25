@@ -33,8 +33,17 @@ const Community: React.FC = () => {
   const { roomMessages, onlineCount, isConnected, sendMessage, megaphoneRemaining } =
     useWebSocket(selectedRoom, myUserId);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!selectedRoom || !input.trim()) return;
+
+    // 금칙어 체크
+    try {
+      await axiosInstance.post('/admin/prohibited-words/check', input);
+    } catch (err: any) {
+      // 금칙어 포함 시 alert
+      alert(err.response?.data?.message || '금칙어가 포함되었습니다.');
+      return; // 전송 차단
+    }
 
     if (messageType === 'MEGAPHONE' && megaphoneRemaining <= 0) { 
       alert('이번 달 확성기 사용 횟수를 모두 사용했습니다.'); 

@@ -13,6 +13,7 @@ interface Props {
   selectedIds: number[];
   onSelect: (id: number) => void;
   onSelectAll: (checked: boolean) => void;
+  onToggleActive: (id: number, isActive: boolean) => void;
 }
 
 const ProhibitedWordsTable: React.FC<Props> = ({
@@ -20,6 +21,7 @@ const ProhibitedWordsTable: React.FC<Props> = ({
   selectedIds,
   onSelect,
   onSelectAll,
+  onToggleActive,
 }) => {
   const rowCount = 10;
   const emptyRows = rowCount - data.length;
@@ -57,7 +59,10 @@ const ProhibitedWordsTable: React.FC<Props> = ({
             <td>{word.wordId}</td>
             <td>{new Date(word.wordCreatedAt).toLocaleDateString()}</td>
             <td>
-              <s.Status active={word.wordIsActive}>
+              <s.Status 
+                  active={word.wordIsActive}
+                  onClick={() => onToggleActive(word.wordId, word.wordIsActive)}
+              >
                 {word.wordIsActive ? '활성화' : '비활성화'}
               </s.Status>
             </td>
