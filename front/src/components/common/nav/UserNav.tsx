@@ -10,40 +10,40 @@ const UserNav = ({ onClose, menuOpen }: { onClose: () => void; menuOpen: boolean
     return (
         <>
             {/* 닫기 버튼: 열렸을 때는 X 모양 */}
-             {/* 메뉴가 열렸을 때만 닫기 버튼 렌더 */}
-      {menuOpen && (
-            <HamburgerButton $open={menuOpen} onClick={onClose} aria-label="메뉴 닫기">
-                <span />
-                <span />
-                <span />
-            </HamburgerButton>
-      )}
+            {/* 메뉴가 열렸을 때만 닫기 버튼 렌더 */}
+            {menuOpen && (
+                <HamburgerButton $open={menuOpen} onClick={onClose} aria-label="메뉴 닫기">
+                    <span />
+                    <span />
+                    <span />
+                </HamburgerButton>
+            )}
             <NavContainer $open={menuOpen}>
                 <NavLinks>
-                <NavLinkItem
-                    onClick={() => setShowSubMenu((prev) => !prev)}>
-                    <ExtraBoldText>굿즈 카테고리</ExtraBoldText>
-                    {showSubMenu && (
-                        <SubMenu>
-                            <SubMenuItem><Link to="/">K-POP</Link></SubMenuItem>
-                            <SubMenuItem><Link to="/">애니메이션</Link></SubMenuItem>
-                            <SubMenuItem><Link to="">영화</Link></SubMenuItem>
-                            <SubMenuItem><Link to="/ ">게임</Link></SubMenuItem>
-                            <SubMenuItem><Link to="/ ">기타</Link></SubMenuItem>
-                        </SubMenu>
-                    )}
-                </NavLinkItem>
-                <MenuLine />
+                    <NavLinkItem
+                        onClick={() => setShowSubMenu((prev) => !prev)}>
+                        <ExtraBoldText>굿즈 카테고리</ExtraBoldText>
+                        {showSubMenu && (
+                            <SubMenu>
+                                <SubMenuItem><Link to="/category/1">K-POP</Link></SubMenuItem>
+                                <SubMenuItem><Link to="/category/2">애니메이션</Link></SubMenuItem>
+                                <SubMenuItem><Link to="/category/3">영화</Link></SubMenuItem>
+                                <SubMenuItem><Link to="/category/4">게임</Link></SubMenuItem>
+                                <SubMenuItem><Link to="/ ">기타</Link></SubMenuItem>
+                            </SubMenu>
+                        )}
+                    </NavLinkItem>
+                    <MenuLine />
 
-                <NavLinkItem><ExtraBoldLink to="/">커뮤니티</ExtraBoldLink></NavLinkItem>
-                <MenuLine />
-                <NavLinkItem><ExtraBoldLink to="/">콘서트/행사 이벤트</ExtraBoldLink></NavLinkItem>
-                <MenuLine />
-                <NavLinkItem><ExtraBoldLink to="/">라이브 경매</ExtraBoldLink></NavLinkItem>
-                <MenuLine />
-                <NavLinkItem><ExtraBoldLink to="/notice">공지사항/소식</ExtraBoldLink></NavLinkItem>
-                <MenuLine />
-                <NavLinkItem><ExtraBoldLink to="/">지도</ExtraBoldLink></NavLinkItem>
+                    <NavLinkItem><ExtraBoldLink to="/">커뮤니티</ExtraBoldLink></NavLinkItem>
+                    <MenuLine />
+                    <NavLinkItem><ExtraBoldLink to="/">콘서트/행사 이벤트</ExtraBoldLink></NavLinkItem>
+                    <MenuLine />
+                    <NavLinkItem><ExtraBoldLink to="/">라이브 경매</ExtraBoldLink></NavLinkItem>
+                    <MenuLine />
+                    <NavLinkItem><ExtraBoldLink to="/notice">공지사항/소식</ExtraBoldLink></NavLinkItem>
+                    <MenuLine />
+                    <NavLinkItem><ExtraBoldLink to="/">지도</ExtraBoldLink></NavLinkItem>
                 </NavLinks>
             </NavContainer>
         </>

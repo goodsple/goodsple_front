@@ -105,7 +105,7 @@ function App() {
             <Route path="/community" element={<Community />} />
             <Route path="/chatbot" element={<ChatBotPage />} />
             <Route path="/categories" element={<CategorySelect />} />
-            <Route path="/category" element={<ThirdCategory />} />
+            <Route path="/category/:categoryId" element={<ThirdCategory />} />
             <Route path="/notification" element={<Notification />} />
             <Route path="/eventzone" element={<EventZoneMain />} />
             <Route path="/eventwrite" element={<EventWritePage />} />
