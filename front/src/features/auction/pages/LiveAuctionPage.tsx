@@ -31,6 +31,7 @@ const LiveAuctionPage = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportingUser, setReportingUser] = useState<string | null>(null);
   
+  
   // [추가] 모달의 상태를 관리할 새로운 state
   const [modalInfo, setModalInfo] = useState({
     isOpen: false,
@@ -41,7 +42,7 @@ const LiveAuctionPage = () => {
 
   const numericAuctionId = Number(auctionId);
   // [수정] 훅에서 systemMessage를 받아옵니다.
-  const { auctionUpdate, chatMessage, systemMessage, sendBid, sendChat } = useAuctionSocket(numericAuctionId);
+  const { auctionUpdate, chatMessage, systemMessage, errorMessage, sendBid, sendChat } = useAuctionSocket(numericAuctionId);
 
   
   // 페이지 최초 로드 시 데이터 불러오기
@@ -116,6 +117,13 @@ const LiveAuctionPage = () => {
       });
     }
   }, [systemMessage, navigate]);
+
+  // 개인 에러 메시지 수신 시 처리
+  useEffect(() => {
+    if (errorMessage) {
+      alert(errorMessage.message); // 간단하게 alert 창으로 피드백
+    }
+  }, [errorMessage]);
 
   const handlePlaceBid = useCallback((amount: number) => {
     if (!auctionData) return false;

@@ -15,7 +15,7 @@ const BidHistory: React.FC<Props> = ({ bidHistory, currentUserNickname }) => {
           <S.ListItem key={bid.bidId} $isMyBid={bid.userNickname === currentUserNickname}>
             <span>{new Date(bid.timestamp).toLocaleTimeString('en-GB')}</span>
             <span>{bid.userNickname}</span>
-            <span>{bid.bidAmount.toLocaleString()}원</span>
+            <span>{bid.price.toLocaleString()}원</span>
           </S.ListItem>
         ))}
       </S.List>
