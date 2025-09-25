@@ -6,7 +6,7 @@ import ReportDetailModal from '../modal/ReportDetailModal';
 import ConfirmModal from '../../../../components/common/modal/ConfirmModal';
 import * as S from './AdminReportPageStyle';
 import axiosInstance from '../../../../api/axiosInstance';
-import { buildStatusUpdateRequest } from '../types/adminReport';
+import { buildStatusUpdateRequest, frontActionToServerLabel } from '../types/adminReport';
 
 import {
   // UI 모델
@@ -85,7 +85,11 @@ const AdminReportPage: React.FC = () => {
         }
         params.statuses = Array.from(set); // ['pending','processing'] / ['resolved','rejected'] / 둘 다
       }
-
+      if (criteria.actions && criteria.actions.length) {
+        params.actions = criteria.actions
+          .map(frontActionToServerLabel)  // 'WARNING' -> 'warning'
+          .filter(Boolean);
+      }
       const res = await axiosInstance.get<AdminReportListResponseDTO>('/admin/reports', { params });
       const list = res.data.items.map(mapListItemToAdminReport);
       setReports(list);

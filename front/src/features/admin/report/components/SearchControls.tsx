@@ -47,7 +47,9 @@ export default function SearchControls({ onSearch }: Props) {
   ) => fn(arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val]);
 
   return (
-    <S.Form>
+    <S.Form onSubmit={(e) => { e.preventDefault(); onSearch({
+      keyword, fromDate, toDate, targetTypes: types, statuses, actions,
+    }); }}>
       <S.Row>
         <S.Group>
           <label>검색</label>
@@ -58,7 +60,7 @@ export default function SearchControls({ onSearch }: Props) {
             onChange={e => setKeyword(e.target.value)}
           />
           <S.SearchButton
-            type="submit"
+            type="button"
             onClick={() => onSearch({
               keyword, fromDate, toDate,
               targetTypes: types,
