@@ -91,7 +91,7 @@ export interface AdminReport {
  * 3) 서버 DTO/타입 (DB 라벨 반영)
  * ========================= */
 
-export type ServerTargetType = 'user' | 'post' | 'review' | 'chat_message' | 'event';
+export type ServerTargetType = 'user' | 'post' | 'review' | 'chat' | 'event';
 
 // 서버 상태(enum) — DB에는 rejected가 없더라도, 응답 방어용으로 타입은 유지
 export type ServerReportStatus = 'pending' | 'processing' | 'resolved' | 'rejected';
@@ -143,7 +143,7 @@ export function serverStatusToFront(s: ServerReportStatus): ReportStatus {
 }
 
 // 프론트 상태 → 서버 상태
-// ✅ processed는 항상 'resolved'로 보냄 (DB status에는 rejected 없음)
+// processed는 항상 'resolved'로 보냄 (DB status에는 rejected 없음)
 export function frontStatusToServer(
   s: ReportStatus,
   _action?: ReportAction
@@ -157,7 +157,7 @@ export function serverTargetToFront(t: ServerTargetType): ReportTargetType {
     case 'user':         return 'USER';
     case 'post':         return 'POST';
     case 'review':       return 'REVIEW';
-    case 'chat_message': return 'MESSAGE';
+    case 'chat': return 'MESSAGE';
     case 'event':        return 'EVENT';
     default:             return 'POST';
   }
@@ -169,7 +169,7 @@ export function frontTargetToServer(t: ReportTargetType): ServerTargetType {
     case 'USER':    return 'user';
     case 'POST':    return 'post';
     case 'REVIEW':  return 'review';
-    case 'MESSAGE': return 'chat_message';
+    case 'MESSAGE': return 'chat';
     case 'EVENT':   return 'event';
   }
 }

@@ -33,18 +33,23 @@ export default function SearchControls({ onSearch }: Props) {
     { label: '이벤트', value: 'EVENT'   },
   ];
 
-  const actionOptions: { label: string; value: ReportAction }[] = [
-    { label: ReportActionLabels.WARNING,      value: 'WARNING' },
-    { label: ReportActionLabels.DISMISS,      value: 'DISMISS' },
-    { label: ReportActionLabels.SUSPEND_3D,   value: 'SUSPEND_3D' },
-    { label: ReportActionLabels.SUSPEND_PERM, value: 'SUSPEND_PERM' },
-  ];
+  // 공통: 다음 배열을 계산해 주는 토글 유틸
+  const toggleNext = <T,>(arr: T[], val: T) =>
+    arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val];
 
-  const toggle = <T,>(
-    arr: T[],
-    val: T,
-    fn: Dispatch<SetStateAction<T[]>>
-  ) => fn(arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val]);
+  // 체크박스 토글 시 즉시 검색 반영
+  const handleToggleType = (val: ReportTargetType) => {
+    const next = toggleNext(types, val);
+    setTypes(next);
+    onSearch({ keyword, fromDate, toDate, targetTypes: next, statuses, actions });
+  };
+
+  const handleToggleStatus = (val: ReportStatus) => {
+    const next = toggleNext(statuses, val);
+    setStatuses(next);
+    onSearch({ keyword, fromDate, toDate, targetTypes: types, statuses: next, actions });
+  };
+  
 
   return (
     <S.Form onSubmit={(e) => { e.preventDefault(); onSearch({
@@ -79,7 +84,7 @@ export default function SearchControls({ onSearch }: Props) {
               <input
                 type="checkbox"
                 checked={types.includes(value)}
-                onChange={() => toggle(types, value, setTypes)}
+                onChange={() => handleToggleType(value)}
               />
               {label}
             </label>
@@ -105,7 +110,7 @@ export default function SearchControls({ onSearch }: Props) {
               <input
                 type="checkbox"
                 checked={statuses.includes(value)}
-                onChange={() => toggle(statuses, value, setStatuses)}
+                onChange={() => handleToggleStatus(value)}
               />
               {label}
             </label>
