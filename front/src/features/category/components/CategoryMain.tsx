@@ -6,17 +6,20 @@ import CategoryBoard from './CategoryBoard.tsx';
 
 function CategoryMain() {
   return (<>
-    <BasicComponents/>
+    <BasicComponents />
+    <div className={CSS.popularContainer}>
       <div className={CSS.categoryMain}>
-        <div className={CSS.categoryMainImg}>
+        {/* <div className={CSS.categoryMainImg}>
         <img src={newjeans} />
-        </div>
+        </div> */}
         <p className={CSS.categoryMainFont1}>NEWJEANS</p>
         <p className={CSS.categoryMainFont2}>인기게시글</p>
-        <PopularPosts/>
+        <PopularPosts />
       </div>
-        <CategoryBoard />
-    </>);
+    </div>
+    <CategoryBoard />
+  </>
+  );
 }
 
 export default CategoryMain;

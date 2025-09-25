@@ -6,12 +6,12 @@ import CateModal from './CateModal.tsx';
 
 function AdminCategorySearch() {
   const [isCateModalOpen, setIsCateModalOpen] = useState(false);
-  const [isFourthModalOpen, setIsFourthModalOpen] = useState(false);
+  // const [isFourthModalOpen, setIsFourthModalOpen] = useState(false);
 
   const openCateModal = () => setIsCateModalOpen(true);
   const closeCateModal = () => setIsCateModalOpen(false);
-  const openFourthModal = () => setIsFourthModalOpen(true);
-  const closeFourthModal = () => setIsFourthModalOpen(false);
+  // const openFourthModal = () => setIsFourthModalOpen(true);
+  // const closeFourthModal = () => setIsFourthModalOpen(false);
 
   return (
     <>
@@ -23,9 +23,12 @@ function AdminCategorySearch() {
           </button>
         </S.SearchWrap>
         <S.ButtonWrap>
-          <button type="button">
+
+          {/* 4차 카테고리 기능 삭제 */}
+          {/* <button type="button">
             4차 카테고리
-          </button>
+          </button> */}
+
           <button type="button" onClick={openCateModal}>
             ╋ 카테고리 등록
           </button>
