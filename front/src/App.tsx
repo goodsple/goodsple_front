@@ -45,6 +45,7 @@ import Community from './features/community/components/Community.tsx';
 import BookmarkFolderPage from './features/bookmark/components/BookmarkFolderPage.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import ExchangePostEdit from './features/exchange/ExchangePostEdit.tsx';
+import ExchangeChatPage from './features/exchangeChat/page/ExchangeChatPage.tsx';
 
 // 관리자화면 컴포넌트
 import AdminAuctionCreatePage from './features/admin/wansu/pages/AdminAuctionCreatePage.tsx';
@@ -88,7 +89,7 @@ function App() {
                 <Route index element={<MyExchangePosts />} />
                 <Route path="history" element={<MyExchangeHistory />} />
               </Route>
-
+              <Route path="/exchange-chat" element={<ExchangeChatPage />} />
               <Route path="/badgeguide" element={<BadgeGuide />} />
               <Route path="/bookmarkPage" element={<BookmarkPage />} />
               <Route path="/bookmarkPage/folder/:folderId" element={<BookmarkFolderPage />} />
