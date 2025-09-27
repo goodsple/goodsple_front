@@ -1,23 +1,34 @@
 import React from 'react';
 import { CustomOverlayMap, Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
-import type { MapGood } from '../mock/mapData';
+import type { MapGood } from '../types/map'; // [수정] '../mock/mapData' -> '../types/map'
 import * as S from './GoodsMapStyle';
 
 interface Props {
+  isLoading: boolean; // [추가] 로딩 상태 prop
   goodsList: MapGood[];
   center: { lat: number, lng: number };
+  onCreate: (map: kakao.maps.Map) => void; // [추가] onCreate prop 타입 정의
   onIdle: (map: kakao.maps.Map) => void;
   onMarkerClick: (position: { lat: number; lng: number }) => void;
   selectedMarker: { items: MapGood[], position: { lat: number, lng: number } } | null;
   setSelectedMarker: (selection: null) => void;
 }
 
-const GoodsMap: React.FC<Props> = ({ 
-  goodsList, center, onIdle, onMarkerClick, selectedMarker, setSelectedMarker 
+// [추가] 거래 타입을 한글로 변환하는 함수
+const translateTradeType = (type: string) => {
+  if (type === 'DIRECT') return '직거래';
+  if (type === 'BOTH') return '모두 가능';
+  if (type === 'DELIVERY') return '택배거래';
+  return type;
+};
+
+const GoodsMapComponent: React.FC<Props> = ({ 
+  isLoading, goodsList, center, onCreate, onIdle, onMarkerClick, selectedMarker, setSelectedMarker 
 }) => {
   return (
     <S.MapContainer>
-      <Map center={center} style={{ width: '100%', height: '100%' }} level={4} onIdle={onIdle}>
+      {isLoading && <S.LoadingOverlay>... 로딩 중 ...</S.LoadingOverlay>}
+      <Map center={center} style={{ width: '100%', height: '100%' }} level={4} onCreate={onCreate} onIdle={onIdle}>
         <MarkerClusterer averageCenter={true} minLevel={6}>
           {goodsList.map((good) => (
             <MapMarker
@@ -39,7 +50,7 @@ const GoodsMap: React.FC<Props> = ({
                   <img src={selectedMarker.items[0].imageUrl} alt={selectedMarker.items[0].name} />
                   <S.InfoContent>
                     <S.InfoTitle>{selectedMarker.items[0].name}</S.InfoTitle>
-                    <S.InfoPrice>{selectedMarker.items[0].price === 0 ? '교환' : `${selectedMarker.items[0].price.toLocaleString()}원`}</S.InfoPrice>
+                    <S.InfoPrice>{translateTradeType(selectedMarker.items[0].tradeType)}</S.InfoPrice>
                     <S.InfoLink href="#">상세보기</S.InfoLink>
                   </S.InfoContent>
                 </S.InfoBody>
@@ -57,7 +68,7 @@ const GoodsMap: React.FC<Props> = ({
                       <div>
                         <div className="multi-item-title">{item.name}</div>
                         <div className="multi-item-price">
-                          {item.price === 0 ? '교환' : `${item.price.toLocaleString()}원`}
+                          {translateTradeType(item.tradeType)}
                         </div>
                       </div>
                     </li>
@@ -73,4 +84,5 @@ const GoodsMap: React.FC<Props> = ({
   );
 };
 
-export default GoodsMap;
+// 3. React.memo로 GoodsMapComponent를 감싸서 최종적으로 export 합니다.
+export default React.memo(GoodsMapComponent);
