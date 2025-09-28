@@ -170,14 +170,15 @@ export const ModalRow = styled.div `
     width: 450px;
     
     input {
-        width: 340px;
+        width: 180px;
         height: 30px;
         outline: none;
         border: none;
         background-color: #F5F5F5;
         color: black;
         border-radius: 5px;
-        font-size: 16px;
+        font-size: 15px;
+        padding: 0 10px;
     }
     
     input::placeholder {
@@ -192,6 +193,7 @@ export const ModalRow = styled.div `
     }
     
     select {
+    
         background-color: #997BEB;
         color: white;
         font-size: 14px;
@@ -243,4 +245,17 @@ export const ResetButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
   white-space: nowrap;
+`;
+
+export const UploadButton = styled.button`
+  background-color: #997BEB;
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 5px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  &:hover {
+    background-color: #8866dd;
+  }
 `;

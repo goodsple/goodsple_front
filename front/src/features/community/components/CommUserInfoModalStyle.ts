@@ -33,6 +33,7 @@ export const Report = styled.div`
         color: #997beb;
         display: flex;
         justify-content: center;
+        cursor: pointer;
 
         img {
             width: 20px;

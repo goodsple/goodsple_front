@@ -6,8 +6,12 @@ const ALLOWED_PARAM_KEYS = new Set([
   "roles", "statuses",
   "page", "size",
   "status","productName","startDate","endDate",
-  "type","value",
-  "roomId", "commRoomId", "date"
+  "type","value", 
+  "keyword", "createdFrom", "createdTo", 
+  "targetTypes",
+  "actions",
+  "roomId", "commRoomId", "date",
+  "swLat", "swLng", "neLat", "neLng"
 ]);
 
 const normalizeArrayParam = (v: any) => {
@@ -34,7 +38,8 @@ const axiosInstance = axios.create({
         if (!ALLOWED_PARAM_KEYS.has(k)) return;
         if (v == null || v === "") return;
 
-        if (k === "roles" || k === "statuses") {
+        // ★ 배열 파라미터는 여기서 통일 처리
+        if (k === "roles" || k === "statuses" || k === "targetTypes" || k === "actions") {
           normalizeArrayParam(v).forEach(val => usp.append(k, val));
         } else if (Array.isArray(v)) {
           v.forEach(val => usp.append(k, String(val)));
