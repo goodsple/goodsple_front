@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import CSS from './UserMainComponents.module.css';
+import * as s from "./CateButtonsStyle";
 
 const categories = [
     { id: 1, name: 'K-POP' },
@@ -16,17 +16,14 @@ const CateButtons: React.FC = () => {
     };
 
     return (
-        <div className={CSS.buttonWrap}>
+        <s.ButtonWrap>
             {categories.map((cat) => (
-                <button
-                    key={cat.id}
-                    className={CSS.cateButton}
-                    onClick={() => handleClick(cat.id)}
+                <s.CateButton key={cat.id} onClick={() => handleClick(cat.id)}
                 >
                     {cat.name}
-                </button>
+                </s.CateButton>
             ))}
-        </div>
+        </s.ButtonWrap>
     );
 };
 
