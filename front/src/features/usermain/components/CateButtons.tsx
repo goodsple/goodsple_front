@@ -12,3 +12,4 @@ const CateButtons: React.FC = () => {
 };
 
 export default CateButtons;
+
