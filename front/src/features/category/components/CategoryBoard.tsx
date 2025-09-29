@@ -86,10 +86,10 @@ const handleWriteClick = () => {
   return (
     <S.BoardWrapper>
       <S.BoardSearchWrap>
-        <S.BoardSearchInput type="text" placeholder="검색어 입력" />
-        <S.SearchButton>
+        {/* <S.BoardSearchInput type="text" placeholder="검색어 입력" /> */}
+        {/* <S.SearchButton>
           <img src={search} />
-        </S.SearchButton>
+        </S.SearchButton> */}
         <S.WriteButton onClick={handleWriteClick}>
           글 작성
         </S.WriteButton>
