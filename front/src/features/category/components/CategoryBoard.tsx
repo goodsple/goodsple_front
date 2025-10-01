@@ -65,21 +65,32 @@ function CategoryBoard() {
 };
 
 
-  // 글 클릭 핸들러
+  // 글 클릭(상세보기) 핸들러
 const handlePostClick = (id: number) => {
   navigate(`/exchange/detail/${id}`); // 로그인 여부 상관없이 상세보기 이동
 };
+
+const handleWriteClick = () => {
+  const token = localStorage.getItem('accessToken'); // 로그인 여부 확인
+  if (!token) {
+    alert('로그인이 필요합니다.');
+    navigate('/login'); // 로그인 페이지로 이동
+    return;
+  }
+  navigate('/exchange/new'); // 로그인 되어 있으면 글 작성 페이지 이동
+};
+
 
 
 
   return (
     <S.BoardWrapper>
       <S.BoardSearchWrap>
-        <S.BoardSearchInput type="text" placeholder="검색어 입력" />
-        <S.SearchButton>
+        {/* <S.BoardSearchInput type="text" placeholder="검색어 입력" /> */}
+        {/* <S.SearchButton>
           <img src={search} />
-        </S.SearchButton>
-        <S.WriteButton onClick={() => navigate('/exchange/new')}>
+        </S.SearchButton> */}
+        <S.WriteButton onClick={handleWriteClick}>
           글 작성
         </S.WriteButton>
       </S.BoardSearchWrap>
@@ -115,7 +126,7 @@ const handlePostClick = (id: number) => {
         </tbody>
       </S.CateTable>
 
-      {/* ✅ 페이지네이션 추가 */}
+      {/* 페이지네이션 추가 */}
       {totalPages > 1 && (
         <Pagination
           currentPage={currentPage}

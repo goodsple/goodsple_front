@@ -16,31 +16,31 @@ export const BoardSearchWrap = styled.div`
   gap: 10px;
 `;
 
-export const BoardSearchInput = styled.input`
-  padding: 8px 12px;
-  border: 1px solid #997BEB;
-  border-radius: 5px;
-  font-family: 'Pretendard', sans-serif;
-  font-size: 15px;
-  color: #444444;
+// export const BoardSearchInput = styled.input`
+//   padding: 8px 12px;
+//   border: 1px solid #997BEB;
+//   border-radius: 5px;
+//   font-family: 'Pretendard', sans-serif;
+//   font-size: 15px;
+//   color: #444444;
 
-  &::placeholder {
-    color: rgba(153, 123, 235, 0.5);
-  }
-`;
+//   &::placeholder {
+//     color: rgba(153, 123, 235, 0.5);
+//   }
+// `;
 
-export const SearchButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
+// export const SearchButton = styled.button`
+//   background: none;
+//   border: none;
+//   cursor: pointer;
+//   display: flex;
+//   align-items: center;
 
-  img {
-    width: 20px;
-    height: 20px;
-  }
-`;
+//   img {
+//     width: 20px;
+//     height: 20px;
+//   }
+// `;
 
 export const WriteButton = styled.button`
   background-color: #997BEB;
@@ -50,6 +50,12 @@ export const WriteButton = styled.button`
   padding: 8px 16px;
   font-weight: 600;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+
+  
 
   &:hover {
     opacity: 0.9;
