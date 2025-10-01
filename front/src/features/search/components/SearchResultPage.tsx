@@ -39,8 +39,8 @@ const SearchResultsPage: React.FC = () => {
     fetchResults();
   }, [keyword]);
 
-  const handleCardClick = (id: number) => {
-    navigate(`/exchange-posts/${id}`);
+  const handleCardClick = (postId: number) => {
+    navigate(`/exchange/detail/${postId}`);
   };
 
   // 거래 상태 필터 적용
