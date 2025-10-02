@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'; // useCallback 추가
+import { useNavigate } from 'react-router-dom'; // <<-- 이 한 줄을 추가하세요.
 import Pagination from '../../../components/common/pagination/Pagination';
 import { getGoodsInBounds } from '../api/mapApi'; // [수정] 새로 만든 API 함수 import
 import GoodsList from '../components/GoodsList';
@@ -9,6 +10,7 @@ import * as S from './MapViewPageStyle';
 const ITEMS_PER_PAGE = 5;
 
 const MapViewPage = () => {
+  const navigate = useNavigate(); // <<-- 이 한 줄을 추가하세요.
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 37.566826, lng: 126.9786567 }); // [수정] 초기 위치를 서울 중심으로 변경
   const [goodsOnMap, setGoodsOnMap] = useState<MapGood[]>([]); // [수정] 지도 전체의 굿즈 목록
   const [visibleGoods, setVisibleGoods] = useState<MapGood[]>([]); // [수정] 현재 화면에 보이는 굿즈 목록
@@ -18,6 +20,13 @@ const MapViewPage = () => {
   
   const mapRef = useRef<kakao.maps.Map>(null); // [추가] 카카오맵 인스턴스를 저장하기 위한 ref
   const debounceTimer = useRef<number | null>(null);
+
+  const [isMapMoved, setIsMapMoved] = useState(false); // 1. 지도 이동 여부 state 추가
+
+  // 2. 지도 이동 시작 시 호출될 핸들러 추가
+    const handleMapDragStart = useCallback(() => {
+        setIsMapMoved(true);
+    }, []);
 
   // [수정] handleMapIdle 로직을 API 호출 방식으로 변경
   const handleMapIdle = useCallback((map: kakao.maps.Map) => {
@@ -44,9 +53,20 @@ const MapViewPage = () => {
         alert("데이터를 불러올 수 없습니다.");
       } finally {
         setIsLoading(false);
+
+        setIsMapMoved(false); 
+        // ↑↑↑↑↑↑ 데이터 로딩이 끝나면 버튼을 다시 숨깁니다.
       }
     }, 300);
   }, []); // 의존성 배열이 비어있으므로, 이 함수는 컴포넌트가 처음 렌더링될 때 딱 한번만 생성됩니다.
+
+  // 3. 재검색 버튼 클릭 핸들러 추가
+    const handleResearchClick = useCallback(() => {
+        if (mapRef.current) {
+            handleMapIdle(mapRef.current);
+            setIsMapMoved(false);
+        }
+    }, [handleMapIdle]);
 
   useEffect(() => {
     // geolocation을 사용하여 현재 위치 가져오기 (컴포넌트 마운트 시 한번만 실행)
@@ -93,10 +113,13 @@ const MapViewPage = () => {
     }
   }, [goodsOnMap, visibleGoods]);
   
-  const handleListItemClick = useCallback((good: MapGood) => {
+// 굿즈 목록의 아이템을 클릭했을 때 호출되는 함수
+const handleListItemClick = useCallback((good: MapGood) => {
+    // 지도의 중심을 클릭된 굿즈의 위치로 이동시킵니다.
     setMapCenter({ lat: good.lat, lng: good.lng });
+    // 해당 위치의 마커를 클릭한 것과 동일한 효과를 줍니다 (정보창 표시).
     handleMarkerClick({ lat: good.lat, lng: good.lng }); 
-  }, [handleMarkerClick]);
+}, [handleMarkerClick]); // 의존성 배열도 handleMarkerClick으로 변경합니다.
 
   const totalPages = Math.ceil(visibleGoods.length / ITEMS_PER_PAGE);
   const paginatedGoods = visibleGoods.slice(
@@ -115,6 +138,9 @@ const MapViewPage = () => {
         onMarkerClick={handleMarkerClick}
         selectedMarker={selectedMarker}
         setSelectedMarker={setSelectedMarker}
+        onDragStart={handleMapDragStart} // 5. onDragStart prop 추가
+                isMapMoved={isMapMoved}         // 6. isMapMoved prop 추가
+                onResearch={handleResearchClick} // 7. onResearch prop 추가
       />
 
       <S.ListWrapper>
