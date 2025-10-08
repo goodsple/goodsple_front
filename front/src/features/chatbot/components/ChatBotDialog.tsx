@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import sendIcon from '../../../assets/images/send_purple.png';
 import BotMessage from './BotMessage';
 import * as s from './ChatBotDialogStyle';
@@ -9,6 +9,14 @@ const ChatBotDialog: React.FC = () => {
     const [chatHistory, setChatHistory] = useState<React.ReactNode[]>([]);
     const [selectedBtn, setSelectedBtn] = useState<'faq' | 'qna' | null>(null);
     const [inputText, setInputText] = useState('');
+
+    // 마지막 메시지 위치 추적용 ref
+    const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+    // 채팅이 추가될 때마다 스크롤을 맨 아래로 이동
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [chatHistory]);
 
     const handleSelectFAQ = () => {
         if (selectedBtn) return; 
@@ -88,6 +96,9 @@ const ChatBotDialog: React.FC = () => {
                 {chatHistory.map((msg, idx) => (
                     <React.Fragment key={idx}>{msg}</React.Fragment>
                 ))}
+
+                {/* 마지막 메시지 위치 표시용 */}
+                <s.ChatEndRef ref={chatEndRef} />
 
             </s.ChatArea>
 

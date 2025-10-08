@@ -574,3 +574,28 @@
     text-align: left;
 }
 
+.chatbotButton {
+    position: fixed;
+    bottom: 40px;       
+    right: 40px;        
+    width: 110px;        
+    height: 110px;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    z-index: 999;      
+}
+
+.chatbotButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+}
+
+.chatbotButton img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
