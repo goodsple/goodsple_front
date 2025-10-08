@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import arrowLeftPurple from '../../../assets/images/arrow_left_purple.png';
 import chatbot from '../../../assets/images/chatbot.png';
 import megaphoneIcon from '../../../assets/images/megaphone_purple.png';
@@ -9,9 +10,15 @@ import * as s from './ChatBotPageStyle';
 
 const ChatBotPage:React.FC = () => {
 
+    const navigate = useNavigate();
+
     const [chatStarted, setChatStarted] = useState(false);
     const [messages, setMessages] = useState([]);
     const scrollable = messages.length > 2;
+
+    const handleRefresh = () => {
+        window.location.reload();
+    };
 
     // comm_send 이미지 => 이름 send_purple 로 수정하기
     return(
@@ -20,7 +27,7 @@ const ChatBotPage:React.FC = () => {
             <s.ChatBotWrapper>
                 <s.ChatbotHeader>
                     {/* 뒤로가기 버튼 + 작은 로고 + 로고 이름 */}
-                    <s.ArrowLeftIcon src = {arrowLeftPurple} alt="뒤로가기 버튼" />
+                    <s.ArrowLeftIcon src = {arrowLeftPurple} onClick={handleRefresh} alt="뒤로가기 버튼" />
                     <s.ChatBotSmallIcon src = {chatbot} alt="챗봇 작은 로고 이미지" />
                     Goodsple
                 </s.ChatbotHeader>
