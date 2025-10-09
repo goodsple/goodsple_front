@@ -1,145 +1,149 @@
 import styled from 'styled-components';
 
-const COLORS = {
-  line: '#EAE7E2',
-  muted: '#9AA0A6',
-  gray: '#6B7280',
-  danger: '#DF3636'
-};
+const COLORS = { line: '#EAE7E2', muted: '#9A9A9A' };
 
 export const Wrap = styled.div`
-  height: 100%;
-  display: flex; 
+  display: flex;
   flex-direction: column;
+  height: 100%;
+  background: #fff;
 `;
 
 export const Title = styled.div`
-  padding: 18px 16px;
-  font-size: 22px;
-  font-weight: 600;
+  padding: 16px;
+  font-weight: 700;
+  font-size:22px;
 `;
 
-export const Scroll = styled.div`
-  overflow-y: auto;
-  padding-bottom: 8px;
+export const Scroll = styled.div<{ $empty?: boolean }>`
+  height: 100%;
+  overflow: ${({ $empty }) => ($empty ? 'hidden' : 'auto')};
+
+  /* 빈 상태일 때 기본 스크롤바 완전 숨김 */
+  ${({ $empty }) =>
+    $empty &&
+    `
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  `}
 `;
 
-export const Item = styled.button<{active?: boolean}>`
-    position: relative; 
-    width: 100%;
-    background: ${({active}) => (active ? '#FAFAFA' : 'transparent')};
-    border: 0;
-    text-align: left; 
-    cursor: pointer;
-    padding: 12px 14px 12px 14px;
-    padding-right: 40px;
-    border-top: 1px solid ${COLORS.line};
+export const Item = styled.button<{ $active?: boolean }>`
+  width: 100%;
+  text-align: left;
+  background: ${({ $active }) => ($active ? '#F6F3FF' : 'transparent')};
+  border: 0;
+  border-bottom: 1px solid ${COLORS.line};
+  padding: 12px 14px;
+  cursor: pointer;
+  position: relative;
 `;
 
 export const Row = styled.div`
-    display: flex; 
-    gap: 12px; 
-    align-items: center;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 `;
 
 export const Avatar = styled.div`
-    width: 44px;
-    height: 44px;
-    border-radius: 999px;
-    background: #ddd; 
-    background-size: cover; 
-    background-position: center;
-    flex: 0 0 44px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  background-size: cover;
+  background-position: center;
+  flex: 0 0 40px;
 `;
 
 export const NickLine = styled.div`
-    display: flex;
-    align-items: center; 
-    gap: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 `;
 
 export const Nick = styled.span`
-    font-weight: 800;
+  font-weight: 700;
 `;
 
 export const Time = styled.span`
-  color: ${COLORS.muted}; 
   font-size: 12px;
+  color: ${COLORS.muted};
 `;
 
 export const Last = styled.div`
-  color: ${COLORS.gray}; 
-  font-size: 14px;
-  white-space: nowrap; 
-  overflow: hidden; 
+  font-size: 13px;
+  color: #555;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
 `;
 
 export const Unread = styled.span`
-  position: absolute;
-  right: 48px;       
-  top: 50%;
-  transform: translateY(-50%);
-
-  min-width: 22px;
-  height: 22px;
-  padding: 0 6px;
-  border-radius: 999px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1;
+  background: #6c5ce7;
   color: #fff;
-  background: #DF3636; 
-
-  /* 숫자가 9 이상일 때도 모양 유지 */
-  box-sizing: border-box;
+  border-radius: 999px;
+  font-size: 12px;
+  padding: 2px 8px;
 `;
 
 export const KebabBtn = styled.button`
   position: absolute;
-  top: 10px;
-  right: 12px;
-  width: 28px;
-  height: 28px;
+  right: 8px;
+  top: 12px;
   border: 0;
   background: transparent;
-  display: grid;
-  place-items: center;
+  color: #999;
   cursor: pointer;
-  color: ${COLORS.muted};
-  opacity: 0.9;
-
-  &:hover { background: rgba(0,0,0,0.04); }
-  &:focus-visible { outline: 2px solid #E5E7EB; }
 `;
 
-/* 메뉴 박스 */
 export const Menu = styled.div`
   position: absolute;
-  top: 38px;
-  right: 20px;
-  min-width: 100px;
+  right: 8px;
+  top: 32px;
   background: #fff;
   border: 1px solid ${COLORS.line};
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
-  z-index: 20;
+  border-radius: 8px;
   overflow: hidden;
+  z-index: 10;
 `;
 
-/* 메뉴 아이템 */
 export const MenuItem = styled.button`
-  width: 100%;
+  width: 160px;
   padding: 10px 12px;
+  text-align: left;
   background: #fff;
   border: 0;
-  text-align: left;
-  cursor: pointer;
   font-size: 14px;
+  cursor: pointer;
 
-  &:hover { background: #F7F7F7; }
+  &.danger {
+    color: #d63031;
+  }
+
+  &:hover {
+    background: #fafafa;
+  }
 `;
+
+/* 빈 상태 전용 컨테이너 */
+export const EmptyCenter = styled.div`
+  position: absolute;       /* 스크롤 높이 영향을 안 주도록 고정 */
+  inset: 0;
+  display: grid;
+  place-items: center;      /* 수직/수평 중앙 */
+  text-align: center;
+  padding: 16px;
+  color: #9A9A9A;
+  line-height: 1.6;
+  white-space: pre-line;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .25s ease, transform .25s ease;
+
+  &.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+

@@ -3,6 +3,7 @@ import * as S from './ComposerStyle';
 
 export default function Composer({ onSend, disabled }: { onSend: (text: string) => void; disabled?: boolean }) {
   const [text, setText] = useState('');
+  const [isComposing, setIsComposing] = useState(false);
 
   const send = () => {
     const v = text.trim();
@@ -11,8 +12,14 @@ export default function Composer({ onSend, disabled }: { onSend: (text: string) 
     setText('');
   };
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    if (e.key === 'Enter' && !e.shiftKey) {
+      // 한글/중문 등 조합 입력 중이면 전송 금지
+      if ((e.nativeEvent as any).isComposing || isComposing) return;
+      e.preventDefault();
+      send();
+    }
   };
+
 
   return (
     <S.Wrap>
@@ -24,8 +31,9 @@ export default function Composer({ onSend, disabled }: { onSend: (text: string) 
         disabled={disabled}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={onKeyDown}
+        onCompositionStart={() => setIsComposing(true)}
+        onCompositionEnd={() => setIsComposing(false)}
       />
-      {/* <S.Send onClick={send} disabled={disabled}>전송</S.Send> */}
     </S.Wrap>
   );
 }

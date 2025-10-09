@@ -3,8 +3,8 @@ import styled from 'styled-components';
 const COLORS = {
   primary: '#997BEB',   // 내 메시지 보라 테두리
   gray:    '#D9D9D9',   // 상대 메시지 회색 테두리
-  text:    '#1F2937',
-  muted:   '#9AA0A6',
+  text:    '#000000',
+  muted:   '#9A9A9A',
 };
 
 export const Row = styled.div<{ mine?: boolean }>`
@@ -32,16 +32,24 @@ export const Bubble = styled.div<{ mine?: boolean }>`
 /* 말풍선 바깥 오른쪽에 붙는 메타 정보 */
 export const Meta = styled.div<{ mine?: boolean }>`
   display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11.5px;
+  align-items: end;
+  font-size: 12px;
   color: ${COLORS.muted};
   white-space: nowrap;
-  margin-left: ${({ mine }) => (mine ? '6px' : '6px')};
-  margin-right: ${({ mine }) => (mine ? '0' : '0')};
+
+   /* 내 메시지: 메타가 왼쪽에 오므로 오른쪽 여백을, 
+    상대 메시지: 메타가 오른쪽에 오므로 왼쪽 여백을 준다 */
+  margin-right: ${({ mine }) => (mine ? '6px' : '0')};
+  margin-left:  ${({ mine }) => (mine ? '0' : '6px')};
+
+  /* 폭이 너무 좁아지지 않게 최소 폭 */
+  min-width: 64px;
+  text-align: ${({ mine }) => (mine ? 'right' : 'left')};
 
   .read {
     color: ${COLORS.muted};
   }
   .unread { color: ${COLORS.primary}; } 
+
+  flex-direction: column-reverse;
 `;

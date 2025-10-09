@@ -90,7 +90,6 @@ function App() {
                 <Route index element={<MyExchangePosts />} />
                 <Route path="history" element={<MyExchangeHistory />} />
               </Route>
-              <Route path="/exchange-chat" element={<ExchangeChatPage />} />
               <Route path="/badgeguide" element={<BadgeGuide />} />
               <Route path="/bookmarkPage" element={<BookmarkPage />} />
               <Route path="/bookmarkPage/folder/:folderId" element={<BookmarkFolderPage />} />
@@ -105,6 +104,10 @@ function App() {
               <Route path="/exchange/new" element={<ExchangePost />} />
               <Route path="/exchange/detail/:postId" element={<ExchangePostDetail />} />
               <Route path="/exchange/edit/:postId" element={<ExchangePostEdit />} />
+               {/* 채팅 목록/진입 공통 페이지 */}
+               <Route path="/exchange-chat" element={<ExchangeChatPage />} /> 
+              <Route path="/exchange-chat/:roomId" element={<ExchangeChatPage />} />
+              
               <Route path="/community" element={<Community />} />
               <Route path="/chatbot" element={<ChatBotPage />} />
               <Route path="/categories" element={<CategorySelect />} />
