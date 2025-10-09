@@ -1,108 +1,159 @@
 import { useEffect, useRef, useState } from 'react';
 import * as S from './ChatLayoutStyle';
 
-export default function CenterScrollbar({ scrollEl }: { scrollEl: HTMLElement | null }) {
+type Props = {
+  /** 메시지 리스트 스크롤 컨테이너 ref (null 포함) */
+  scrollRef: React.RefObject<HTMLElement | null>;
+  /** 방 변경/새 메시지 등으로 재바인딩 트리거 */
+  bindKey?: unknown;
+};
+
+export default function CenterScrollbar({ scrollRef, bindKey }: Props) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [thumb, setThumb] = useState({ top: 0, height: 40 });
+  const [thumb, setThumb] = useState({ top: 0, height: 44 });
 
-  // 왼쪽 리스트 스크롤 변화 → 썸 위치/크기 갱신
+  // 캡/여백(픽셀) – 썸이 오버랩되지 않도록 상하 여유를 둠
+  const CAP_H = 12;      // 삼각형 높이(시각적으로 9px 정도지만 여유 포함)
+  const GAP   = 6;       // 캡과 레일 사이 여백
+
+  // 레일 지오메트리(트랙 높이 기준)
+  const getRailGeom = (trackH: number) => {
+    const top = CAP_H + GAP;
+    const height = Math.max(0, trackH - (CAP_H + GAP) * 2);
+    return { top, height };
+  };
+
+  // 스크롤 위치 → 썸(top, height) 반영
+  const updateFrom = (el: HTMLElement) => {
+    const trackH = trackRef.current?.clientHeight ?? 1;
+    const { top: railTop, height: railH } = getRailGeom(trackH);
+
+    const sh = el.scrollHeight;
+    const ch = el.clientHeight;
+    const st = el.scrollTop;
+
+    if (sh <= ch || railH <= 0) {
+      // 내용이 짧거나 레일이 0이면 썸을 레일 전체로
+      setThumb({ top: railTop, height: Math.max(36, railH) });
+      return;
+    }
+    const MIN_THUMB = 28;      // 최소 높이
+    const SCALE     = 0.6; 
+
+    const hRaw = (ch / sh) * railH;
+    const h    = Math.max(MIN_THUMB, hRaw * SCALE);    // 썸 최소 높이
+    const maxY = railH - h;
+    const rel  = st / (sh - ch);                   // 0~1
+    setThumb({ top: railTop + rel * maxY, height: h });
+  };
+
+  // 스크롤/리사이즈 바인딩
   useEffect(() => {
-    if (!scrollEl) return;
+    let alive = true;
+    let rafId = 0;
+    let unbind: (() => void) | null = null;
 
-    const update = () => {
-      const sh = scrollEl.scrollHeight;
-      const ch = scrollEl.clientHeight;
-      const st = scrollEl.scrollTop;
-      const trackH = trackRef.current?.clientHeight ?? 1;
+    const bind = () => {
+      const el = scrollRef.current ?? null;
+      const track = trackRef.current ?? null;
+      if (!alive) return;
+      if (!el || !track) { rafId = requestAnimationFrame(bind); return; }
 
-      if (sh <= ch) {
-        setThumb({ top: 0, height: trackH });
-        return;
-      }
+      const onScroll = () => updateFrom(el);
+      const onResize = () => updateFrom(el);
 
-      const h = Math.max(28, (ch / sh) * trackH);
-      const maxY = trackH - h;
-      const top = Math.min(maxY, (st / (sh - ch)) * maxY);
-      setThumb({ top, height: h });
+      updateFrom(el);
+      el.addEventListener('scroll', onScroll, { passive: true });
+
+      const ro  = new ResizeObserver(onResize);
+      ro.observe(el);
+
+      const tro = new ResizeObserver(() => updateFrom(el));
+      tro.observe(track);
+
+      unbind = () => {
+        el.removeEventListener('scroll', onScroll);
+        ro.disconnect();
+        tro.disconnect();
+      };
     };
 
-    update();
-    scrollEl.addEventListener('scroll', update, { passive: true });
-    const ro = new ResizeObserver(update);
-    ro.observe(scrollEl);
-
+    bind();
     return () => {
-      scrollEl.removeEventListener('scroll', update);
-      ro.disconnect();
+      alive = false;
+      if (rafId) cancelAnimationFrame(rafId);
+      unbind?.();
     };
-  }, [scrollEl]);
+  }, [scrollRef, bindKey]);
 
-  // 드래그로 스크롤 제어 (Pointer Events로 타입 안전하게)
+  // 드래그로 스크롤
   useEffect(() => {
-    if (!scrollEl || !trackRef.current) return;
+    const el = scrollRef.current;
+    const track = trackRef.current;
+    if (!el || !track) return;
 
-    const thumbEl = trackRef.current.querySelector<HTMLDivElement>('[data-thumb]');
+    const thumbEl = track.querySelector<HTMLDivElement>('[data-thumb]');
     if (!thumbEl) return;
 
-    let startY = 0;
-    let startTop = 0;
-    let trackH = 0;
-    let thumbH = 0;
+    let startY = 0, startTop = 0, railTop = 0, railH = 0, thumbH = 0;
 
     const onPointerDown = (e: PointerEvent) => {
       e.preventDefault();
-      // 포인터 캡처 (드래그 안정화)
-      thumbEl.setPointerCapture(e.pointerId);
+      thumbEl.setPointerCapture?.(e.pointerId);
 
-      startY = e.clientY;
+      startY   = e.clientY;
       startTop = thumb.top;
-      trackH = trackRef.current?.clientHeight ?? 1;
+
+      const trackH = track.clientHeight;
+      ({ top: railTop, height: railH } = getRailGeom(trackH));
       thumbH = thumb.height;
 
-      window.addEventListener('pointermove', onPointerMove);
-      window.addEventListener('pointerup', onPointerUp);
-    };
+      const onMove = (e: PointerEvent) => {
+        const dy  = e.clientY - startY;
+        const y   = Math.max(railTop, Math.min(railTop + railH - thumbH, startTop + dy));
+        const rel = railH > thumbH ? (y - railTop) / (railH - thumbH) : 0;
 
-    const onPointerMove = (e: PointerEvent) => {
-      const dy = e.clientY - startY;
-      const maxY = Math.max(0, trackH - thumbH);
-      const newTop = Math.max(0, Math.min(maxY, startTop + dy));
+        const sh  = el.scrollHeight, ch = el.clientHeight;
+        el.scrollTop = rel * (sh - ch);
+      };
 
-      const sh = scrollEl.scrollHeight;
-      const ch = scrollEl.clientHeight;
-      if (sh > ch && maxY > 0) {
-        scrollEl.scrollTop = (newTop / maxY) * (sh - ch);
-      }
-    };
+      const onUp = (e: PointerEvent) => {
+        thumbEl.releasePointerCapture?.(e.pointerId);
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+      };
 
-    const onPointerUp = (e: PointerEvent) => {
-      thumbEl.releasePointerCapture?.(e.pointerId);
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerUp);
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
     };
 
     thumbEl.addEventListener('pointerdown', onPointerDown);
+    return () => thumbEl.removeEventListener('pointerdown', onPointerDown);
+  }, [scrollRef, thumb]);
 
-    return () => {
-      thumbEl.removeEventListener('pointerdown', onPointerDown);
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerUp);
-    };
-  }, [scrollEl, thumb]);
-
-  // 트랙 클릭 시 페이지 점프
+  // 트랙 클릭 → 한 페이지 점프
   const onTrackPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!trackRef.current || !scrollEl) return;
-    const rect = trackRef.current.getBoundingClientRect();
+    const el = scrollRef.current;
+    const track = trackRef.current;
+    if (!el || !track) return;
+
+    const rect = track.getBoundingClientRect();
     const clickY = e.clientY - rect.top;
 
-    if (clickY < thumb.top) scrollEl.scrollTop -= scrollEl.clientHeight;
-    else if (clickY > thumb.top + thumb.height) scrollEl.scrollTop += scrollEl.clientHeight;
+    if (clickY < thumb.top) el.scrollTop -= el.clientHeight;
+    else if (clickY > thumb.top + thumb.height) el.scrollTop += el.clientHeight;
   };
+
+  // ▲/▼ 캡 클릭 → 한 페이지 점프
+  const pageUp   = () => { const el = scrollRef.current; if (el) el.scrollTop -= el.clientHeight; };
+  const pageDown = () => { const el = scrollRef.current; if (el) el.scrollTop += el.clientHeight; };
 
   return (
     <S.Divider>
       <S.Track ref={trackRef} onPointerDown={onTrackPointerDown}>
+        <S.Rail />
+        <S.CapUp   onClick={pageUp} />
+        <S.CapDown onClick={pageDown} />
         <S.Thumb data-thumb style={{ top: thumb.top, height: thumb.height }} />
       </S.Track>
     </S.Divider>
