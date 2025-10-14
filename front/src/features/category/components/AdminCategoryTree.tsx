@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '../../../store/Store.ts';
-import { addCategoryAPI, fetchAllFirstCate, fetchAllSecCate, fetchAllThiCate, updateSecCategory, updateThiCategory } from '../../../api/category/categoryAPICalls.ts';
+import { addCategoryAPI, fetchAllFirstCate, fetchAllSecCate, fetchAllThiCate, updateFirstCategory, updateSecCategory, updateThiCategory } from '../../../api/category/categoryAPICalls.ts';
 import * as S from '../../admin/../category/components/AdminCategoryTree.styles.ts';
 import axios from 'axios';
 
@@ -173,7 +173,14 @@ function AdminCategoryTree() {
     if (!selectedCategory.id || newChildName.trim() === '') return;
 
 
-    const newId = await addCategoryAPI({ parentId: selectedCategory.id, level: selectedCategory.level + 1, name: newChildName, });
+    const newId = await addCategoryAPI({
+      parentId: selectedCategory.id,
+      level: selectedCategory.level + 1,
+      name: newChildName,
+      subText,        // 메모 추가
+      visibility,     // 공개/비공개 추가
+    });
+
     if (!newId) {
       alert('카테고리 추가 실패');
       return;
@@ -200,6 +207,8 @@ function AdminCategoryTree() {
               thirdCateId: newId,
               cateName: newChildName,
               secondCateId: sc.secondCateId,
+              subText,        // 메모 포함
+              visibility,     // 공개/비공개 포함
             };
             return { ...sc, children: [...(sc.children || []), newThird] };
           }
@@ -210,8 +219,6 @@ function AdminCategoryTree() {
       return fc;
     });
     setTreeData(newTreeData);
-
-    // ✅ 선택 상태는 유지! (추가된 항목으로 변경하지 않음)
     setIsAdding(false);
     setNewChildName('');
     alert('카테고리 추가 완료!');
@@ -259,6 +266,16 @@ function AdminCategoryTree() {
     if (!window.confirm('정말 수정하시겠습니까?')) return;
 
     let success = false;
+
+    if (selectedCategory.level === 1) {
+      // 1차는 subText만 업데이트
+      success = await updateFirstCategory(selectedCategory.id, { subText });
+    } else if (selectedCategory.level === 2) {
+      success = await updateSecCategory(selectedCategory.id, { cateName: inputValue, subText, visibility });
+    } else if (selectedCategory.level === 3) {
+      success = await updateThiCategory(selectedCategory.id, { cateName: inputValue, subText, visibility });
+    }
+
     if (selectedCategory.level === 2) {
       success = await updateSecCategory(selectedCategory.id,
         { cateName: inputValue, subText, visibility });
@@ -271,9 +288,13 @@ function AdminCategoryTree() {
       alert('수정 완료!');
       setIsModified(false);
       setOriginalData({ name: inputValue, subText, visibility });
+
       // treeData 업데이트 (id 절대 변경 X)
       setTreeData(prevTree =>
         prevTree.map(fc => {
+          if (selectedCategory.level === 1 && fc.firstCateId === selectedCategory.id) {
+            return { ...fc, subText }; // 이름은 안바꿈
+          }
           if (fc.children) {
             fc.children = fc.children.map(sc => {
               if (selectedCategory.level === 2 && sc.secondCateId === selectedCategory.id) {
@@ -565,6 +586,7 @@ function AdminCategoryTree() {
                     setIsModified(true);
                   }
                 }}
+                disabled={selectedCategory.level === 1} // 1차 카테고리일 때 입력 불가
               />
             </S.InputGroup>
 
@@ -587,38 +609,41 @@ function AdminCategoryTree() {
                   handleSubTextChange(e.target.value);
                   setIsModified(true); // 메모 변경 시도 수정 버튼 활성화
                 }}
+                disabled={selectedCategory.level === 0} // 선택 안되면 비활성
               />
             </S.InputGroup>
 
-            <S.InputGroup>
-              <S.Label>공개설정:</S.Label>
-              <S.RadioGroup>
-                <S.RadioLabel>
-                  <S.RadioInput
-                    type="radio"
-                    name="visibility"
-                    checked={visibility === 'public'}
-                    onChange={() => {
-                      handleVisibilityChange('public');
-                      setIsModified(true);
-                    }}
-                  />
-                  공개
-                </S.RadioLabel>
-                <S.RadioLabel>
-                  <S.RadioInput
-                    type="radio"
-                    name="visibility"
-                    checked={visibility === 'private'}
-                    onChange={() => {
-                      handleVisibilityChange('private');
-                      setIsModified(true);
-                    }}
-                  />
-                  비공개
-                </S.RadioLabel>
-              </S.RadioGroup>
-            </S.InputGroup>
+            {selectedCategory.level > 1 && (
+              <S.InputGroup>
+                <S.Label>공개설정:</S.Label>
+                <S.RadioGroup>
+                  <S.RadioLabel>
+                    <S.RadioInput
+                      type="radio"
+                      name="visibility"
+                      checked={visibility === 'public'}
+                      onChange={() => {
+                        handleVisibilityChange('public');
+                        setIsModified(true);
+                      }}
+                    />
+                    공개
+                  </S.RadioLabel>
+                  <S.RadioLabel>
+                    <S.RadioInput
+                      type="radio"
+                      name="visibility"
+                      checked={visibility === 'private'}
+                      onChange={() => {
+                        handleVisibilityChange('private');
+                        setIsModified(true);
+                      }}
+                    />
+                    비공개
+                  </S.RadioLabel>
+                </S.RadioGroup>
+              </S.InputGroup>
+            )}
 
             {selectedCategory.level >= 1 && selectedCategory.level <= 3 && (
               <S.InputGroup>
