@@ -1,31 +1,34 @@
-
-// ============== ver4 왼쪽 트리 입력창 + 오른쪽 패널 동기화 ================
+//  ============== ver4 왼쪽 트리 입력창 + 오른쪽 패널 동기화 ================
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '../../../store/Store.ts';
-import { fetchAllSecCate, fetchAllThiCate, fetchAllFirstCate, addCategoryAPI } from '../../../api/category/categoryAPICalls.ts';
+import { addCategoryAPI, fetchAllFirstCate, fetchAllSecCate, fetchAllThiCate, updateSecCategory, updateThiCategory } from '../../../api/category/categoryAPICalls.ts';
 import * as S from '../../admin/../category/components/AdminCategoryTree.styles.ts';
+import axios from 'axios';
 
 interface ThirdCate {
   thirdCateId: number;
   cateName: string;
   secondCateId: number;
   subText?: string;
+  visibility?: string;
 }
 
 interface SecondCate {
   secondCateId: number;
   cateName: string;
   firstCateId: number;
-  children?: ThirdCate[];
   subText?: string;
+  visibility?: string;
+  children?: ThirdCate[];
 }
 
 interface FirstCate {
   firstCateId: number;
   cateName: string;
-  children?: SecondCate[];
+  visibility?: string;
   subText?: string;
+  children?: SecondCate[];
 }
 
 
@@ -36,13 +39,18 @@ function AdminCategoryTree() {
   const thirdCates: ThirdCate[] = useSelector((state: any) => state.category.allThiCate);
 
   const [treeData, setTreeData] = useState<FirstCate[]>([]);
-  const [expanded, setExpanded] = useState<{ [key: number]: boolean }>({});
+  // const [expanded, setExpanded] = useState<{ [key: number]: boolean }>({});
   const [selectedCategory, setSelectedCategory] = useState<{ level: number; id: number | null }>({ level: 0, id: null });
   const [inputValue, setInputValue] = useState('');
   const [subText, setSubText] = useState('');
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [newChildName, setNewChildName] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [isModified, setIsModified] = useState(false);
+
+  // 기존 데이터 백업 (수정 취소용)
+  const [originalData, setOriginalData] = useState({ name: '', subText: '', visibility: 'public' });
+
 
   const [expandedFirst, setExpandedFirst] = useState<{ [key: number]: boolean }>({});
   const [expandedSecond, setExpandedSecond] = useState<{ [key: number]: boolean }>({});
@@ -55,7 +63,7 @@ function AdminCategoryTree() {
     setExpandedSecond(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-
+  // 최초 렌더링 시 데이터 불러오기
   useEffect(() => {
     dispatch(fetchAllFirstCate());
     dispatch(fetchAllSecCate());
@@ -64,54 +72,108 @@ function AdminCategoryTree() {
 
   useEffect(() => {
     if (!firstCates.length) return;
+
     const firstCateArray: FirstCate[] = firstCates.map(fc => ({ ...fc, children: [] }));
-    secondCates.forEach(sec => {
+
+    (secondCates || []).forEach(sec => {
       const firstCate = firstCateArray.find(fc => fc.firstCateId === sec.firstCateId);
       if (firstCate) firstCate.children!.push({ ...sec, children: [] });
     });
-    thirdCates.forEach(third => {
+
+    (thirdCates || []).forEach(third => {
       const secondCate = secondCates.find(sec => sec.secondCateId === third.secondCateId);
       const firstCate = firstCateArray.find(fc => fc.firstCateId === secondCate?.firstCateId);
       const parentSecondCate = firstCate?.children?.find(sc => sc.secondCateId === third.secondCateId);
       if (parentSecondCate) parentSecondCate.children!.push(third);
     });
+
     setTreeData(firstCateArray);
   }, [firstCates, secondCates, thirdCates]);
 
   // 트리 메뉴 확장/축소
-  const toggleExpand = (id: number) =>
-    setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+  // const toggleExpand = (id: number) =>
+  //   setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
 
-  const handleClickCategory = (level: number, id: number, name?: string, subTextValue?: string, vis?: 'public' | 'private') => {
-    setSelectedCategory({ level, id });
+  const handleClickCategory = (
+    level: number,
+    id: number,
+    name?: string,
+    subTextValue?: string,
+    vis?: 'public' | 'private'
+  ) => {
+    setSelectedCategory({ level, id: Number(id) });
     setInputValue(name || '');
     setSubText(subTextValue || '');
     setVisibility(vis || 'public');
     setNewChildName('');
     setIsAdding(false); // 새 카테고리 입력 모드 초기화
+    setIsModified(false); // 기존 카테고리 클릭 시 수정 버튼 비활성화
+    setOriginalData({ name: name || '', subText: subTextValue || '', visibility: vis || 'public' }); // 원본 저장
   };
 
-  const handleSave = () => {
-    if (!selectedCategory.id) return;
-    alert(
-      `${selectedCategory.level}차 카테고리 수정\n` +
-      `ID: ${selectedCategory.id}\n` +
-      `이름: ${inputValue}\n` +
-      `메모: ${subText}\n` +
-      `공개설정: ${visibility}`
-    );
-  };
+  // --- 변경 감지 함수
+  useEffect(() => {
+    const modified =
+      inputValue !== originalData.name ||
+      subText !== originalData.subText ||
+      visibility !== originalData.visibility;
+    setIsModified(modified);
+  }, [inputValue, subText, visibility, originalData]);
 
+
+  // 저장
+  // const handleSave = async () => {
+
+  //   if (!selectedCategory.id || !inputValue.trim()) {
+  //     alert('카테고리 정보가 올바르지 않습니다.');
+  //     return;
+  //   }
+
+  //   if (!selectedCategory.id) return;
+
+  //   let success = false;
+
+  //   if (selectedCategory.level === 2) {
+  //     // 2차 카테고리
+  //     success = await updateSecCategory(selectedCategory.id, { cateName: inputValue, subText, visibility });
+  //   } else if (selectedCategory.level === 3) {
+  //     // 3차 카테고리
+  //     success = await updateThiCategory(selectedCategory.id, { cateName: inputValue, subText, visibility });
+  //   }
+
+  //   if (success) {
+  //     alert('저장 완료!');
+  //     // 트리 업데이트
+
+
+  //     // treeData 업데이트
+  //     setTreeData(prevTree => prevTree.map(fc => {
+  //       if (selectedCategory.level === 2 && fc.children) {
+  //         fc.children = fc.children.map(sc =>
+  //           sc.secondCateId === selectedCategory.id
+  //             ? { ...sc, cateName: inputValue, subText } : sc);
+  //       }
+  //       if (selectedCategory.level === 3 && fc.children) {
+  //         fc.children = fc.children.map(sc => ({
+  //           ...sc,
+  //           children: sc.children?.map(tc =>
+  //             tc.thirdCateId === selectedCategory.id
+  //               ? { ...tc, cateName: inputValue, subText } : tc)
+  //         }));
+  //       }
+  //       return fc;
+  //     }));
+  //   } else {
+  //     alert('저장 실패');
+  //   }
+  // };
+
+  // 추가
   const handleAddChild = async () => {
     if (!selectedCategory.id || newChildName.trim() === '') return;
 
-    // 1. 백엔드에 새 카테고리 생성 요청
-    const newId = await addCategoryAPI({
-      parentId: selectedCategory.id,
-      level: selectedCategory.level + 1,
-      name: newChildName,
-    });
 
+    const newId = await addCategoryAPI({ parentId: selectedCategory.id, level: selectedCategory.level + 1, name: newChildName, });
     if (!newId) {
       alert('카테고리 추가 실패');
       return;
@@ -132,7 +194,7 @@ function AdminCategoryTree() {
       if (selectedCategory.level === 2 && fc.children) {
         // 2차 클릭 → 3차 추가
         const newFc = { ...fc };
-        newFc.children = newFc.children.map(sc => {
+        newFc.children = (newFc.children || []).map(sc => {
           if (sc.secondCateId === selectedCategory.id) {
             const newThird: ThirdCate = {
               thirdCateId: newId,
@@ -147,27 +209,158 @@ function AdminCategoryTree() {
       }
       return fc;
     });
-
     setTreeData(newTreeData);
 
-    // 오른쪽 패널에 새 카테고리 정보 동기화
-    setSelectedCategory({
-      level: selectedCategory.level + 1,
-      id: newId,
-    });
-    setInputValue(newChildName);
+    // ✅ 선택 상태는 유지! (추가된 항목으로 변경하지 않음)
     setIsAdding(false);
     setNewChildName('');
+    alert('카테고리 추가 완료!');
   };
 
-  // 삭제
-  const handleDelete = () => {
+
+  // 수정
+  // 입력값 변경 시
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+
+    // 선택된 카테고리가 있으면 treeData 업데이트
+    if (!isAdding && selectedCategory.id) {
+      setTreeData(prevTree =>
+        prevTree.map(fc => {
+          if (selectedCategory.level === 2 && fc.children) {
+            fc.children = fc.children.map(sc =>
+              sc.secondCateId === selectedCategory.id
+                ? { ...sc, cateName: value }
+                : sc
+            );
+          }
+          if (selectedCategory.level === 3 && fc.children) {
+            fc.children = fc.children.map(sc => ({
+              ...sc,
+              children: sc.children?.map(tc =>
+                tc.thirdCateId === selectedCategory.id
+                  ? { ...tc, cateName: value }
+                  : tc
+              ),
+            }));
+          }
+          return fc;
+        })
+      );
+    }
+  };
+
+  const handleSubTextChange = (value: string) => setSubText(value);
+  const handleVisibilityChange = (value: 'public' | 'private') => setVisibility(value);
+
+  // 수정 버튼 클릭
+  const handleUpdate = async () => {
     if (!selectedCategory.id) return;
-    alert(`카테고리 삭제: ID ${selectedCategory.id}`);
-    setSelectedCategory({ level: 0, id: null });
-    setInputValue('');
-    setSubText('');
-    setVisibility('public');
+    if (!window.confirm('정말 수정하시겠습니까?')) return;
+
+    let success = false;
+    if (selectedCategory.level === 2) {
+      success = await updateSecCategory(selectedCategory.id,
+        { cateName: inputValue, subText, visibility });
+    } else if (selectedCategory.level === 3) {
+      success = await updateThiCategory(selectedCategory.id,
+        { cateName: inputValue, subText, visibility });
+    }
+
+    if (success) {
+      alert('수정 완료!');
+      setIsModified(false);
+      setOriginalData({ name: inputValue, subText, visibility });
+      // treeData 업데이트 (id 절대 변경 X)
+      setTreeData(prevTree =>
+        prevTree.map(fc => {
+          if (fc.children) {
+            fc.children = fc.children.map(sc => {
+              if (selectedCategory.level === 2 && sc.secondCateId === selectedCategory.id) {
+                return { ...sc, cateName: inputValue, subText, visibility };
+              }
+              if (sc.children) {
+                sc.children = sc.children.map(tc => {
+                  if (selectedCategory.level === 3 && tc.thirdCateId === selectedCategory.id) {
+                    return { ...tc, cateName: inputValue, subText, visibility };
+                  }
+                  return tc;
+                });
+              }
+              return sc;
+            });
+          }
+          return fc;
+        })
+      );
+    } else {
+      alert('수정 실패');
+    }
+  };
+
+
+  // 삭제
+  const handleDelete = async () => {
+    if (!selectedCategory.id) return;
+
+    if (!window.confirm('정말 삭제하시겠습니까?')) return;
+
+    try {
+      if (selectedCategory.level === 2) {
+        // 2차 카테고리 삭제
+        await axios.delete(`http://localhost:8080/api/admin/category/second/${selectedCategory.id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            'Content-Type': 'application/json',
+          }
+        });
+        // 트리에서 제거
+        setTreeData(prevTree =>
+          prevTree.map(fc => ({
+            ...fc,
+            children: fc.children?.filter(sc => sc.secondCateId !== selectedCategory.id)
+          }))
+        );
+      } else if (selectedCategory.level === 3) {
+        // 3차 카테고리 삭제
+        await axios.delete(`http://localhost:8080/api/admin/category/third/${selectedCategory.id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            'Content-Type': 'application/json',
+          }
+        });
+        // 트리에서 제거
+        setTreeData(prevTree =>
+          prevTree.map(fc => ({
+            ...fc,
+            children: fc.children?.map(sc => ({
+              ...sc,
+              children: sc.children?.filter(tc => tc.thirdCateId !== selectedCategory.id)
+            }))
+          }))
+        );
+      } else if (selectedCategory.level === 1) {
+        // 1차 카테고리 삭제
+        await axios.delete(`http://localhost:8080/api/admin/category/first/${selectedCategory.id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            'Content-Type': 'application/json',
+          }
+        });
+        setTreeData(prevTree => prevTree.filter(fc => fc.firstCateId !== selectedCategory.id));
+      }
+
+      // 선택 초기화
+      setSelectedCategory({ level: 0, id: null });
+      setInputValue('');
+      setSubText('');
+      setVisibility('public');
+
+      alert('삭제 완료!');
+    } catch (error) {
+      console.error(error);
+      alert('삭제 실패');
+    }
   };
 
   // 정렬
@@ -236,7 +429,13 @@ function AdminCategoryTree() {
         </span>
         <span
           onClick={() =>
-            handleClickCategory(1, first.firstCateId, first.cateName, first.subText, 'public')
+            handleClickCategory(
+              1,
+              first.firstCateId,
+              first.cateName,
+              first.subText,
+              first.visibility as 'public' | 'private' || 'public'
+            )
           }
         >
           {first.cateName}
@@ -260,9 +459,9 @@ function AdminCategoryTree() {
                 </span>
 
                 {/* 2차가 열렸을 때만 3차 표시 */}
-                {expandedSecond[second.secondCateId] && second.children?.length > 0 && (
+                {expandedSecond[second.secondCateId] && (second.children?.length ?? 0) > 0 && (
                   <ul>
-                    {second.children.map(third => (
+                    {second.children!.map(third => (
                       <li key={third.thirdCateId}>
                         <span
                           onClick={() =>
@@ -333,19 +532,21 @@ function AdminCategoryTree() {
         {selectedCategory.level > 0 && (
           <S.PanelSection>
             <S.PanelHeader>
-              {selectedCategory.level < 3 && <S.Button
-                onClick={() => {
-                  setIsAdding(true); // 추가 모드 진입
-                  // 선택은 유지하고 내용만 초기화
-                  setInputValue('');
-                  setSubText('');
-                  setVisibility('public');
-                  setNewChildName('');
-                }}
-              >
-                카테고리 추가
-              </S.Button>
-              }
+              {selectedCategory.level < 3 && (
+                <S.Button
+                  onClick={() => {
+                    setIsAdding(true); // 추가 모드 진입
+                    // 입력값 초기화 X → 기존 선택 상태와 입력값 유지
+                    setInputValue('');
+                    setSubText('');
+                    setVisibility('public');
+                    setNewChildName('');
+                    setIsModified(true); // 수정/추가 버튼 활성화
+                  }}
+                >
+                  카테고리 추가
+                </S.Button>
+              )}
               {selectedCategory.id && <S.Button onClick={handleDelete}>카테고리 삭제</S.Button>}
             </S.PanelHeader>
 
@@ -353,24 +554,67 @@ function AdminCategoryTree() {
 
             <S.InputGroup>
               <S.Label>카테고리명:</S.Label>
-              <S.TextInput value={inputValue} onChange={e => setInputValue(e.target.value)} />
-              <S.Button onClick={handleSave} disabled={!inputValue}>저장</S.Button>
+              <S.TextInput
+                value={isAdding ? newChildName : inputValue}
+                onChange={e => {
+                  const val = e.target.value;
+                  if (isAdding) {
+                    setNewChildName(val);
+                  } else {
+                    handleInputChange(val);
+                    setIsModified(true);
+                  }
+                }}
+              />
             </S.InputGroup>
+
+            {/* 저장 버튼 */}
+            {/* <S.Button onClick={handleSave}
+                disabled={
+                  (isAdding && !newChildName.trim()) || // 추가 모드일 때 입력값 없으면 비활성
+                  (!isAdding && (!isModified || !inputValue.trim())) // 수정 모드일 때 변경 없으면 비활성
+                }
+              >
+                저장
+              </S.Button> */}
+            {/* </S.InputGroup> */}
 
             <S.InputGroup>
               <S.Label>메모:</S.Label>
-              <S.TextInput value={subText} onChange={e => setSubText(e.target.value)} />
+              <S.TextInput
+                value={subText}
+                onChange={e => {
+                  handleSubTextChange(e.target.value);
+                  setIsModified(true); // 메모 변경 시도 수정 버튼 활성화
+                }}
+              />
             </S.InputGroup>
 
             <S.InputGroup>
               <S.Label>공개설정:</S.Label>
               <S.RadioGroup>
                 <S.RadioLabel>
-                  <S.RadioInput type="radio" name="visibility" checked={visibility === 'public'} onChange={() => setVisibility('public')} />
+                  <S.RadioInput
+                    type="radio"
+                    name="visibility"
+                    checked={visibility === 'public'}
+                    onChange={() => {
+                      handleVisibilityChange('public');
+                      setIsModified(true);
+                    }}
+                  />
                   공개
                 </S.RadioLabel>
                 <S.RadioLabel>
-                  <S.RadioInput type="radio" name="visibility" checked={visibility === 'private'} onChange={() => setVisibility('private')} />
+                  <S.RadioInput
+                    type="radio"
+                    name="visibility"
+                    checked={visibility === 'private'}
+                    onChange={() => {
+                      handleVisibilityChange('private');
+                      setIsModified(true);
+                    }}
+                  />
                   비공개
                 </S.RadioLabel>
               </S.RadioGroup>
@@ -387,6 +631,25 @@ function AdminCategoryTree() {
                 </S.MoveButtons>
               </S.InputGroup>
             )}
+
+            <S.UpdateButtonWrapper>
+              <S.Button
+                onClick={async () => {
+                  if (isAdding) {
+                    await handleAddChild(); // 새 카테고리 추가
+                    setIsAdding(false);
+                    setNewChildName('');
+                  } else {
+                    await handleUpdate(); // 기존 카테고리 수정
+                  }
+                  setIsModified(false);
+                }}
+                disabled={
+                  isAdding ? !newChildName.trim() : (!isModified || !inputValue.trim())
+                }              >
+                {isAdding ? '추가' : '수정'}
+              </S.Button>
+            </S.UpdateButtonWrapper>
 
             {/* 우측 패널 새2차/3차 카테고리 입력란 */}
             {/* {selectedCategory.level > 0 && selectedCategory.level < 3 && (
@@ -409,3 +672,5 @@ function AdminCategoryTree() {
   );
 }
 export default AdminCategoryTree;
+
+

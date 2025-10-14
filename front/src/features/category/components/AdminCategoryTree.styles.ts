@@ -140,6 +140,12 @@ export const MoveButtons = styled.div`
   flex-wrap: wrap;
 `;
 
+export const UpdateButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;  // 가로 중앙
+  margin: 16px 0;           // 위아래 여백
+`;
+
 
 
 

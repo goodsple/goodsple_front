@@ -1,4 +1,3 @@
-import AdminCategoryTable from '../components/AdminCategoryTree.tsx';
 import AdminCategoryOrder from '../components/AdminCategoryOrder.tsx';
 import AdminCategorySearch from '../components/AdminCategorySearch.tsx';
 import CSS from './AdminCategoryPage.module.css'
