@@ -568,7 +568,14 @@ function AdminCategoryTree() {
                   카테고리 추가
                 </S.Button>
               )}
-              {selectedCategory.id && <S.Button onClick={handleDelete}>카테고리 삭제</S.Button>}
+              {selectedCategory.id &&
+                <S.Button
+                  onClick={handleDelete}
+                  disabled={selectedCategory.level === 1} // 1차 선택 시 비활성
+                  >
+                  카테고리 삭제
+                </S.Button>
+              }
             </S.PanelHeader>
 
             <h4>{isAdding ? selectedCategory.level + 1 : selectedCategory.level}차 카테고리 정보</h4>
