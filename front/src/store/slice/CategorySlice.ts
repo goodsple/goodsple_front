@@ -1,10 +1,19 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   createSecCategory,
   fetchAllSecCate,
   fetchAllThiCate,
   fetchSecCate,
 } from '../../api/category/categoryAPICalls.ts';
+import axios from 'axios';
+
+export const fetchAllFirstCate = createAsyncThunk(
+  'category/fetchAllFirstCate',
+  async () => {
+    const response = await axios.get('http://localhost:8080/api/admin/category/first/all');
+    return response.data;
+  }
+);
 
 const initialState = {
   firstCate: [],
@@ -17,7 +26,7 @@ const initialState = {
 };
 
 const categorySlice = createSlice({
-  name:'category',
+  name: 'category',
   initialState,
   reducers: {
     postSecCate: (state, action) => {
@@ -47,6 +56,18 @@ const categorySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchAllFirstCate.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllFirstCate.fulfilled, (state, action) => {
+        state.firstCate = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchAllFirstCate.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
       .addCase(fetchSecCate.pending, (state) => {
         state.loading = true;
         state.error = null;

@@ -1,0 +1,411 @@
+
+// ============== ver4 왼쪽 트리 입력창 + 오른쪽 패널 동기화 ================
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch } from '../../../store/Store.ts';
+import { fetchAllSecCate, fetchAllThiCate, fetchAllFirstCate, addCategoryAPI } from '../../../api/category/categoryAPICalls.ts';
+import * as S from '../../admin/../category/components/AdminCategoryTree.styles.ts';
+
+interface ThirdCate {
+  thirdCateId: number;
+  cateName: string;
+  secondCateId: number;
+  subText?: string;
+}
+
+interface SecondCate {
+  secondCateId: number;
+  cateName: string;
+  firstCateId: number;
+  children?: ThirdCate[];
+  subText?: string;
+}
+
+interface FirstCate {
+  firstCateId: number;
+  cateName: string;
+  children?: SecondCate[];
+  subText?: string;
+}
+
+
+function AdminCategoryTree() {
+  const dispatch = useDispatch<AppDispatch>();
+  const firstCates: FirstCate[] = useSelector((state: any) => state.category.firstCate);
+  const secondCates: SecondCate[] = useSelector((state: any) => state.category.allSecCate);
+  const thirdCates: ThirdCate[] = useSelector((state: any) => state.category.allThiCate);
+
+  const [treeData, setTreeData] = useState<FirstCate[]>([]);
+  const [expanded, setExpanded] = useState<{ [key: number]: boolean }>({});
+  const [selectedCategory, setSelectedCategory] = useState<{ level: number; id: number | null }>({ level: 0, id: null });
+  const [inputValue, setInputValue] = useState('');
+  const [subText, setSubText] = useState('');
+  const [visibility, setVisibility] = useState<'public' | 'private'>('public');
+  const [newChildName, setNewChildName] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
+
+  const [expandedFirst, setExpandedFirst] = useState<{ [key: number]: boolean }>({});
+  const [expandedSecond, setExpandedSecond] = useState<{ [key: number]: boolean }>({});
+
+  const toggleExpandFirst = (id: number) => {
+    setExpandedFirst(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const toggleExpandSecond = (id: number) => {
+    setExpandedSecond(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+
+  useEffect(() => {
+    dispatch(fetchAllFirstCate());
+    dispatch(fetchAllSecCate());
+    dispatch(fetchAllThiCate());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!firstCates.length) return;
+    const firstCateArray: FirstCate[] = firstCates.map(fc => ({ ...fc, children: [] }));
+    secondCates.forEach(sec => {
+      const firstCate = firstCateArray.find(fc => fc.firstCateId === sec.firstCateId);
+      if (firstCate) firstCate.children!.push({ ...sec, children: [] });
+    });
+    thirdCates.forEach(third => {
+      const secondCate = secondCates.find(sec => sec.secondCateId === third.secondCateId);
+      const firstCate = firstCateArray.find(fc => fc.firstCateId === secondCate?.firstCateId);
+      const parentSecondCate = firstCate?.children?.find(sc => sc.secondCateId === third.secondCateId);
+      if (parentSecondCate) parentSecondCate.children!.push(third);
+    });
+    setTreeData(firstCateArray);
+  }, [firstCates, secondCates, thirdCates]);
+
+  // 트리 메뉴 확장/축소
+  const toggleExpand = (id: number) =>
+    setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+
+  const handleClickCategory = (level: number, id: number, name?: string, subTextValue?: string, vis?: 'public' | 'private') => {
+    setSelectedCategory({ level, id });
+    setInputValue(name || '');
+    setSubText(subTextValue || '');
+    setVisibility(vis || 'public');
+    setNewChildName('');
+    setIsAdding(false); // 새 카테고리 입력 모드 초기화
+  };
+
+  const handleSave = () => {
+    if (!selectedCategory.id) return;
+    alert(
+      `${selectedCategory.level}차 카테고리 수정\n` +
+      `ID: ${selectedCategory.id}\n` +
+      `이름: ${inputValue}\n` +
+      `메모: ${subText}\n` +
+      `공개설정: ${visibility}`
+    );
+  };
+
+  const handleAddChild = async () => {
+    if (!selectedCategory.id || newChildName.trim() === '') return;
+
+    // 1. 백엔드에 새 카테고리 생성 요청
+    const newId = await addCategoryAPI({
+      parentId: selectedCategory.id,
+      level: selectedCategory.level + 1,
+      name: newChildName,
+    });
+
+    if (!newId) {
+      alert('카테고리 추가 실패');
+      return;
+    }
+
+    // 2. treeData 업데이트
+    const newTreeData = treeData.map(fc => {
+      if (selectedCategory.level === 1 && fc.firstCateId === selectedCategory.id) {
+        // 1차 클릭 → 2차 추가
+        const newSecond: SecondCate = {
+          secondCateId: newId,
+          cateName: newChildName,
+          firstCateId: fc.firstCateId,
+          children: [],
+        };
+        return { ...fc, children: [...(fc.children || []), newSecond] };
+      }
+      if (selectedCategory.level === 2 && fc.children) {
+        // 2차 클릭 → 3차 추가
+        const newFc = { ...fc };
+        newFc.children = newFc.children.map(sc => {
+          if (sc.secondCateId === selectedCategory.id) {
+            const newThird: ThirdCate = {
+              thirdCateId: newId,
+              cateName: newChildName,
+              secondCateId: sc.secondCateId,
+            };
+            return { ...sc, children: [...(sc.children || []), newThird] };
+          }
+          return sc;
+        });
+        return newFc;
+      }
+      return fc;
+    });
+
+    setTreeData(newTreeData);
+
+    // 오른쪽 패널에 새 카테고리 정보 동기화
+    setSelectedCategory({
+      level: selectedCategory.level + 1,
+      id: newId,
+    });
+    setInputValue(newChildName);
+    setIsAdding(false);
+    setNewChildName('');
+  };
+
+  // 삭제
+  const handleDelete = () => {
+    if (!selectedCategory.id) return;
+    alert(`카테고리 삭제: ID ${selectedCategory.id}`);
+    setSelectedCategory({ level: 0, id: null });
+    setInputValue('');
+    setSubText('');
+    setVisibility('public');
+  };
+
+  // 정렬
+  const handleMove = (direction: 'up' | 'down' | 'top' | 'bottom') => {
+    if (!selectedCategory.id) return;
+
+    const newData = [...treeData];
+
+    if (selectedCategory.level === 1) {
+      // 1차 정렬
+      const index = newData.findIndex(fc => fc.firstCateId === selectedCategory.id);
+      if (index === -1) return;
+      const [item] = newData.splice(index, 1);
+      switch (direction) {
+        case 'up': newData.splice(Math.max(index - 1, 0), 0, item); break;
+        case 'down': newData.splice(Math.min(index + 1, newData.length), 0, item); break;
+        case 'top': newData.unshift(item); break;
+        case 'bottom': newData.push(item); break;
+      }
+    } else if (selectedCategory.level === 2) {
+      // 2차 정렬
+      newData.forEach(fc => {
+        if (fc.children) {
+          const index = fc.children.findIndex(sc => sc.secondCateId === selectedCategory.id);
+          if (index !== -1) {
+            const [item] = fc.children.splice(index, 1);
+            switch (direction) {
+              case 'up': fc.children.splice(Math.max(index - 1, 0), 0, item); break;
+              case 'down': fc.children.splice(Math.min(index + 1, fc.children.length), 0, item); break;
+              case 'top': fc.children.unshift(item); break;
+              case 'bottom': fc.children.push(item); break;
+            }
+          }
+        }
+      });
+    } else if (selectedCategory.level === 3) {
+      // 3차 정렬
+      newData.forEach(fc => {
+        fc.children?.forEach(sc => {
+          if (sc.children) {
+            const index = sc.children.findIndex(tc => tc.thirdCateId === selectedCategory.id);
+            if (index !== -1) {
+              const [item] = sc.children.splice(index, 1);
+              switch (direction) {
+                case 'up': sc.children.splice(Math.max(index - 1, 0), 0, item); break;
+                case 'down': sc.children.splice(Math.min(index + 1, sc.children.length), 0, item); break;
+                case 'top': sc.children.unshift(item); break;
+                case 'bottom': sc.children.push(item); break;
+              }
+            }
+          }
+        });
+      });
+    }
+
+    setTreeData(newData);
+  };
+
+  // 트리 렌더링
+  const renderTree = () =>
+    treeData.map(first => (
+      <li key={first.firstCateId}>
+        {/* 1차 */}
+        <span onClick={() => toggleExpandFirst(first.firstCateId)}>
+          {expandedFirst[first.firstCateId] ? '▼' : '▶'}
+        </span>
+        <span
+          onClick={() =>
+            handleClickCategory(1, first.firstCateId, first.cateName, first.subText, 'public')
+          }
+        >
+          {first.cateName}
+        </span>
+
+        {/* 1차가 열렸을 때만 2차 표시 */}
+        {expandedFirst[first.firstCateId] && (
+          <ul>
+            {first.children?.map(second => (
+              <li key={second.secondCateId}>
+                {/* 2차 */}
+                <span onClick={() => toggleExpandSecond(second.secondCateId)}>
+                  {expandedSecond[second.secondCateId] ? '▼' : '▶'}
+                </span>
+                <span
+                  onClick={() =>
+                    handleClickCategory(2, second.secondCateId, second.cateName, second.subText, 'public')
+                  }
+                >
+                  {second.cateName}
+                </span>
+
+                {/* 2차가 열렸을 때만 3차 표시 */}
+                {expandedSecond[second.secondCateId] && second.children?.length > 0 && (
+                  <ul>
+                    {second.children.map(third => (
+                      <li key={third.thirdCateId}>
+                        <span
+                          onClick={() =>
+                            handleClickCategory(3, third.thirdCateId, third.cateName, third.subText, 'public')
+                          }
+                        >
+                          {third.cateName}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {/* 3차 추가 입력창 */}
+                {isAdding && selectedCategory.level === 2 &&
+                  selectedCategory.id === second.secondCateId && (
+                    <S.InputGroup>
+                      <S.TextInput
+                        value={newChildName}
+                        onChange={e => {
+                          setNewChildName(e.target.value);
+                          setInputValue(e.target.value);
+                        }}
+                        placeholder="새 3차 카테고리 입력"
+                      />
+                      <S.Button onClick={handleAddChild} disabled={!newChildName}>
+                        추가
+                      </S.Button>
+                    </S.InputGroup>
+                  )}
+              </li>
+            ))}
+
+            {/* 2차 추가 입력창 */}
+            {isAdding && selectedCategory.level === 1 &&
+              selectedCategory.id === first.firstCateId && (
+                <li>
+                  <S.InputGroup>
+                    <S.TextInput
+                      value={newChildName}
+                      onChange={e => {
+                        setNewChildName(e.target.value);
+                        setInputValue(e.target.value);
+                      }}
+                      placeholder="새 2차 카테고리 입력"
+                    />
+                    <S.Button onClick={handleAddChild} disabled={!newChildName}>
+                      추가
+                    </S.Button>
+                  </S.InputGroup>
+                </li>
+              )}
+          </ul>
+        )}
+      </li>
+    ));
+
+
+
+  return (
+    <S.TreeWrapper>
+      <S.TreeContainer>
+        <S.TreeSection>
+          <h3>카테고리 전체보기</h3>
+          <ul>{renderTree()}</ul>
+        </S.TreeSection>
+
+        {selectedCategory.level > 0 && (
+          <S.PanelSection>
+            <S.PanelHeader>
+              {selectedCategory.level < 3 && <S.Button
+                onClick={() => {
+                  setIsAdding(true); // 추가 모드 진입
+                  // 선택은 유지하고 내용만 초기화
+                  setInputValue('');
+                  setSubText('');
+                  setVisibility('public');
+                  setNewChildName('');
+                }}
+              >
+                카테고리 추가
+              </S.Button>
+              }
+              {selectedCategory.id && <S.Button onClick={handleDelete}>카테고리 삭제</S.Button>}
+            </S.PanelHeader>
+
+            <h4>{isAdding ? selectedCategory.level + 1 : selectedCategory.level}차 카테고리 정보</h4>
+
+            <S.InputGroup>
+              <S.Label>카테고리명:</S.Label>
+              <S.TextInput value={inputValue} onChange={e => setInputValue(e.target.value)} />
+              <S.Button onClick={handleSave} disabled={!inputValue}>저장</S.Button>
+            </S.InputGroup>
+
+            <S.InputGroup>
+              <S.Label>메모:</S.Label>
+              <S.TextInput value={subText} onChange={e => setSubText(e.target.value)} />
+            </S.InputGroup>
+
+            <S.InputGroup>
+              <S.Label>공개설정:</S.Label>
+              <S.RadioGroup>
+                <S.RadioLabel>
+                  <S.RadioInput type="radio" name="visibility" checked={visibility === 'public'} onChange={() => setVisibility('public')} />
+                  공개
+                </S.RadioLabel>
+                <S.RadioLabel>
+                  <S.RadioInput type="radio" name="visibility" checked={visibility === 'private'} onChange={() => setVisibility('private')} />
+                  비공개
+                </S.RadioLabel>
+              </S.RadioGroup>
+            </S.InputGroup>
+
+            {selectedCategory.level >= 1 && selectedCategory.level <= 3 && (
+              <S.InputGroup>
+                <S.Label>카테고리 정렬:</S.Label>
+                <S.MoveButtons>
+                  <S.Button onClick={() => handleMove('top')}>맨위</S.Button>
+                  <S.Button onClick={() => handleMove('up')}>위</S.Button>
+                  <S.Button onClick={() => handleMove('down')}>아래</S.Button>
+                  <S.Button onClick={() => handleMove('bottom')}>맨아래</S.Button>
+                </S.MoveButtons>
+              </S.InputGroup>
+            )}
+
+            {/* 우측 패널 새2차/3차 카테고리 입력란 */}
+            {/* {selectedCategory.level > 0 && selectedCategory.level < 3 && (
+            <S.InputGroup>
+              <S.Label>새 {selectedCategory.level + 1}차 카테고리:</S.Label>
+              <S.TextInput
+                value={newChildName}
+                onChange={e => setNewChildName(e.target.value)}
+                placeholder={`여기에 ${selectedCategory.level + 1}차 카테고리 입력`}
+              />
+              <S.Button onClick={handleAddChild} disabled={!newChildName}>추가</S.Button>
+            </S.InputGroup>
+          )} */}
+
+          </S.PanelSection>
+        )}
+      </S.TreeContainer>
+
+    </S.TreeWrapper>
+  );
+}
+export default AdminCategoryTree;

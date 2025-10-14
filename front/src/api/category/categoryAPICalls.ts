@@ -7,6 +7,38 @@ interface secCateProps {
   firstCateId: number;
 }
 
+export const fetchAllFirstCate = createAsyncThunk(
+  'category/fetchAllFirstCate',
+  async () => {
+    const response = await axios.get('http://localhost:8080/api/admin/category/first/all');
+    return response.data; // DB에서 받아온 FirstCate[]
+  }
+);
+
+// 추가된 부분: 카테고리 추가 API
+export const addCategoryAPI = async ({
+  parentId,
+  level,
+  name,
+}: {
+  parentId: number;
+  level: number;
+  name: string;
+}) => {
+  try {
+    const response = await fetch(`/api/category/add`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ parentId, level, name }),
+    });
+    const data = await response.json();
+    return data.newId; // 새로 생성된 카테고리 ID 반환
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 // 기존
 // export const createSecCategory = createAsyncThunk(
 //   'category/createSecCat',

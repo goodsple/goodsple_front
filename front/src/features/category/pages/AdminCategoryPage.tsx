@@ -1,7 +1,8 @@
-import AdminCategoryTable from '../components/AdminCategoryTable.tsx';
+import AdminCategoryTable from '../components/AdminCategoryTree.tsx';
 import AdminCategoryOrder from '../components/AdminCategoryOrder.tsx';
 import AdminCategorySearch from '../components/AdminCategorySearch.tsx';
 import CSS from './AdminCategoryPage.module.css'
+import AdminCategoryTree from '../components/AdminCategoryTree.tsx';
 
 function AdminCategoryPage()
 {
@@ -11,7 +12,8 @@ function AdminCategoryPage()
       <AdminCategoryOrder/>
       <AdminCategorySearch/>
       </div>
-      <AdminCategoryTable/>
+      {/* <AdminCategoryTable/> */}
+      <AdminCategoryTree/>
     </>
   )
 }

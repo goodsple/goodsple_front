@@ -29,9 +29,9 @@ function AdminCategorySearch() {
             4차 카테고리
           </button> */}
 
-          <button type="button" onClick={openCateModal}>
+          {/* <button type="button" onClick={openCateModal}>
             ╋ 카테고리 등록
-          </button>
+          </button> */}
         </S.ButtonWrap>
       </S.Form>
 
