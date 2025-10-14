@@ -1,6 +1,30 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+// 1차 카테고리 수정(메모만)
+export const updateFirstCategory = async (
+  firstCateId: number,
+  data: { subText?: string } // 이름은 수정 불가, subText만
+) => {
+  try {
+    const token = localStorage.getItem('accessToken');
+    const res = await axios.put(
+      `http://localhost:8080/api/admin/category/first/${firstCateId}`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return res.status === 200 || res.status === 204;
+  } catch (err) {
+    console.error('updateFirstCategory error:', err);
+    return false;
+  }
+};
+
 // 2차 카테고리 수정
 export const updateSecCategory = async (secondCateId: number, data: { cateName: string; subText?: string; visibility?: 'public' | 'private' }) => {
   try {
