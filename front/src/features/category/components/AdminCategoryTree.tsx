@@ -571,7 +571,7 @@ function AdminCategoryTree() {
               {selectedCategory.id &&
                 <S.Button
                   onClick={handleDelete}
-                  disabled={selectedCategory.level === 1} // 1차 선택 시 비활성
+                  disabled={selectedCategory.level === 1} // 1차 카테고리 선택 시 삭제버튼 비활성
                   >
                   카테고리 삭제
                 </S.Button>
