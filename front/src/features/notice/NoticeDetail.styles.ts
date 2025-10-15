@@ -35,6 +35,7 @@ export const NoticeDate = styled.p`
 `;
 
 export const Content = styled.pre`
+  font-family: 'Pretendard', sans-serif;
   font-size: 16px;
   line-height: 1.7;
   color: #444;
