@@ -66,18 +66,18 @@ export const fetchAllFirstCate = createAsyncThunk(
 );
 
 // 추가된 부분: 카테고리 추가 API
-export const addCategoryAPI = async ({ parentId, level, name }: { parentId: number; level: number; name: string }) => {
+export const addCategoryAPI = async ({ parentId, level, name, subText, visibility }: { parentId: number; level: number; name: string, subText: string, visibility?: 'public' | 'private'}) => {
   const token = localStorage.getItem('accessToken');
   try {
     if (level === 2) {
       const res = await axios.post('http://localhost:8080/api/admin/category/second',
-        { cateName: name, firstCateId: parentId }, // body
+        { cateName: name, firstCateId: parentId, subText, visibility  }, // body
         { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
       );
       return res.data.secondCateId;
     } else if (level === 3) {
       const res = await axios.post('http://localhost:8080/api/admin/category/third',
-        { cateName: name, secondCateId: parentId },
+        { cateName: name, secondCateId: parentId, subText, visibility },
         { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
       );
       return res.data.thirdCateId;
