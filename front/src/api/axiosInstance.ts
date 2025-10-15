@@ -1,5 +1,24 @@
 import axios from "axios";
 
+
+// snake_case를 camelCase로 변환해주는 마법의 함수
+const camelize = (obj: any): any => {
+    if (Array.isArray(obj)) {
+        return obj.map(v => camelize(v));
+    }
+    if (obj !== null && obj.constructor === Object) {
+        return Object.keys(obj).reduce(
+            (result, key) => {
+                const camelKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+                result[camelKey] = camelize(obj[key]);
+                return result;
+            },
+            {} as { [key: string]: any }
+        );
+    }
+    return obj;
+};
+
 const ALLOWED_PARAM_KEYS = new Set([
   "queryType", "query",
   "joinedFrom", "joinedTo",
@@ -63,5 +82,25 @@ axiosInstance.interceptors.request.use((config) => {
   config.headers["X-Api-Client"] = "admin-users";
   return config;
 });
+
+// ▼▼▼▼▼ 바로 이 부분이 '자동 번역기'의 핵심입니다! ▼▼▼▼▼
+// 응답(response)을 가로채서 처리하는 인터셉터
+axiosInstance.interceptors.response.use(
+    (response) => {
+        // 응답 데이터가 JSON 형태일 경우, camelize 함수를 적용하여
+        // 모든 snake_case 키를 camelCase로 자동 변환합니다.
+        if (response.data && response.headers['content-type']?.includes('application/json')) {
+            response.data = camelize(response.data);
+        }
+        return response;
+    },
+    (error) => {
+        // 에러가 발생했을 때도 동일한 로직을 적용할 수 있습니다 (선택 사항)
+        if (error.response && error.response.data) {
+            error.response.data = camelize(error.response.data);
+        }
+        return Promise.reject(error);
+    }
+);
 
 export default axiosInstance;
