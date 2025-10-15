@@ -104,10 +104,10 @@ function App() {
               <Route path="/exchange/new" element={<ExchangePost />} />
               <Route path="/exchange/detail/:postId" element={<ExchangePostDetail />} />
               <Route path="/exchange/edit/:postId" element={<ExchangePostEdit />} />
-               {/* 채팅 목록/진입 공통 페이지 */}
-               <Route path="/exchange-chat" element={<ExchangeChatPage />} /> 
+              {/* 채팅 목록/진입 공통 페이지 */}
+              <Route path="/exchange-chat" element={<ExchangeChatPage />} />
               <Route path="/exchange-chat/:roomId" element={<ExchangeChatPage />} />
-              
+
               <Route path="/community" element={<Community />} />
               <Route path="/chatbot" element={<ChatBotPage />} />
               <Route path="/categories" element={<CategorySelect />} />
