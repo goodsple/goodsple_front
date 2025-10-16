@@ -9,6 +9,7 @@ interface FolderCreationModalProps {
     mode: 'create' | 'edit';                                // 생성 또는 수정 모드
     initialFolderName?: string;                             // 수정 시 기존 폴더명 
     initialColor?: string;                                  // 수정 시 기존 색상
+    folders: { name: string; color: string }[];
     onSubmit: (name: string, color: string) => void;        // 확인 버튼 클릭 시 콜백
 }
 
@@ -27,6 +28,7 @@ const FolderCreationModal:React.FC<FolderCreationModalProps> = ({
                                                                     mode = 'create',
                                                                     initialFolderName = '',
                                                                     initialColor = colorOptions[0],
+                                                                    folders,
                                                                     onSubmit,
     }) => {
 
@@ -46,13 +48,39 @@ const FolderCreationModal:React.FC<FolderCreationModalProps> = ({
         if(!isOpen) return null;
 
         const handleConfirm = () => {
-            if(!folderName.trim()) {
-                setErrorMessage('폴더 이름을 입력해주세요.');    
+            const trimmedName = folderName.trim();
+
+            // 폴더 이름 체크
+            if (!trimmedName) {
+                setErrorMessage('폴더 이름을 입력해주세요.');
                 return;
-            } 
+            }
+
+            // 폴더 이름 길이 체크 (20자 이하)
+            if (trimmedName.length > 20) {
+                setErrorMessage('폴더 이름은 20자 이내로 입력해주세요.');
+                return;
+            }
+
+            if (folders.some((f) => f.name === trimmedName && f.name !== initialFolderName)) {
+                setErrorMessage("이미 같은 이름의 폴더가 있습니다.");
+                return;
+            }
+
             setErrorMessage('');
             onSubmit(folderName.trim(), selectedColor);
-            onClose();
+        };
+
+        const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = e.target.value;
+            
+            if (value.length > 20) { // 20자 제한 적용
+                setFolderName(value.slice(0, 20));
+                setErrorMessage('폴더 이름은 20자 이내로 입력해주세요.');
+            } else {
+                setFolderName(value);
+                setErrorMessage('');
+            }
         };
 
         return (
@@ -65,10 +93,7 @@ const FolderCreationModal:React.FC<FolderCreationModalProps> = ({
                     <s.FolderNameInputBox
                             type="text"
                             value={folderName}
-                            onChange={(e) => {
-                                setFolderName(e.target.value);
-                                setErrorMessage('');
-                            }}
+                            onChange={handleChangeName}
                             placeholder="폴더 명을 입력해주세요."
                     />
                     <s.ErrorText>{errorMessage || '⠀'}</s.ErrorText>
@@ -83,7 +108,7 @@ const FolderCreationModal:React.FC<FolderCreationModalProps> = ({
                                         color={color}
                                         selected={selectedColor === color}
                                         onClick={() => setSelectedColor(color)}
-                                        checkImg={checkIcon}
+                                        $checkImg={checkIcon}
                                     />
                                 ))}
                         </s.ColorOptions>
@@ -96,7 +121,7 @@ const FolderCreationModal:React.FC<FolderCreationModalProps> = ({
                     </s.FolderBtnGroup>
                 </s.ModalContainer>
             </s.Overlay>
-  );
+        );
 };
 
 export default FolderCreationModal;

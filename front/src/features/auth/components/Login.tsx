@@ -9,6 +9,11 @@ import type {LoginFormType} from '../types/login'
 import { useAuth } from '../contexts/AuthContext'; 
 import type { UserProfile } from '../types/auth'
 
+// 토큰 payload 파서 (role 읽기용)
+function parseJwt(token?: string | null) {
+    if (!token) return null;
+    try { return JSON.parse(atob(token.split('.')[1])); } catch { return null; }
+}
 
 const Login:React.FC = () => {
 
@@ -49,10 +54,11 @@ const Login:React.FC = () => {
             setUserProfile(profile);                     // 4) Context 업데이트
 
             // 5) role 검사 후 라우팅 (추가된 부분)
-            if (profile.role === 'ADMIN') {
-                navigate('/admin/');
+            const role = parseJwt(accessToken)?.role;
+            if (role === 'ADMIN') {
+                navigate('/admin', { replace: true });
             } else {
-                navigate('/');
+                navigate('/', { replace: true });
             }
         }catch (err: any) {
             // 에러 처리

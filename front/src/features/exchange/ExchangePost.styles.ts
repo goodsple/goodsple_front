@@ -23,12 +23,12 @@ export const Divider = styled.hr`
   margin: 16px 0;
 `;
 
-export const Section = styled.div`
-  margin-bottom: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
+// export const Section = styled.div`
+//   margin-bottom: 30px;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 12px;
+// `;
 
 export const SectionRow = styled.div`
   display: flex;
@@ -319,6 +319,25 @@ export const DeleteButton = styled.button`
   font-size: 16px;
   line-height: ;
   cursor: pointer;
+`;
+
+export const SubmitButton = styled.button`
+  background-color: #997BEB;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  padding: 15px 100px; // 적당히 크게
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  display: block;
+  margin: 50px auto 80px; // 중앙 정렬
+  text-align: center;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #8757d8;
+  }
 `;
 
 

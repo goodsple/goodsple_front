@@ -65,7 +65,7 @@ export const ColorOptions = styled.div`
 `;
 
 // 하나의 폴더 색상 선택
-export const ColorDot = styled.div<{ color : string; selected : boolean, checkImg : string}>`
+export const ColorDot = styled.div<{ color : string; selected : boolean, $checkImg : string}>`
       width: ${({ selected }) => (selected ? '35px' : '30px')};
       height: ${({ selected }) => (selected ? '35px' : '30px')};
       background: ${({ color }) => color};
@@ -81,7 +81,7 @@ export const ColorDot = styled.div<{ color : string; selected : boolean, checkIm
           transform: translate(-50%, -50%);
           content: '';
           display: ${({ selected }) => (selected ? 'block' : 'none')};
-          background-image: ${({ checkImg }) => `url(${checkImg})`};
+          background-image: ${({ $checkImg }) => `url(${ $checkImg })`};
           background-size: contain;
           background-repeat: no-repeat;
           background-position: center;

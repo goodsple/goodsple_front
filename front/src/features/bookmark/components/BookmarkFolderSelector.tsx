@@ -1,44 +1,66 @@
-// 북마크를 어느 폴더에 추가/이동할것인지? 모달창
-import type React from 'react';
-import * as s from './BookmarkFolderSelectorStyle';
+import React from "react";
+import * as s from "./BookmarkFolderSelectorStyle";
 
 interface Folder {
-    name: string;
+  folderId: number;
+  folderName: string;
 }
 
 interface BookmarkFolderSelectorProps {
-    isOpen: boolean;
-    onClose: () => void;
-    folders: Folder[];
-    onSelect: (folderName: string) => void;
+  isOpen: boolean;
+  onClose: () => void;
+  folders: Folder[];
+  mode: "add" | "move"; 
+  onSelect: (folderId: number, mode: "add" | "move") => void; 
+  onAddFolder: () => void; 
 }
 
 const BookmarkFolderSelector: React.FC<BookmarkFolderSelectorProps> = ({
-        isOpen,
-        onClose,
-        folders,
-        onSelect,
-    }) => {
+  isOpen,
+  onClose,
+  folders,
+  mode,
+  onSelect,
+  onAddFolder,
+}) => {
+  if (!isOpen) return null;
 
-        if (!isOpen) return null;
+  return (
+    <s.Overlay onClick={onClose}>
+      <s.ModalBox onClick={(e) => e.stopPropagation()}>
+        {/* 모드에 따라 안내 문구 다르게 */}
+        <s.Title>
+          {mode === "add"
+            ? "어떤 폴더에 북마크를 추가하시겠습니까?"
+            : "어떤 폴더로 북마크를 이동하시겠습니까?"}
+        </s.Title>
 
-        return(
-            <s.Overlay onClick={onClose}>
-                <s.ModalBox onClick={(e) => e.stopPropagation()}>
-                    <s.Title>어떤 폴더에 추가하시겠습니까?</s.Title>
-                    <s.FolderList>
-                        {folders.map((folder, idx) => (
-                            <s.FolderItem key={idx} onClick={() => onSelect(folder.name)}>
-                                {folder.name}
-                            </s.FolderItem>
-                        ))}
-                    </s.FolderList>
-                    {/* 임시버튼 => 닫기 버튼이 아니라 새폴더 추가버튼을 넣어야됨!!! */}
-                    <s.CloseButton onClick={onClose}>닫기</s.CloseButton>
-                </s.ModalBox>
-            </s.Overlay>
-        )
-}
+        {/* 폴더 리스트 */}
+        <s.FolderList>
+          {folders.map((folder) => (
+            <s.FolderItem
+              key={folder.folderId}
+              onClick={() => onSelect(folder.folderId, mode)} 
+            >
+              {folder.folderName}
+            </s.FolderItem>
+          ))}
+        </s.FolderList>
 
+        {/* 새 폴더 추가 버튼 */}
+        <s.AddFolderButton
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddFolder();
+          }}
+        >
+          + 새 폴더 추가
+        </s.AddFolderButton>
+
+        <s.CloseButton onClick={onClose}>닫기</s.CloseButton>
+      </s.ModalBox>
+    </s.Overlay>
+  );
+};
 
 export default BookmarkFolderSelector;

@@ -41,4 +41,11 @@ export const Status = styled.span<{ active: boolean }>`
         padding: 7px 12px;
         border-radius: 8px;
         font-size: 14px;
+
+        &.active {
+            color: green;
+        }
+        &.inactive {
+            color: gray;
+        }
 `;

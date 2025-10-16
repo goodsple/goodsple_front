@@ -1,23 +1,27 @@
-import { useEffect, useRef, useState } from 'react';
+/**
+ * 파일 경로: src/features/auction/components/LiveChat.tsx
+ */
+import React, { useEffect, useRef, useState } from 'react'; // 1. React를 import 합니다.
 import type { ChatMessage } from '../types/auction';
 import * as S from './LiveChatStyle';
 
 interface Props {
   chatHistory: ChatMessage[];
+  onSendChat: (message: string) => void;
   onReport: (user: string) => void;
 }
 
-const LiveChat: React.FC<Props> = ({ chatHistory, onReport }) => {
+// 2. 기존 컴포넌트 로직을 별도의 상수로 분리합니다.
+const LiveChatComponent: React.FC<Props> = ({ chatHistory, onSendChat, onReport }) => {
   const [newMessage, setNewMessage] = useState('');
-  const messageListRef = useRef<HTMLUListElement>(null); // ✨ ref 타입 ul로 변경
+  const messageListRef = useRef<HTMLUListElement>(null);
   
   useEffect(() => {
     const messageList = messageListRef.current;
     if (!messageList) return;
 
-    // ✨ 스크롤 로직 변경
     const scrollBottom = messageList.scrollHeight - messageList.scrollTop;
-    const shouldScroll = scrollBottom <= messageList.clientHeight + 50; // 50px 정도 여유
+    const shouldScroll = scrollBottom <= messageList.clientHeight + 50;
 
     if (shouldScroll) {
       setTimeout(() => {
@@ -30,17 +34,16 @@ const LiveChat: React.FC<Props> = ({ chatHistory, onReport }) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
     
-    // TODO: 실제 채팅 메시지 전송 로직
-    console.log("전송할 메시지:", newMessage);
+    onSendChat(newMessage);
     setNewMessage('');
   };
 
   return (
     <S.Wrapper>
       <S.Title>실시간 채팅</S.Title>
-      <S.MessageList ref={messageListRef}> {/* ✨ ref 연결 */}
+      <S.MessageList ref={messageListRef}>
         {chatHistory.map((chat) => (
-          <S.MessageItem key={chat.chatId}> {/* ✨ S.Message -> S.MessageItem */}
+          <S.MessageItem key={chat.chatId}>
             <S.MessageContent>
               <S.Sender>{chat.userNickname}:</S.Sender>
               <S.Text>{chat.message}</S.Text>
@@ -62,4 +65,6 @@ const LiveChat: React.FC<Props> = ({ chatHistory, onReport }) => {
   );
 };
 
-export default LiveChat;
+// 3. React.memo로 컴포넌트를 감싸서 export 합니다.
+// 이렇게 하면 props가 변경되지 않는 한, 부모 컴포넌트가 리렌더링되어도 LiveChat은 리렌더링되지 않습니다.
+export default React.memo(LiveChatComponent);

@@ -11,19 +11,13 @@ export const BookmarkPageContainer = styled.div`
 
 export const BookmarkPageSection = styled.div`
         width: 76vw;
-        // height: 100vh;
         padding-top : 80px;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        justify-items: center;
-        // align-items: start; 
-        // gap: 50px;                              
+        justify-items: center;                          
         grid-auto-rows: 250px;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));  
-        
-        // 위치 확인 위한 배경색
-        background: #f5cacaff;
 `;
 
 export const FolderCreationBox = styled.button`
@@ -118,8 +112,6 @@ export const StyledHr = styled.hr`
         border: 1px solid #bdbdbdff;
         margin: 0;
 `;
-
-
 
 
 // 북마크 추가 => 사용할 모달창

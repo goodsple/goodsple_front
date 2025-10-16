@@ -2,10 +2,10 @@ import React from 'react';
 import * as s from './ProhibitedWordsTableStyle';
 
 export interface ProhibitedWord {
-  id: number;
-  date: string;
-  isActive: boolean;
+  wordId: number;
   word: string;
+  wordIsActive: boolean;
+  wordCreatedAt: string; // ISO 문자열, e.g., "2025-09-18T12:34:56Z"
 }
 
 interface Props {
@@ -13,6 +13,7 @@ interface Props {
   selectedIds: number[];
   onSelect: (id: number) => void;
   onSelectAll: (checked: boolean) => void;
+  onToggleActive: (id: number, isActive: boolean) => void;
 }
 
 const ProhibitedWordsTable: React.FC<Props> = ({
@@ -20,11 +21,13 @@ const ProhibitedWordsTable: React.FC<Props> = ({
   selectedIds,
   onSelect,
   onSelectAll,
+  onToggleActive,
 }) => {
   const rowCount = 10;
   const emptyRows = rowCount - data.length;
 
-  const isAllChecked = data.length > 0 && data.every((d) => selectedIds.includes(d.id));
+  // 현재 페이지 모든 항목이 선택되었는지 체크
+  const isAllChecked = data.length > 0 && data.every((d) => selectedIds.includes(d.wordId));
 
   return (
     <s.Table>
@@ -45,25 +48,29 @@ const ProhibitedWordsTable: React.FC<Props> = ({
       </thead>
       <tbody>
         {data.map((word) => (
-          <tr key={word.id}>
+          <tr key={word.wordId}>
             <td>
               <input
                 type="checkbox"
-                checked={selectedIds.includes(word.id)}
-                onChange={() => onSelect(word.id)}
+                checked={selectedIds.includes(word.wordId)}
+                onChange={() => onSelect(word.wordId)}
               />
             </td>
-            <td>{word.id}</td>
-            <td>{word.date}</td>
+            <td>{word.wordId}</td>
+            <td>{new Date(word.wordCreatedAt).toLocaleDateString()}</td>
             <td>
-              <s.Status active={word.isActive}>
-                {word.isActive ? '활성화' : '비활성화'}
+              <s.Status 
+                  active={word.wordIsActive}
+                  onClick={() => onToggleActive(word.wordId, word.wordIsActive)}
+              >
+                {word.wordIsActive ? '활성화' : '비활성화'}
               </s.Status>
             </td>
             <td>{word.word}</td>
           </tr>
         ))}
 
+        {/* 빈 행 채우기 (항목이 10개 미만일 때) */}
         {Array.from({ length: emptyRows }).map((_, index) => (
           <tr key={`empty-${index}`}>
             {[...Array(5)].map((_, i) => (

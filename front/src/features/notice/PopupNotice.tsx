@@ -2,63 +2,64 @@ import React, { useEffect, useState } from 'react';
 import * as S from './PopupNotice.styles';
 import axios from 'axios';
 
-interface PopupNoticeDto {
+interface Popup {
     noticeId: number;
     noticeTitle: string;
-    noticeContent: string;
-    popupStart: string; // ISO 날짜 문자열
-    popupEnd: string;   // ISO 날짜 문자열
-    popupImageUrl?: string;
-    popupSummary?: string;
+    popupInfo: {
+        popupSummary: string;
+    };
 }
-
 const PopupNotice: React.FC = () => {
-    const [visible, setVisible] = useState(true);
-    const [popupData, setPopupData] = useState<PopupNoticeDto | null>(null);
+    const [popups, setPopups] = useState<Popup[]>([]);
 
     useEffect(() => {
-        const fetchPopup = async () => {
+        const fetchPopups = async () => {
             try {
-                const today = new Date().toISOString().split('T')[0];
-                const res = await axios.get<PopupNoticeDto[]>('/api/notices/popups', {
-                    params: { today }
-                });
-
+                const res = await axios.get('/api/notices/popup');
                 if (res.data.length > 0) {
-                    setPopupData(res.data[0]); // 오늘 날짜 기준 첫 번째 팝업
-                } else {
-                    setVisible(false); // 오늘 팝업 없으면 안 띄움
+                    // 최대 3개만 저장
+                    setPopups(res.data.slice(0, 3));
                 }
             } catch (err) {
-                console.error(err);
-                setVisible(false);
+                console.error('팝업 공지 불러오기 실패', err);
             }
         };
-
-        // "오늘 하루 보지 않기" 체크 여부 확인
-        const hidden = localStorage.getItem('popupHidden');
-        if (!hidden) fetchPopup();
-        else setVisible(false);
-
+        fetchPopups();
     }, []);
 
-    if (!visible) return null;
+    // 오늘 하루 숨기기 기록 확인
+    const isHidden = (noticeId: number) => {
+        return localStorage.getItem(`popupHidden_${noticeId}`) === 'true';
+    };
+
+    const hidePopup = (noticeId: number) => {
+        localStorage.setItem(`popupHidden_${noticeId}`, 'true');
+        setPopups(prev => prev.filter(p => p.noticeId !== noticeId));
+    };
+
+    if (popups.length === 0) return null;
 
     return (
-        <S.PopupWrapper>
-            <S.PopupHeader>{popupData?.noticeTitle}</S.PopupHeader>
-            <S.PopupContent>
-                {popupData?.popupSummary || popupData?.noticeContent}
-            </S.PopupContent>
-            <S.PopupFooter>
-                <S.Button onClick={() => {
-                    localStorage.setItem("popupHidden", "true");
-                    setVisible(false);
-                }}>오늘 하루 보지 않기</S.Button>
-                <S.Button onClick={() => setVisible(false)}>닫기</S.Button>
-            </S.PopupFooter>
-        </S.PopupWrapper>
+        <>
+            {popups.map((popup, index) => (
+                !isHidden(popup.noticeId) && (
+                    <S.PopupWrapper key={popup.noticeId} index={index}>
+                        <S.PopupHeader>{popup.noticeTitle}</S.PopupHeader>
+                        <S.PopupContent>{popup.popupInfo.popupSummary}</S.PopupContent>
+                        <S.PopupFooter>
+                            <S.Button onClick={() => hidePopup(popup.noticeId)}>
+                                오늘 하루 보지 않기
+                            </S.Button>
+                            <S.Button onClick={() => setPopups(prev => prev.filter(p => p.noticeId !== popup.noticeId))}>
+                                닫기
+                            </S.Button>
+                        </S.PopupFooter>
+                    </S.PopupWrapper>
+                )
+            ))}
+        </>
     );
 };
+
 
 export default PopupNotice;

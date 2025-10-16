@@ -62,7 +62,9 @@ function Header() {
           <style.RightArea>
             {isLoggedIn && userProfile ? (
               <>
-                <style.IconBox $iconType="chat">
+                <style.IconBox $iconType="chat"
+                onClick={() => navigate('/exchange-chat')} 
+                >
                   <img src={chatImg} alt="채팅" />
                 </style.IconBox>
 

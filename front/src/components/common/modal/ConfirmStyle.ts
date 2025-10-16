@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const ModalBg = styled.div`
+export const ModalBg = styled.div<{ $zIndex?: number }>`
     position: fixed;
     top: 0;
     left: 0;
@@ -10,7 +10,7 @@ export const ModalBg = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: ${({ $zIndex }) => $zIndex ?? 1000};
 `;
 export const ModalWrap = styled.div`
     background: #fff;
@@ -29,6 +29,7 @@ export const ModalContent = styled.p`
     font-size: 16px;
     margin-bottom: 35px;
     color: #444;
+    white-space: pre-line;
 `;
 export const ButtonRow = styled.div`
     display: flex;

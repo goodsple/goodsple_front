@@ -1,3 +1,4 @@
+// ReportDetailModal.tsx
 import React, { useState, useEffect } from 'react';
 import * as S from './ReportDetailModalStyle';
 import { ReportActionLabels, type AdminReport, type ReportAction } from '../types/adminReport';
@@ -10,23 +11,35 @@ type Props = {
   onClose: () => void;
   onSave: (updated: {
     reportId: string;
-    status: AdminReport['status'];
-    action: AdminReport['action'];
+    status: AdminReport['status'];      // 'pending' | 'processed'
+    action: AdminReport['action'];      // ReportAction | undefined
   }) => Promise<void>;
 };
 
 const ReportDetailModal: React.FC<Props> = ({ isOpen, report, onClose, onSave }) => {
-  const [status, setStatus] = useState<AdminReport['status']>('PENDING');
-  const [action, setAction] = useState<AdminReport['action']>('WARNING');
+  // ISO → yyyy-MM-dd HH:mm:ss
+  function formatLocalDateTime(iso?: string) {
+    if (!iso) return '-';
+    const d = new Date(iso);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    const ss = String(d.getSeconds()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
+  }
+
+  const [status, setStatus] = useState<AdminReport['status']>('pending');
+  const [action, setAction] = useState<AdminReport['action']>(undefined);
 
   const [showConfirm, setShowConfirm] = useState(false);
-  const [showResult, setShowResult]     = useState(false);
+  const [showResult, setShowResult] = useState(false);
   const [resultMessage, setResultMessage] = useState('');
 
-  // report 변경 시 초기화
   useEffect(() => {
     if (report) {
-      setStatus(report.status);
+      setStatus(report.status ?? 'pending');
       setAction(report.action);
       setShowConfirm(false);
       setShowResult(false);
@@ -36,39 +49,31 @@ const ReportDetailModal: React.FC<Props> = ({ isOpen, report, onClose, onSave })
 
   if (!isOpen || !report) return null;
 
-  const handleClickSave = () => {
-    setShowConfirm(true);
-  };
+  const descriptionText = report.description ?? report.reason ?? '-';
 
-  const handleConfirmSave = async() => {
+  const handleClickSave = () => setShowConfirm(true);
+
+  // 저장 실행(처리 상태라도 조치 없이 저장 가능)
+  const handleConfirmSave = async () => {
     setShowConfirm(false);
-    await onSave({ reportId: report.reportId, status, action });
 
-    // 1) action만 변경됐고 status가 아직 PENDING이면 자동으로 처리됨으로 전환
-    if (action !== report!.action && status === 'PENDING') {
-      setStatus('PROCESSED');
-    }
-    // 2) 실제 저장 호출
+    // 액션만 선택했고 상태가 pending이면 processed로 자동 승격
+    const nextStatus: AdminReport['status'] =
+      status === 'pending' && action ? 'processed' : status;
+
     await onSave({
-      reportId: report!.reportId,
-      status:   action !== report!.action && status === 'PENDING' 
-                  ? 'PROCESSED' 
-                  : status,
-      action,
+      reportId: report.reportId,
+      status: nextStatus,
+      action, // undefined면 서버에 미지정으로 전송
     });
 
-    // 3) 결과 모달 띄우기
     setResultMessage('변경 사항이 저장되었습니다.');
     setShowResult(true);
   };
 
-  const handleCancelSave = () => {
-    setShowConfirm(false);
-  };
-
   const handleResultClose = () => {
     setShowResult(false);
-    onClose();  // 상세 모달도 닫고 싶으면 호출
+    onClose();
   };
 
   return (
@@ -84,86 +89,95 @@ const ReportDetailModal: React.FC<Props> = ({ isOpen, report, onClose, onSave })
             <S.Label>신고 ID</S.Label>
             <S.Value>{report.reportId}</S.Value>
           </S.Field>
+
           <S.Field>
             <S.Label>신고 유형</S.Label>
             <S.Value>{report.targetTypeLabel}</S.Value>
           </S.Field>
+
           <S.Field>
             <S.Label>신고자</S.Label>
             <S.Value>{report.reporter}</S.Value>
           </S.Field>
+
           <S.Field>
             <S.Label>상태</S.Label>
             <S.Select
               value={status}
-              onChange={e => setStatus(e.target.value as AdminReport['status'])}
+              onChange={(e) => setStatus(e.target.value as AdminReport['status'])}
             >
-              <option value="PENDING">미처리</option>
-              <option value="PROCESSED">처리됨</option>
+              <option value="pending">미처리</option>
+              <option value="processed">처리</option>
             </S.Select>
           </S.Field>
+
           <S.Field>
             <S.Label>대상자</S.Label>
             <S.Value>{report.targetName}</S.Value>
           </S.Field>
+
           <S.Field>
             <S.Label>신고일</S.Label>
-            <S.Value>{report.reportedAt}</S.Value>
+            <S.Value>{formatLocalDateTime(report.reportedAt)}</S.Value>
           </S.Field>
+
           <S.Field>
-            <S.Label>신고 내용</S.Label>
-            <S.Value>{report.reportTypeLabel}</S.Value>
+            <S.Label>처리일</S.Label>
+            <S.Value>{formatLocalDateTime(report.handledAt)}</S.Value>
           </S.Field>
+
           <S.Field>
             <S.Label>조치</S.Label>
             <S.Select
-              value={action}
-              onChange={e => setAction(e.target.value as any)}
+              value={action ?? ''} // 미지정 → '' (선택 안 함)
+              onChange={(e) => {
+                const v = e.target.value;
+                setAction(v ? (v as ReportAction) : undefined);
+              }}
             >
-            {Object.entries(ReportActionLabels).map(([key, label]) => (
-                   <option key={key} value={key}>
-                     {label}
-                   </option>
+              {/* ✅ "선택 안 함" 표시, 별도 '미지정' 문구는 사용하지 않음 */}
+              <option value="">선택 안 함</option>
+              {Object.entries(ReportActionLabels).map(([key, label]) => (
+                <option key={key} value={key}>
+                  {label}
+                </option>
               ))}
             </S.Select>
           </S.Field>
-          <S.FieldFull className='reasonText'>
-            <S.Label>신고 사유</S.Label>
-            <S.ReasonBox>{report.reason}</S.ReasonBox>
+
+          <S.FieldFull className="reasonText">
+            <S.Label>신고 내용</S.Label>
+            <S.ReasonBox>{descriptionText}</S.ReasonBox>
           </S.FieldFull>
         </S.Body>
 
         <S.Footer>
-            <S.SaveButton 
-              disabled={status === report.status && action === report.action}
-              onClick={handleClickSave}
-            >
+          <S.SaveButton
+            // 변경 없음이면 비활성화
+            disabled={status === report.status && action === report.action}
+            onClick={handleClickSave}
+          >
             저장
           </S.SaveButton>
-          {/* 저장 확인 모달 */}
-        <ConfirmModal
-          isOpen={showConfirm}
-          title="저장 확인"
-          content={
-            <>
-              <p>변경된 내용을 저장하시겠습니까?</p>
-            </>
-          }
-          showCancel
-          confirmText="확인"
-          cancelText="취소"
-          onConfirm={handleConfirmSave}
-          onCancel={() => setShowConfirm(false)}
-        />
 
-        {/* 결과 모달 */}
-        <ConfirmModal
-          isOpen={showResult}
-          content={resultMessage}
-          showCancel={false}
-          confirmText="확인"
-          onConfirm={handleResultClose}
-        />
+          <ConfirmModal
+            isOpen={showConfirm}
+            title="저장 확인"
+            content={<p>변경된 내용을 저장하시겠습니까?</p>}
+            showCancel
+            confirmText="확인"
+            cancelText="취소"
+            onConfirm={handleConfirmSave}
+            onCancel={() => setShowConfirm(false)}
+          />
+
+          <ConfirmModal
+            isOpen={showResult}
+            content={resultMessage}
+            showCancel={false}
+            confirmText="확인"
+            onConfirm={handleResultClose}
+          />
         </S.Footer>
       </S.Dialog>
     </S.Overlay>

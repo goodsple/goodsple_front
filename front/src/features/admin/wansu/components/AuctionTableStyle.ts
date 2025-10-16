@@ -88,3 +88,11 @@ export const ActionButton = styled.button<{ variant: string }>`
     variant === '수정' || variant === '결과' ? '#997BEB' : '#444444'
   };
 `;
+
+export const ClickableTr = styled.tr`
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f1f3f5; // 마우스를 올렸을 때 배경색 변경
+  }
+`;

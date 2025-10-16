@@ -46,5 +46,13 @@ export const Button = styled.button`
     background: #E03131;
     color: #fff;
   }
+
+  &:disabled {
+    background: #D9D9D9;   
+    color: #666;          
+    border-color: #bbb;   
+    cursor: not-allowed;   
+    /* pointer-events: none; 
+  }
   
 `;
