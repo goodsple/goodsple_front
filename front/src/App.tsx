@@ -19,8 +19,6 @@ import SignUp from './features/auth/components/SignUp';
 import BadgeGuide from './features/badge/components/BadgeGuide.tsx';
 import BookmarkFolderPage from './features/bookmark/components/BookmarkFolderPage.tsx';
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
-import CategorySelect from './features/category/pages/CategorySelect.tsx';
-import ThirdCategory from './features/category/pages/ThirdCategory.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import Community from './features/community/components/Community.tsx';
 import EventViewPage from './features/eventzone/pages/EventViewPage.tsx';
@@ -148,7 +146,7 @@ function App() {
               <Route path="/admin/notice/:noticeId/edit" element={<AdminNoticeEdit />} />
 
               <Route path="/admin/keyword" element={<AdminKeywordMonitoring />} />
-              
+
               <Route path="/admin/category" element={<AdminCategoryPage />} />
             </Route>
 
