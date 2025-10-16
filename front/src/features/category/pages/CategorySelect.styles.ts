@@ -46,38 +46,44 @@ export const ColumnHeader = styled.div`
   width: 100%;
 `;
 
+/* ✅ 수정된 체크박스 부분 */
 export const CheckboxLabel = styled.label`
-  width: 33.33%;  // 한 행에 3개
+  width: 33.33%;
   box-sizing: border-box;
   margin-bottom: 4px;
   display: flex;
-  align-items: center; // 중앙 정렬
-  height: 28px;        // 고정 높이
+  align-items: center;
+  height: 28px;
+  position: relative;
+  cursor: pointer;
 
-  // 기본 체크박스 숨기기
   input[type="checkbox"] {
-    opacity: 0; /* 기본 체크박스 숨김 */
-    position: absolute;
+    appearance: none;
     width: 18px;
     height: 18px;
-    margin: 0;
-    cursor: pointer;
-  }
-
-  // 커스텀 체크박스 스타일
-  &::before {
-    content: "";
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 1px solid #b39ddb; /* 테두리 보라색 */
-    // border-radius: px;
+    border: 1.5px solid #b39ddb;
+    border-radius: 4px;
     margin-right: 6px;
-    box-sizing: border-box;
+    cursor: pointer;
+    position: relative;
+    background-color: white;
+    transition: all 0.2s ease;
   }
 
-  input[type="checkbox"]:checked + &::before {
-    background-color: #b39ddb; /* 체크 시 배경 보라색, 필요 없으면 제거 가능 */
+  /* ✅ 체크되었을 때 표시 */
+  input[type="checkbox"]:checked {
+    background-color: #b39ddb;
+    border-color: #b39ddb;
+  }
+
+  /* ✅ 체크표시(✔) 추가 */
+  input[type="checkbox"]:checked::after {
+    // content: "V";
+    color: white;
+    font-size: 12px;
+    position: absolute;
+    top: 0px;
+    left: 3px;
   }
 `;
 

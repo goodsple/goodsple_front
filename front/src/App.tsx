@@ -16,8 +16,6 @@ import KakaoInfo from './features/auth/components/KakaoInfo';
 import Login from './features/auth/components/Login';
 import SignUp from './features/auth/components/SignUp';
 import BadgeGuide from './features/badge/components/BadgeGuide.tsx';
-import CategorySelect from './features/category/pages/CategorySelect.tsx';
-import ThirdCategory from './features/category/pages/ThirdCategory.tsx';
 import EventViewPage from './features/eventzone/pages/EventViewPage.tsx';
 import EventWritePage from './features/eventzone/pages/EventWritePage.tsx';
 import EventZoneMain from './features/eventzone/pages/EventZoneMain.tsx';
@@ -67,6 +65,7 @@ import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import ReportWrapper from './features/report/ReportWrapper.tsx';
 import AdminNoticeEdit from './features/admin/notice/AdminNoticeEdit.tsx';
 import ExchangePostEdit from './features/exchange/ExchangePostEdit.tsx';
+import CategoryMain from './features/category/components/CategoryMain.tsx';
 
 
 function App() {
@@ -104,8 +103,11 @@ function App() {
             <Route path="/exchange/edit/:postId" element={<ExchangePostEdit />} />
             <Route path="/community" element={<Community />} />
             <Route path="/chatbot" element={<ChatBotPage />} />
-            <Route path="/categories" element={<CategorySelect />} />
-            <Route path="/category/:categoryId" element={<ThirdCategory />} />
+
+            <Route path="/category/:firstCateId" element={<CategoryMain />} />
+            {/* <Route path="/categories/:firstCateId" element={<CategorySelect />} />
+            <Route path="/category/:categoryId" element={<ThirdCategory />} /> */}
+
             <Route path="/notification" element={<Notification />} />
             <Route path="/eventzone" element={<EventZoneMain />} />
             <Route path="/eventwrite" element={<EventWritePage />} />
@@ -139,7 +141,7 @@ function App() {
 
             <Route path="/admin/keyword" element={<AdminKeywordMonitoring />} />
 
-             <Route path="/admin/category" element={<AdminCategoryPage />} />
+            <Route path="/admin/category" element={<AdminCategoryPage />} />
           </Route>
 
           {/* Layout 없이 단독 페이지 */}
