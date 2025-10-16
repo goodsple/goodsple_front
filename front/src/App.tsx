@@ -69,6 +69,7 @@ import AdminReportPage from './features/admin/report/page/AdminReportPage.tsx';
 import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
 import AdminCategoryPage from './features/category/pages/AdminCategoryPage.tsx';
 import SearchResultsPage from './features/search/components/SearchResultPage.tsx';
+import CategoryMain from './features/category/components/CategoryMain.tsx';
 
 
 function App() {
@@ -110,8 +111,11 @@ function App() {
 
               <Route path="/community" element={<Community />} />
               <Route path="/chatbot" element={<ChatBotPage />} />
-              <Route path="/categories" element={<CategorySelect />} />
-              <Route path="/category/:categoryId" element={<ThirdCategory />} />
+
+              <Route path="/category/:firstCateId" element={<CategoryMain />} />
+              {/* <Route path="/categories/:firstCateId" element={<CategorySelect />} />
+            <Route path="/category/:categoryId" element={<ThirdCategory />} /> */}
+
               <Route path="/notification" element={<Notification />} />
               <Route path="/eventzone" element={<EventZoneMain />} />
               <Route path="/eventwrite" element={<EventWritePage />} />
@@ -144,6 +148,7 @@ function App() {
               <Route path="/admin/notice/:noticeId/edit" element={<AdminNoticeEdit />} />
 
               <Route path="/admin/keyword" element={<AdminKeywordMonitoring />} />
+              
               <Route path="/admin/category" element={<AdminCategoryPage />} />
             </Route>
 
