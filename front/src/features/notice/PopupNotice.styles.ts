@@ -35,6 +35,7 @@ export const PopupContent = styled.div`
   padding: 20px;
   font-size: 16px;
   line-height: 1.4;
+  white-space: pre-line;
 `;
 
 export const PopupFooter = styled.div`
@@ -51,5 +52,20 @@ export const Button = styled.button`
   font-size: 14px;
   &:hover {
     text-decoration: underline;
+  }
+`;
+
+export const LinkText = styled.span`
+  display: block;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #0077cc;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #005fa3;
   }
 `;
