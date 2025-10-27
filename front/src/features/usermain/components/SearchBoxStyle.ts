@@ -37,11 +37,16 @@ export const PopularKeywords = styled.div`
   flex-direction: row;
   gap: 20px;
   align-items: center;
-  margin-left: 30px;
+  // margin-left: 20px;
   transform: translateX(40%);
   z-index: 9;
   position: relative;
+
+  cursor: pointer;
+  width: 300px;
+  overflow: visible;
 `;
+
 
 export const RealTimePopularKeywords1 = styled.span`
   font-size: 20px;
@@ -51,12 +56,27 @@ export const RealTimePopularKeywords1 = styled.span`
   letter-spacing: -1px;
 `;
 
+
+export const KeywordTextWrapper = styled.div`
+  flex: 1;
+  overflow: hidden;         /* 넘치는 글자는 숨김 */
+  white-space: nowrap;      /* 한 줄로 유지 */
+  text-overflow: ellipsis;  /* 넘치면 ... 표시 */
+`;
+
 export const RealTimePopularKeywords2 = styled.span`
   font-size: 18px;
   font-weight: 600;
   color: #444444;
   font-family: 'Pretendard', sans-serif;
   letter-spacing: -1px;
+
+  /* 부모가 overflow:hidden이면 글자가 길어도 레이아웃 안깨짐 */
+  // display: inline-block;
+  // width: 100%;
+  // overflow: hidden;
+  // text-overflow: ellipsis;
+  // white-space: nowrap;
 `;
 
 export const SearchInput = styled.input`
