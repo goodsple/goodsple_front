@@ -26,6 +26,7 @@ interface Post {
     postId: number;
     title: string;
     category: string;
+    viewCount: number;
     description: string;
     status: string;
     // writerId: number;
@@ -59,7 +60,7 @@ interface User {
 }
 
 interface Folder {
-    folderId : number;
+    folderId: number;
     folderName: string;
     folderColor: string;
 }
@@ -89,97 +90,18 @@ const ExchangePostDetail = () => {
 
     const navigate = useNavigate(); // 훅으로 navigate 함수 가져오기
 
-    const {openReport} = useReport();
+    const { openReport } = useReport();
 
     const handleOpenReport = () => {
         if (!post) return;
         openReport({
-          targetType: 'POST',               
-          targetId: post.postId,            
-          reportTargetUserId: post.writer?.id ?? null,
+            targetType: 'POST',
+            targetId: post.postId,
+            reportTargetUserId: post.writer?.id ?? null,
         });
     };
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const postRes = await axios.get(`/api/posts/${postIdNum}`);
-    //             setPost(postRes.data);
-
-    //             const accessToken = localStorage.getItem('accessToken');
-    //             if (accessToken) {
-    //                 const userRes = await axios.get(`/api/users/me`, {
-    //                     headers: { Authorization: `Bearer ${accessToken}` }
-    //                 });
-    //                 setUser(userRes.data);
-    //             }
-    //         } catch (err) {
-    //             console.error(err);
-    //         }
-    //     };
-    //     fetchData();
-    // }, [postIdNum]);
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const accessToken = localStorage.getItem('accessToken');
-    //             let currentUser = null;
-    //             if (accessToken) {
-    //                 const userRes = await axios.get(`/api/users/me`, {
-    //                     headers: { Authorization: `Bearer ${accessToken}` }
-    //                 });
-    //                 currentUser = userRes.data;
-    //                 setUser(currentUser);
-    //             }
-
-    //             const postRes = await axios.get(`/api/posts/${postIdNum}`);
-    //             setPost(postRes.data);
-
-    //             // 💡 여기서 isWriter 상태를 업데이트
-    //             if (currentUser && postRes.data) {
-    //                 setIsWriter(currentUser.id === postRes.data.writer.id);
-    //             }
-
-    //         } catch (err) {
-    //             console.error(err);
-    //         }
-    //     };
-    //     fetchData();
-    // }, [postIdNum]); // 의존성 배열에 postIdNum만 유지
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const accessToken = localStorage.getItem('accessToken');
-
-    //             let currentUser = null;
-    //             if (accessToken) {
-    //                 const userRes = await axios.get(`/api/users/me`, {
-    //                     headers: { Authorization: `Bearer ${accessToken}` }
-    //                 });
-    //                 console.log('userRes.data:', userRes.data); // 유저 정보 확인
-    //                 currentUser = userRes.data;
-    //                 setUser(currentUser);
-    //             }
-
-    //             const postRes = await axios.get(`/api/posts/${postIdNum}`);
-    //             const postData = postRes.data;
-    //             console.log('postData:', postData); // 게시글 정보 확인
-    //             setPost(postData);
-
-    //             if (currentUser) {
-    //                 setIsWriter(String(currentUser.id) === String(postData.writer.id));
-    //                 console.log('isWriter 계산:', String(currentUser.id) === String(postData.writer.id));
-    //             }
-    //         } catch (err) {
-    //             console.error(err);
-    //         }
-    //     };
-    //     fetchData();
-
-    // }, [postIdNum]); // 의존성 배열에 postIdNum만 유지
-
+    // 게시글 데이터 불러오기
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -193,6 +115,7 @@ const ExchangePostDetail = () => {
                     currentUserId = Number(decoded.sub); // 여기서 sub 사용
                 }
 
+                // 게시글 상세 정보 API 호출
                 const postRes = await axios.get(`/api/posts/${postIdNum}`);
                 const postData = postRes.data;
                 setPost(postData);
@@ -442,57 +365,57 @@ const ExchangePostDetail = () => {
 
     // 북마크 코드 ----------------------------------------------
 
-   // 채팅하기 핸들러
+    // 채팅하기 핸들러
     const handleStartChat = async () => {
         if (!post) return;
-    
+
         const token = localStorage.getItem("accessToken");
         if (!token) {
-        alert("로그인이 필요합니다.");
-        navigate("/login", { replace: true });
-        return;
+            alert("로그인이 필요합니다.");
+            navigate("/login", { replace: true });
+            return;
         }
-    
+
         // tradeType → '직거래' | '택배' 로만 매핑
         const decideMethod = (tradeType: Post["tradeType"]): '직거래' | '택배' => {
-        if (tradeType === 'DELIVERY') return '택배';
-        if (tradeType === 'DIRECT')   return '직거래';
-        // BOTH 일 때 기본 정책: 직거래 우선(지역 있으면 직거래, 없으면 택배)
-        return post.location && post.location.trim() ? '직거래' : '택배';
+            if (tradeType === 'DELIVERY') return '택배';
+            if (tradeType === 'DIRECT') return '직거래';
+            // BOTH 일 때 기본 정책: 직거래 우선(지역 있으면 직거래, 없으면 택배)
+            return post.location && post.location.trim() ? '직거래' : '택배';
         };
-    
+
         try {
-        // 방 생성/재사용
-        const { room, isNew } = await startRoom(post.writer.id, post.postId);
-    
-        // 채팅 화면 이동 + 우측 인트로 카드용 데이터 전달
-        navigate(`/exchange-chat/${room.id}`, {
-            state: {
-            isNewRoom: isNew,
-            isWriter: false, // 상세에서 구매자 진입이므로 기본 false (상황에 맞게 조절)
-            peer: {
-                userId: post.writer.id,
-                nickname: post.writer.nickname,
-                avatar: post.writer.profileImageUrl ?? undefined,
-                levelText: `Lv.${post.writer.level ?? 1} 교환러`,
-            },
-            postPreview: {
-                title: post.title,
-                thumb: post.images?.[0],
-                method: decideMethod(post.tradeType), // ★ 직거래 | 택배
-                regionText: post.location || '',      // ★ 직거래 희망지역
-                // 필요하면 태그 유지
-                tags: [post.category].filter(Boolean),
-            },
-            },
-        });
+            // 방 생성/재사용
+            const { room, isNew } = await startRoom(post.writer.id, post.postId);
+
+            // 채팅 화면 이동 + 우측 인트로 카드용 데이터 전달
+            navigate(`/exchange-chat/${room.id}`, {
+                state: {
+                    isNewRoom: isNew,
+                    isWriter: false, // 상세에서 구매자 진입이므로 기본 false (상황에 맞게 조절)
+                    peer: {
+                        userId: post.writer.id,
+                        nickname: post.writer.nickname,
+                        avatar: post.writer.profileImageUrl ?? undefined,
+                        levelText: `Lv.${post.writer.level ?? 1} 교환러`,
+                    },
+                    postPreview: {
+                        title: post.title,
+                        thumb: post.images?.[0],
+                        method: decideMethod(post.tradeType), // ★ 직거래 | 택배
+                        regionText: post.location || '',      // ★ 직거래 희망지역
+                        // 필요하면 태그 유지
+                        tags: [post.category].filter(Boolean),
+                    },
+                },
+            });
         } catch (e) {
-        console.error("채팅방 생성 실패:", e);
-        alert("채팅방을 만들 수 없어요. 잠시 후 다시 시도해주세요.");
+            console.error("채팅방 생성 실패:", e);
+            alert("채팅방을 만들 수 없어요. 잠시 후 다시 시도해주세요.");
         }
     };
-  
-      
+
+
 
     return (
         <S.Container>
@@ -521,7 +444,7 @@ const ExchangePostDetail = () => {
                         <S.Category>{post.category}</S.Category>
                         <S.Title>{post.title}</S.Title>
                         <S.StatusRow>
-                            <S.StatusInfo>찜 {bookmarkCount}   조회수 0
+                            <S.StatusInfo>찜 {bookmarkCount}   조회수 {post.viewCount}
                                 <S.TimeWrapper>
                                     <S.StatusIcon src={clockIcon} alt="시계 아이콘" />
                                     {getTimeAgo(post.createdAt)}
@@ -621,7 +544,7 @@ const ExchangePostDetail = () => {
                                 isOpen={isSelectorOpen}
                                 onClose={() => setIsSelectorOpen(false)}
                                 folders={folders}
-                                mode={isBookmarked ? "move" : "add"}  
+                                mode={isBookmarked ? "move" : "add"}
                                 onSelect={handleSelectFolder}
                                 onAddFolder={() => {
                                     setIsSelectorOpen(false);
@@ -639,7 +562,7 @@ const ExchangePostDetail = () => {
                                 onSubmit={handleCreateFolder}
                             />
 
-                            <S.ActionButton $main onClick={handleStartChat}> 
+                            <S.ActionButton $main onClick={handleStartChat}>
                                 <img src={chatIcon} alt="채팅하기 아이콘" />
                                 채팅하기
                             </S.ActionButton>
