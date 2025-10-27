@@ -12,12 +12,16 @@ interface PopularKeyword {
 }
 
 const SearchBox: React.FC = () => {
+
   const [keywordsList, setKeywordsList] = useState(false);
   const [keyword, setKeyword] = useState(""); // 입력된 검색어 상태
 
   const [popularKeywords, setPopularKeywords] = useState<PopularKeyword[]>([]);
   const [scrollIndex, setScrollIndex] = useState(0); // 현재 보여줄 순위 인덱스
+  const [isSearching, setIsSearching] = useState(false); // 검색 중복 방지 상태
 
+  // 🔹 검색어 기록 여부
+  const [recordedKeywords, setRecordedKeywords] = useState<Set<string>>(new Set());
 
   const navigate = useNavigate();
 
@@ -27,16 +31,21 @@ const SearchBox: React.FC = () => {
 
   // 검색 실행 함수
   const handleSearch = async () => {
-    if (!keyword.trim()) return;
+    if (!keyword.trim() || isSearching) return;
 
-    // 검색어 기록 API 호출
+    setIsSearching(true); // 중복 방지
+
+    console.log("handleSearch 호출:", keyword);
+
     try {
-      await axios.post("/api/popular/record", null, { params: { keyword } });
+      // SearchBox에서는 기록/조회수 API 호출하지 않고 SearchResultsPage에서 처리
+      // 단순 검색 결과 페이지로 이동
+      navigate(`/search-results?keyword=${encodeURIComponent(keyword)}`);
     } catch (err) {
-      console.error("검색어 기록 실패:", err);
+      console.error("검색 실행 실패:", err);
+    } finally {
+      setIsSearching(false);
     }
-
-    navigate(`/search-results?keyword=${encodeURIComponent(keyword)}`);
   };
 
 
@@ -79,7 +88,12 @@ const SearchBox: React.FC = () => {
           placeholder="굿즈 이름 또는 키워드를 검색해보세요"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleSearch();
+            }
+          }}
         />
         <s.SearchIcon2
           src={search}
@@ -91,11 +105,11 @@ const SearchBox: React.FC = () => {
       <s.PopularKeywords onClick={onClickKeywords}>
         <PopularKeywords state={keywordsList} />
         <s.RealTimePopularKeywords1>🔥실시간 인기</s.RealTimePopularKeywords1>
-          <s.KeywordTextWrapper>
-        <s.RealTimePopularKeywords2>
-          {scrollIndex + 1}. {popularKeywords[scrollIndex]?.keyword || " - "}
-        </s.RealTimePopularKeywords2>
-          </s.KeywordTextWrapper>
+        <s.KeywordTextWrapper>
+          <s.RealTimePopularKeywords2>
+            {scrollIndex + 1}. {popularKeywords[scrollIndex]?.keyword || " - "}
+          </s.RealTimePopularKeywords2>
+        </s.KeywordTextWrapper>
       </s.PopularKeywords>
     </s.SearchWrap>
   );
