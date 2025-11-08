@@ -1,11 +1,93 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axiosInstance from '../axiosInstance.ts';
 import axios from 'axios';
 
-interface secCateProps {
-  cateName: string;
-  firstCateId: number;
-}
+// 1차 카테고리 수정(메모만)
+export const updateFirstCategory = async (
+  firstCateId: number,
+  data: { subText?: string } // 이름은 수정 불가, subText만
+) => {
+  try {
+    const token = localStorage.getItem('accessToken');
+    const res = await axios.put(
+      `http://localhost:8080/api/admin/category/first/${firstCateId}`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return res.status === 200 || res.status === 204;
+  } catch (err) {
+    console.error('updateFirstCategory error:', err);
+    return false;
+  }
+};
+
+// 2차 카테고리 수정
+export const updateSecCategory = async (secondCateId: number, data: { cateName: string; subText?: string; visibility?: 'public' | 'private' }) => {
+  try {
+    const token = localStorage.getItem('accessToken');
+    const res = await axios.put(`http://localhost:8080/api/admin/category/second/${secondCateId}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      }
+    });
+    return res.status === 200 || res.status === 204;
+  } catch (err) {
+    console.error('updateSecCategory error:', err);
+    return false;
+  }
+};
+
+export const updateThiCategory = async (thirdCateId: number, data: { cateName: string; subText?: string; visibility?: 'public' | 'private' }) => {
+  try {
+    const token = localStorage.getItem('accessToken');
+    const res = await axios.put(`http://localhost:8080/api/admin/category/third/${thirdCateId}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return res.status === 200 || res.status === 204;
+  } catch (err) {
+    console.error('updateThiCategory error:', err);
+    return false;
+  }
+};
+export const fetchAllFirstCate = createAsyncThunk(
+  'category/fetchAllFirstCate',
+  async () => {
+    const response = await axios.get('http://localhost:8080/api/admin/category/first/all');
+    return response.data; // DB에서 받아온 FirstCate[]
+  }
+);
+
+// 추가된 부분: 카테고리 추가 API
+export const addCategoryAPI = async ({ parentId, level, name, subText, visibility }: { parentId: number; level: number; name: string, subText: string, visibility?: 'public' | 'private'}) => {
+  const token = localStorage.getItem('accessToken');
+  try {
+    if (level === 2) {
+      const res = await axios.post('http://localhost:8080/api/admin/category/second',
+        { cateName: name, firstCateId: parentId, subText, visibility  }, // body
+        { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
+      );
+      return res.data.secondCateId;
+    } else if (level === 3) {
+      const res = await axios.post('http://localhost:8080/api/admin/category/third',
+        { cateName: name, secondCateId: parentId, subText, visibility },
+        { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
+      );
+      return res.data.thirdCateId;
+    }
+    return null;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
 
 // 기존
 // export const createSecCategory = createAsyncThunk(
@@ -48,7 +130,7 @@ export const fetchSecCate = createAsyncThunk(
     const response = await axios.get(
       `http://localhost:8080/api/admin/category/second/${firstCateId}`,
       // `/admin/category/second/${firstCateId}`,
-      );
+    );
     return response.data;
   }
 );
@@ -86,7 +168,7 @@ export const fetchAllSecCate = createAsyncThunk(
 // 파일 미업로드용 -2
 export const createThiCategory = createAsyncThunk(
   'category/createThiCategory',
-  async (categoryData: { secondCateId: number; cateName: string; subText: string }, { rejectWithValue }) => {
+  async (categoryData: { secondCateId: number; cateName: string; subText: string, visibility: 'public' | 'private' }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('accessToken');
       const res = await axios.post('/api/admin/category/third', categoryData, {

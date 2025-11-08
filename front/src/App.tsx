@@ -19,8 +19,6 @@ import SignUp from './features/auth/components/SignUp';
 import BadgeGuide from './features/badge/components/BadgeGuide.tsx';
 import BookmarkFolderPage from './features/bookmark/components/BookmarkFolderPage.tsx';
 import BookmarkPage from './features/bookmark/components/BookmarkPage.tsx';
-import CategorySelect from './features/category/pages/CategorySelect.tsx';
-import ThirdCategory from './features/category/pages/ThirdCategory.tsx';
 import ChatBotPage from './features/chatbot/components/ChatBotPage.tsx';
 import Community from './features/community/components/Community.tsx';
 import EventViewPage from './features/eventzone/pages/EventViewPage.tsx';
@@ -69,6 +67,7 @@ import AdminReportPage from './features/admin/report/page/AdminReportPage.tsx';
 import AdminReviewPage from './features/admin/review/page/AdminReviewPage.tsx';
 import AdminCategoryPage from './features/category/pages/AdminCategoryPage.tsx';
 import SearchResultsPage from './features/search/components/SearchResultPage.tsx';
+import CategoryMain from './features/category/components/CategoryMain.tsx';
 
 
 function App() {
@@ -104,14 +103,17 @@ function App() {
               <Route path="/exchange/new" element={<ExchangePost />} />
               <Route path="/exchange/detail/:postId" element={<ExchangePostDetail />} />
               <Route path="/exchange/edit/:postId" element={<ExchangePostEdit />} />
-               {/* 채팅 목록/진입 공통 페이지 */}
-               <Route path="/exchange-chat" element={<ExchangeChatPage />} /> 
+              {/* 채팅 목록/진입 공통 페이지 */}
+              <Route path="/exchange-chat" element={<ExchangeChatPage />} />
               <Route path="/exchange-chat/:roomId" element={<ExchangeChatPage />} />
-              
+
               <Route path="/community" element={<Community />} />
               <Route path="/chatbot" element={<ChatBotPage />} />
-              <Route path="/categories" element={<CategorySelect />} />
-              <Route path="/category/:categoryId" element={<ThirdCategory />} />
+
+              <Route path="/category/:firstCateId" element={<CategoryMain />} />
+              {/* <Route path="/categories/:firstCateId" element={<CategorySelect />} />
+            <Route path="/category/:categoryId" element={<ThirdCategory />} /> */}
+
               <Route path="/notification" element={<Notification />} />
               <Route path="/eventzone" element={<EventZoneMain />} />
               <Route path="/eventwrite" element={<EventWritePage />} />
@@ -144,6 +146,7 @@ function App() {
               <Route path="/admin/notice/:noticeId/edit" element={<AdminNoticeEdit />} />
 
               <Route path="/admin/keyword" element={<AdminKeywordMonitoring />} />
+
               <Route path="/admin/category" element={<AdminCategoryPage />} />
             </Route>
 

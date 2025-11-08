@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import * as S from './PopupNotice.styles';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface Popup {
     noticeId: number;
@@ -9,8 +10,12 @@ interface Popup {
         popupSummary: string;
     };
 }
+
+
 const PopupNotice: React.FC = () => {
+
     const [popups, setPopups] = useState<Popup[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchPopups = async () => {
@@ -45,7 +50,27 @@ const PopupNotice: React.FC = () => {
                 !isHidden(popup.noticeId) && (
                     <S.PopupWrapper key={popup.noticeId} index={index}>
                         <S.PopupHeader>{popup.noticeTitle}</S.PopupHeader>
-                        <S.PopupContent>{popup.popupInfo.popupSummary}</S.PopupContent>
+                        <S.PopupContent>
+                            {popup.popupInfo?.popupSummary
+                                ? (
+                                    <>
+                                        {popup.popupInfo.popupSummary
+                                            .split('\n')
+                                            .map((line, idx) => (
+                                                <p key={idx}>{line}</p>
+                                            ))
+                                        }
+                                        <S.LinkText onClick={() => navigate(`/notice/detail/${popup.noticeId}`)}>
+                                            👉 공지사항 자세히보기
+                                        </S.LinkText>
+                                    </>
+                                )
+                                : <p>(공지 내용이 없습니다)</p>
+                            }
+                        </S.PopupContent>
+                        {/* <S.PopupContent>
+                            {popup.popupInfo.popupSummary}
+                            </S.PopupContent> */}
                         <S.PopupFooter>
                             <S.Button onClick={() => hidePopup(popup.noticeId)}>
                                 오늘 하루 보지 않기
