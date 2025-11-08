@@ -385,30 +385,32 @@ const ExchangePostDetail = () => {
         };
 
         try {
-            // 방 생성/재사용
-            const { room, isNew } = await startRoom(post.writer.id, post.postId);
 
-            // 채팅 화면 이동 + 우측 인트로 카드용 데이터 전달
-            navigate(`/exchange-chat/${room.id}`, {
-                state: {
-                    isNewRoom: isNew,
-                    isWriter: false, // 상세에서 구매자 진입이므로 기본 false (상황에 맞게 조절)
-                    peer: {
-                        userId: post.writer.id,
-                        nickname: post.writer.nickname,
-                        avatar: post.writer.profileImageUrl ?? undefined,
-                        levelText: `Lv.${post.writer.level ?? 1} 교환러`,
-                    },
-                    postPreview: {
-                        title: post.title,
-                        thumb: post.images?.[0],
-                        method: decideMethod(post.tradeType), // ★ 직거래 | 택배
-                        regionText: post.location || '',      // ★ 직거래 희망지역
-                        // 필요하면 태그 유지
-                        tags: [post.category].filter(Boolean),
-                    },
-                },
-            });
+        // 방 생성/재사용
+        const { roomId, room, isNew } = await startRoom(post.writer.id, post.postId);
+    
+        // 채팅 화면 이동 + 우측 인트로 카드용 데이터 전달
+        navigate(`/exchange-chat/${roomId}`, {
+            state: {
+            isNewRoom: isNew,
+            isWriter: false, // 상세에서 구매자 진입이므로 기본 false (상황에 맞게 조절)
+            peer: {
+                userId: post.writer.id,
+                nickname: post.writer.nickname,
+                avatar: post.writer.profileImageUrl ?? undefined,
+                levelText: `Lv.${post.writer.level ?? 1} 교환러`,
+            },
+            postPreview: {
+                title: post.title,
+                thumb: post.images?.[0],
+                method: decideMethod(post.tradeType), // ★ 직거래 | 택배
+                regionText: post.location || '',      // ★ 직거래 희망지역
+                // 필요하면 태그 유지
+                tags: [post.category].filter(Boolean),
+            },
+            },
+        });
+
         } catch (e) {
             console.error("채팅방 생성 실패:", e);
             alert("채팅방을 만들 수 없어요. 잠시 후 다시 시도해주세요.");
