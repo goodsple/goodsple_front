@@ -1,4 +1,3 @@
-// ChatLayout.tsx
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Room, Msg } from '../types/exchangeChat';
 import RoomList from './RoomList';
@@ -60,6 +59,7 @@ export default function ChatLayout({
   useEffect(() => {
     if (!currentRoomId && initialRoomId && rooms.some(r => r.id === initialRoomId)) {
       setCurrentRoomId(initialRoomId);
+      onEnterRoom?.(initialRoomId);  // 초기 자동 선택에도 enter 콜백 실행
     }
   }, [rooms, currentRoomId, initialRoomId]);
 

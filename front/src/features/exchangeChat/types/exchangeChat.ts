@@ -74,20 +74,18 @@ export type Room = {
       verified?: boolean | null;
       levelText?: string | null;
     } | null;
-  
-    /** 백엔드 구현에 따라 'last' 혹은 'lastMessage' 중 하나가 올 수 있음 → 매퍼에서 둘 다 처리 */
     last?: { id?: number | string; text?: string | null; createdAt?: string | null } | null;
     lastMessage?:
       | { messageId?: number | string; text?: string | null; createdAt?: string | null }
       | null;
-  
     unreadCount?: number | null;
     updatedAt?: string | null;
     postPreview?: { title: string; thumb?: string; tags?: string[] };
   
-    /** 일부 응답에서 writer 필드로 올 수도 있음 → peer 대체로 사용 */
-    writer?: { nickname: string; avatar?: string; verified?: boolean; levelText?: string };
+    // userId?: number 를 추가 (옵션)
+    writer?: { userId?: number; nickname: string; avatar?: string; verified?: boolean; levelText?: string };
   };
+  
   
   // 방 생성/재사용 응답(최초 생성 여부 플래그 포함)
   export type StartRoomDTO = RoomSummaryDTO & { isNewRoom: boolean };
@@ -123,42 +121,51 @@ export type Room = {
    * 역할: 백엔드 스펙 변경을 UI로부터 격리.
    * 주의: number id는 모두 String()으로 통일 변환.
    */
-  export const toRoom = (d: RoomSummaryDTO): Room => {
-    // peer가 없으면 writer나 기본값으로 폴백
-    const p =
-      d.peer ??
-      d.writer ?? {
-        nickname: '상대방',
-        avatar: undefined,
-        verified: false,
-        levelText: undefined,
-      };
+  export const toRoom = (d: RoomSummaryDTO, meId?: number): Room => {
+    // 1) 기본: peer만 사용
+    let p = d.peer ?? null;
   
-    // last 또는 lastMessage 중 가용한 쪽 선택
+    // 2) 예외: peer가 없으면 writer 고려(단, writer.userId !== meId일 때만)
+    if (!p && d.writer) {
+      const w = d.writer;
+      if (!meId || w.userId == null || w.userId !== meId) {
+        p = {
+          userId: w.userId ?? -1,
+          nickname: w.nickname,
+          avatar: w.avatar ?? undefined,
+          verified: w.verified ?? false,
+          levelText: w.levelText ?? undefined,
+        };
+      }
+    }
+  
+    // 3) 그래도 없으면 placeholder
+    const nickname = p?.nickname ?? '상대방';
+    const avatar   = p?.avatar ?? undefined;
+    const verified = !!p?.verified;
+    const level    = p?.levelText ?? undefined;
+  
+    // 마지막 메시지 추출 (last / lastMessage 모두 대응)
     const lastRaw = d.last ?? d.lastMessage ?? null;
-    const lastText =
-      (lastRaw?.text ?? '') || ''; // 비어있으면 빈 문자열
+    const lastText = (lastRaw?.text ?? '') || '';
     const lastCreatedAt =
       (lastRaw && ('createdAt' in lastRaw ? lastRaw.createdAt : null)) ?? null;
   
-    // updatedAt 우선, 없으면 마지막 메시지 시간, 그것도 없으면 now()
-    const updated =
-      d.updatedAt ??
-      lastCreatedAt ??
-      new Date().toISOString();
+    const updated = d.updatedAt ?? lastCreatedAt ?? new Date().toISOString();
   
     return {
       id: String(d.roomId),
-      nick: p.nickname,
-      avatar: p.avatar ?? undefined,
-      verified: !!p.verified,
-      levelText: p.levelText ?? undefined,
+      nick: nickname,
+      avatar,
+      verified,
+      levelText: level,
       last: lastText,
       unread: d.unreadCount ?? 0,
       updatedAt: updated,
       postPreview: d.postPreview,
     };
-  };
+  };  
+  
   
   /**
    * 메시지 매핑
@@ -191,22 +198,23 @@ export type Room = {
     };
   };
   
-  /* =========================
-   * 사용 예시 (참고)
-   * =========================
-   * // 방 생성/재사용
-   * const { data } = await api.post<StartRoomDTO>('/api/chat/rooms', { peerId, postId });
-   * const room: Room = toRoom(data);
-   *
-   * // 리스트
-   * const { data: list } = await api.get<RoomSummaryDTO[]>('/api/chat/rooms/summary');
-   * const rooms: Room[] = list.map(toRoom);
-   *
-   * // 메시지
-   * const { data } = await api.get(`/api/chat/rooms/${roomId}/messages`, { params: { limit: 50 }});
-   * const msgs: Msg[] = (Array.isArray(data) ? data : data.messages).map(toMsg);
-   *
-   * // 읽음 ACK 수신 시(상대가 내 메시지 읽음)
-   * // applyReadAck: 내 메시지 중 Number(id) <= lastReadMessageId → status='read'
-   */
+    /* =========================
+    * 사용 예시 (참고)
+    * =========================
+    * // 방 생성/재사용
+    * const { data } = await api.post<StartRoomDTO>('/api/chat/rooms', { peerId, postId });
+    * const meId = * 로그인 유저 id * 0;
+    * const room: Room = toRoom(data, meId);
+    *
+    * // 리스트
+    * const { data: list } = await api.get<RoomSummaryDTO[]>('/api/chat/rooms/summary');
+    * const rooms: Room[] = list.map(d => toRoom(d, meId));
+    *
+    * // 메시지
+    * const { data } = await api.get(`/api/chat/rooms/${roomId}/messages`, { params: { limit: 50 }});
+    * const msgs: Msg[] = (Array.isArray(data) ? data : data.messages).map(toMsg);
+    *
+    * // 읽음 ACK 수신 시(상대가 내 메시지 읽음)
+    * // applyReadAck: 내 메시지 중 Number(id) <= lastReadMessageId → status='read'
+    */
   

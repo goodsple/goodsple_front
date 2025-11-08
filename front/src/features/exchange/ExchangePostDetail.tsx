@@ -463,10 +463,10 @@ const ExchangePostDetail = () => {
     
         try {
         // 방 생성/재사용
-        const { room, isNew } = await startRoom(post.writer.id, post.postId);
+        const { roomId, room, isNew } = await startRoom(post.writer.id, post.postId);
     
         // 채팅 화면 이동 + 우측 인트로 카드용 데이터 전달
-        navigate(`/exchange-chat/${room.id}`, {
+        navigate(`/exchange-chat/${roomId}`, {
             state: {
             isNewRoom: isNew,
             isWriter: false, // 상세에서 구매자 진입이므로 기본 false (상황에 맞게 조절)

@@ -85,6 +85,7 @@ export const Unread = styled.span`
   border-radius: 999px;
   font-size: 12px;
   padding: 2px 8px;
+  margin-top: 16px;
 `;
 
 export const KebabBtn = styled.button`
