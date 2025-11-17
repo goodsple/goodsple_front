@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import * as S from './CategorySelect.styles';
 import axios from 'axios';
 
-const MAX_SECOND = 5;
-const MAX_THIRD = 10;
+const MAX_TOTAL = 5; // 2차 + 3차 합계 제한
 
 interface SecondCate {
   id: number;
@@ -26,9 +25,9 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ firstCateId }) => {
   const [thirdBySecond, setThirdBySecond] = useState<Record<number, ThirdCate[]>>({});
 
   const [selectedSecond, setSelectedSecond] = useState<number[]>([]);
-  const [selectedThird, setSelectedThird] = useState<number[]>([]);
+  const [selectedThird, setSelectedThird] = useState<ThirdCate[]>([]);
 
-  // 🟢 이름 기준 중복 제거 함수
+  // 🟢 중복 제거 함수 (이름 기준)
   const uniqueThirdByName = (arr: ThirdCate[]) => {
     const map = new Map<string, ThirdCate>();
     arr.forEach(item => {
@@ -37,7 +36,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ firstCateId }) => {
     return Array.from(map.values());
   };
 
-  // 1️⃣ 2차 카테고리 불러오기
+  // 1️⃣ 2차 카테고리 로드
   useEffect(() => {
     const id = Number(firstCateId);
     if (isNaN(id)) return;
@@ -45,10 +44,10 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ firstCateId }) => {
     axios
       .get<SecondCate[]>(`/api/user/categories/second/${id}`)
       .then((res) => {
-        const seconds = [{ id: 0, name: '전체' }, ...res.data];
+        // 전체 제거
+        const seconds = [...res.data];
         setSecondCategories(seconds);
 
-        // 2️⃣ 2차 ID 배열로 3차 카테고리 불러오기
         const secondIds = res.data.map(s => s.id);
         if (secondIds.length > 0) {
           axios
@@ -56,7 +55,7 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ firstCateId }) => {
             .then((res) => {
               setThirdBySecond(res.data);
 
-              // 초기 3차 카테고리 세팅 (전체 선택 시 2차 전체 기준)
+              // 전체 제거
               const allThirds = Object.values(res.data).flat();
               setThirdCategories(uniqueThirdByName(allThirds));
             })
@@ -66,62 +65,55 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ firstCateId }) => {
       .catch(console.error);
   }, [firstCateId]);
 
-  // 2차 선택 시 3차 필터링
+  // 🔥 firstCateId 변경 시 선택값 초기화
   useEffect(() => {
-    let filtered: ThirdCate[] = [];
-
-    if (selectedThird.includes(0) || selectedSecond.includes(0) || selectedSecond.length === 0) {
-      // 3차 전체 선택 OR 2차 전체 OR 아무것도 선택 안됨
-      const allThirds = Object.values(thirdBySecond).flat();
-      filtered = [{ id: 0, name: '전체', secondId: 0 }, ...uniqueThirdByName(allThirds)];
-    } else {
-      // 선택된 2차만
-      const selectedThirds = selectedSecond
-        .filter(id => id !== 0)
-        .map(id => thirdBySecond[id] || [])
-        .flat();
-      filtered = [{ id: 0, name: '전체', secondId: 0 }, ...uniqueThirdByName(selectedThirds)];
-    }
-
-    setThirdCategories(filtered);
-  }, [selectedSecond, thirdBySecond, selectedThird]);
+    setSelectedSecond([]);
+    setSelectedThird([]);
+  }, [firstCateId]);
 
   // 2차 선택
   const handleSecondChange = (id: number) => {
-    if (id === 0) {
-      setSelectedSecond([0]);
-      setSelectedThird([]);
-      return;
-    }
-
     setSelectedSecond(prev => {
-      const newSelection = prev.includes(id)
-        ? prev.filter(v => v !== id)
-        : prev.length < MAX_SECOND
-          ? [...prev.filter(v => v !== 0), id]
-          : prev;
-      return newSelection;
+      const alreadySelected = prev.includes(id);
+      const totalCount = prev.length + selectedThird.length;
+
+      if (alreadySelected) {
+        return prev.filter(v => v !== id);
+      } else if (totalCount < MAX_TOTAL) {
+        return [...prev, id];
+      } else {
+        alert(`카테고리는 최대 ${MAX_TOTAL}개까지 선택 가능합니다.`);
+        return prev;
+      }
     });
   };
 
   // 3차 선택
-  const handleThirdChange = (id: number) => {
-    setSelectedThird(prev =>
-      prev.includes(id)
-        ? prev.filter(v => v !== id)
-        : prev.length < MAX_THIRD
-          ? [...prev, id]
-          : prev
-    );
+  const handleThirdChange = (item: ThirdCate) => {
+    setSelectedThird(prev => {
+      const alreadySelected = prev.some(v => v.id === item.id);
+      const totalCount = selectedSecond.length + prev.length;
+
+      if (alreadySelected) {
+        return prev.filter(v => v.id !== item.id);
+      } else if (totalCount < MAX_TOTAL) {
+        return [...prev, item];
+      } else {
+        alert(`카테고리는 최대 ${MAX_TOTAL}개까지 선택 가능합니다.`);
+        return prev;
+      }
+    });
   };
 
+  // 이름 가져오기
   const getSecondName = (id: number) => secondCategories.find(s => s.id === id)?.name || '';
-  const getThirdName = (id: number) => thirdCategories.find(t => t.id === id)?.name || '';
 
   return (
     <S.Wrapper>
       <S.Header>카테고리별</S.Header>
       <S.Columns>
+
+        {/* 2차 영역 */}
         <S.Column hasDivider>
           <S.ColumnHeader>2차 카테고리</S.ColumnHeader>
           {secondCategories.map(item => (
@@ -136,43 +128,239 @@ const CategorySelect: React.FC<CategorySelectProps> = ({ firstCateId }) => {
           ))}
         </S.Column>
 
+        {/* 3차 영역 */}
         <S.Column>
           <S.ColumnHeader>3차 카테고리</S.ColumnHeader>
           {thirdCategories.map(item => (
             <S.CheckboxLabel key={item.id}>
               <input
                 type="checkbox"
-                checked={selectedThird.includes(item.id)}
-                onChange={() => handleThirdChange(item.id)}
+                checked={selectedThird.some(v => v.id === item.id)}
+                onChange={() => handleThirdChange(item)}
               />
               {item.name}
             </S.CheckboxLabel>
           ))}
         </S.Column>
+
       </S.Columns>
 
+      {/* 선택된 목록 */}
       <S.SelectedWrapper>
-        선택된 카테고리(최대 5개):
-        {selectedSecond.concat(selectedThird).map(id => (
-          <S.SelectedItem key={id}>
-            {getSecondName(id) || getThirdName(id)}
+        선택된 카테고리(최대 {MAX_TOTAL}개):
+        {/* 선택된 2차 */}
+        {selectedSecond.map(id => (
+          <S.SelectedItem key={`second-${id}`}>
+            {getSecondName(id)}
             <S.RemoveButton
-              onClick={() => {
-                if (selectedSecond.includes(id))
-                  setSelectedSecond(selectedSecond.filter(v => v !== id));
-                else setSelectedThird(selectedThird.filter(v => v !== id));
-              }}
+              onClick={() =>
+                setSelectedSecond(selectedSecond.filter(v => v !== id))
+              }
             >
               ×
             </S.RemoveButton>
           </S.SelectedItem>
         ))}
+
+        {/* 선택된 3차 */}
+        {selectedThird.map(item => (
+          <S.SelectedItem key={`third-${item.id}`}>
+            {item.name}
+            <S.RemoveButton
+              onClick={() =>
+                setSelectedThird(selectedThird.filter(v => v.id !== item.id))
+              }
+            >
+              ×
+            </S.RemoveButton>
+          </S.SelectedItem>
+        ))}
+
       </S.SelectedWrapper>
     </S.Wrapper>
   );
 };
 
 export default CategorySelect;
+
+
+
+
+// import { useEffect, useState } from 'react';
+// import * as S from './CategorySelect.styles';
+// import axios from 'axios';
+
+// const MAX_SECOND = 5;
+// const MAX_THIRD = 10;
+
+// interface SecondCate {
+//   id: number;
+//   name: string;
+// }
+
+// interface ThirdCate {
+//   id: number;
+//   name: string;
+//   secondId: number;
+// }
+
+// interface CategorySelectProps {
+//   firstCateId: number;
+// }
+
+// const CategorySelect: React.FC<CategorySelectProps> = ({ firstCateId }) => {
+//   const [secondCategories, setSecondCategories] = useState<SecondCate[]>([]);
+//   const [thirdCategories, setThirdCategories] = useState<ThirdCate[]>([]);
+//   const [thirdBySecond, setThirdBySecond] = useState<Record<number, ThirdCate[]>>({});
+
+//   const [selectedSecond, setSelectedSecond] = useState<number[]>([]);
+//   const [selectedThird, setSelectedThird] = useState<number[]>([]);
+
+//   // 🟢 이름 기준 중복 제거 함수
+//   const uniqueThirdByName = (arr: ThirdCate[]) => {
+//     const map = new Map<string, ThirdCate>();
+//     arr.forEach(item => {
+//       if (!map.has(item.name)) map.set(item.name, item);
+//     });
+//     return Array.from(map.values());
+//   };
+
+//   // 1️⃣ 2차 카테고리 불러오기
+//   useEffect(() => {
+//     const id = Number(firstCateId);
+//     if (isNaN(id)) return;
+
+//     axios
+//       .get<SecondCate[]>(`/api/user/categories/second/${id}`)
+//       .then((res) => {
+//         const seconds = [{ id: 0, name: '전체' }, ...res.data];
+//         setSecondCategories(seconds);
+
+//         // 2️⃣ 2차 ID 배열로 3차 카테고리 불러오기
+//         const secondIds = res.data.map(s => s.id);
+//         if (secondIds.length > 0) {
+//           axios
+//             .post<Record<number, ThirdCate[]>>('/api/user/categories/third/by-second', secondIds)
+//             .then((res) => {
+//               setThirdBySecond(res.data);
+
+//               // 초기 3차 카테고리 세팅 (전체 선택 시 2차 전체 기준)
+//               const allThirds = Object.values(res.data).flat();
+//               setThirdCategories(uniqueThirdByName(allThirds));
+//             })
+//             .catch(console.error);
+//         }
+//       })
+//       .catch(console.error);
+//   }, [firstCateId]);
+
+//   // 2차 선택 시 3차 필터링
+//   useEffect(() => {
+//     let filtered: ThirdCate[] = [];
+
+//     if (selectedThird.includes(0) || selectedSecond.includes(0) || selectedSecond.length === 0) {
+//       // 3차 전체 선택 OR 2차 전체 OR 아무것도 선택 안됨
+//       const allThirds = Object.values(thirdBySecond).flat();
+//       filtered = [{ id: 0, name: '전체', secondId: 0 }, ...uniqueThirdByName(allThirds)];
+//     } else {
+//       // 선택된 2차만
+//       const selectedThirds = selectedSecond
+//         .filter(id => id !== 0)
+//         .map(id => thirdBySecond[id] || [])
+//         .flat();
+//       filtered = [{ id: 0, name: '전체', secondId: 0 }, ...uniqueThirdByName(selectedThirds)];
+//     }
+
+//     setThirdCategories(filtered);
+//   }, [selectedSecond, thirdBySecond, selectedThird]);
+
+//   // 2차 선택
+//   const handleSecondChange = (id: number) => {
+//     if (id === 0) {
+//       setSelectedSecond([0]);
+//       setSelectedThird([]);
+//       return;
+//     }
+
+//     setSelectedSecond(prev => {
+//       const newSelection = prev.includes(id)
+//         ? prev.filter(v => v !== id)
+//         : prev.length < MAX_SECOND
+//           ? [...prev.filter(v => v !== 0), id]
+//           : prev;
+//       return newSelection;
+//     });
+//   };
+
+//   // 3차 선택
+//   const handleThirdChange = (id: number) => {
+//     setSelectedThird(prev =>
+//       prev.includes(id)
+//         ? prev.filter(v => v !== id)
+//         : prev.length < MAX_THIRD
+//           ? [...prev, id]
+//           : prev
+//     );
+//   };
+
+//   const getSecondName = (id: number) => secondCategories.find(s => s.id === id)?.name || '';
+//   const getThirdName = (id: number) => thirdCategories.find(t => t.id === id)?.name || '';
+
+//   return (
+//     <S.Wrapper>
+//       <S.Header>카테고리별</S.Header>
+//       <S.Columns>
+//         <S.Column hasDivider>
+//           <S.ColumnHeader>2차 카테고리</S.ColumnHeader>
+//           {secondCategories.map(item => (
+//             <S.CheckboxLabel key={item.id}>
+//               <input
+//                 type="checkbox"
+//                 checked={selectedSecond.includes(item.id)}
+//                 onChange={() => handleSecondChange(item.id)}
+//               />
+//               {item.name}
+//             </S.CheckboxLabel>
+//           ))}
+//         </S.Column>
+
+//         <S.Column>
+//           <S.ColumnHeader>3차 카테고리</S.ColumnHeader>
+//           {thirdCategories.map(item => (
+//             <S.CheckboxLabel key={item.id}>
+//               <input
+//                 type="checkbox"
+//                 checked={selectedThird.includes(item.id)}
+//                 onChange={() => handleThirdChange(item.id)}
+//               />
+//               {item.name}
+//             </S.CheckboxLabel>
+//           ))}
+//         </S.Column>
+//       </S.Columns>
+
+//       <S.SelectedWrapper>
+//         선택된 카테고리(최대 5개):
+//         {selectedSecond.concat(selectedThird).map(id => (
+//           <S.SelectedItem key={id}>
+//             {getSecondName(id) || getThirdName(id)}
+//             <S.RemoveButton
+//               onClick={() => {
+//                 if (selectedSecond.includes(id))
+//                   setSelectedSecond(selectedSecond.filter(v => v !== id));
+//                 else setSelectedThird(selectedThird.filter(v => v !== id));
+//               }}
+//             >
+//               ×
+//             </S.RemoveButton>
+//           </S.SelectedItem>
+//         ))}
+//       </S.SelectedWrapper>
+//     </S.Wrapper>
+//   );
+// };
+
+// export default CategorySelect;
 
 
 // import { useEffect, useState } from 'react';
