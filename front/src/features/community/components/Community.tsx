@@ -13,6 +13,14 @@ export interface ChatRoom {
     name: string;
 }
 
+type SelectedUserInfo = {
+  userId: number;
+  nickname: string;
+  userProfile: string;
+  badgeName: string;
+  badgeImage: string;
+};
+
 const Community: React.FC = () => {
   const chatRooms: ChatRoom[] = [
     { id: 'K-POP', name: 'K-POP 채팅방' },
@@ -28,13 +36,22 @@ const Community: React.FC = () => {
   const [input, setInput] = useState<string>('');
   const [messageType, setMessageType] = useState<MessageType>('GENERAL');
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [selectedUserInfo, setSelectedUserInfo] = useState<any>(null);
+  const [selectedUserInfo, setSelectedUserInfo] = useState<SelectedUserInfo | null>(null);
 
   const { roomMessages, onlineCount, isConnected, sendMessage, megaphoneRemaining } =
     useWebSocket(selectedRoom, myUserId);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!selectedRoom || !input.trim()) return;
+
+    // 금칙어 체크
+    try {
+      await axiosInstance.post('/admin/prohibited-words/check', input);
+    } catch (err: any) {
+      // 금칙어 포함 시 alert
+      alert(err.response?.data?.message || '금칙어가 포함되었습니다.');
+      return; // 전송 차단
+    }
 
     if (messageType === 'MEGAPHONE' && megaphoneRemaining <= 0) { 
       alert('이번 달 확성기 사용 횟수를 모두 사용했습니다.'); 
@@ -64,6 +81,7 @@ const Community: React.FC = () => {
 
       const userData = res.data;
       setSelectedUserInfo({
+        userId: Number(msg.userId),
         nickname: userData.nickname || '익명',
         userProfile: userData.userProfile || '/assets/images/default_profile.png',
         badgeName: userData.badges?.[0]?.name || 'LV. 1 신규 유저',
@@ -149,6 +167,7 @@ const Community: React.FC = () => {
                 {/* 프로필 모달 */}
                 {profileModalOpen && selectedUserInfo && (
                   <CommUserInfoModal
+                    userId={selectedUserInfo.userId} 
                     nickname={selectedUserInfo.nickname}
                     badgeName={selectedUserInfo.badgeName}
                     badgeImage={selectedUserInfo.badgeImage}

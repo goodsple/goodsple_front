@@ -164,6 +164,8 @@ export const SendBtn = styled.button`
         }
 `;
 
+export const ChatEndRef = styled.div``;
+
 
 
 

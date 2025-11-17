@@ -18,7 +18,7 @@ export interface AuctionStatus {
 export interface Bid {
   bidId: number;
   userNickname: string;
-  bidAmount: number;
+  price: number;
   timestamp: string;
 }
 

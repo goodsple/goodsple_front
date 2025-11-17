@@ -40,18 +40,30 @@ const PaymentSuccessPage = () => {
         return;
       }
 
+      // 1. sessionStorage에서 배송 정보를 가져옵니다.
+      const savedShippingInfo = sessionStorage.getItem('shippingInfo');
+      if (!savedShippingInfo) {
+          setError('배송 정보가 유실되었습니다. 다시 시도해주세요.');
+          setIsLoading(false);
+          return;
+      }
+      const shippingInfoData = JSON.parse(savedShippingInfo);
+
       // [추가] API를 호출하기 직전에, 호출했다는 사실을 기록합니다.
       hasBeenCalled.current = true;
 
       try {
-      await confirmPayment({
-        paymentKey,
-        orderId: ourOrderId,
-        tossOrderId: tossOrderId, // [추가] tossOrderId를 함께 보냅니다.
-        amount: Number(amount),
-          shippingInfo: { name: '', phone: '', postalCode: '', address: '', message: '' }
+      // 2. 백엔드로 보낼 데이터에, 가져온 배송 정보를 사용합니다.
+        await confirmPayment({
+          paymentKey,
+          orderId: ourOrderId,
+          tossOrderId: tossOrderId,
+          amount: Number(amount),
+          shippingInfo: shippingInfoData, // [수정] 빈 객체 대신 sessionStorage에서 가져온 데이터 사용
         });
 
+        // 3. 성공 시, 사용한 배송 정보를 sessionStorage에서 삭제합니다.
+        sessionStorage.removeItem('shippingInfo');
         // 3. 승인 성공 시, 화면에 표시할 정보 설정
         setOrderInfo({
             orderId: ourOrderId,
@@ -61,6 +73,8 @@ const PaymentSuccessPage = () => {
 
       } catch (err: any) {
         console.error("결제 승인 실패:", err);
+        // [추가] 실패 시에도 sessionStorage 데이터를 지워주는 것이 좋습니다.
+        sessionStorage.removeItem('shippingInfo'); 
         setError(err.response?.data?.message || '결제 승인에 실패했습니다.');
       } finally {
         setIsLoading(false);

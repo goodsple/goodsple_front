@@ -1,8 +1,8 @@
 
-import React, { useEffect, useState } from 'react';
-import * as S from './ExchangePost.styles';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import * as S from './ExchangePost.styles';
 
 // 백엔드 DTO와 필드명이 동일하게 
 interface Category {
@@ -48,6 +48,9 @@ const ExchangePost = () => {
     const [locationCode, setLocationCode] = useState('');
     const [directTradePlace, setDirectTradePlace] = useState(''); // 직거래 장소 입력 상태
     const navigate = useNavigate();
+
+    const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+    // ↑↑↑↑↑↑ 이 코드는 '내 위치'나 '주소 검색'으로 얻은 좌표를 저장하는 역할을 합니다.
 
 
     // 카테고리 불러오기
@@ -149,6 +152,9 @@ const ExchangePost = () => {
             async (pos) => {
                 const { latitude, longitude } = pos.coords;
 
+                setCoordinates({ lat: latitude, lng: longitude });
+                // ↑↑↑↑↑↑ 이 코드가 현재 위치의 좌표를 state에 저장합니다.
+
                 try {
                     const res = await axios.get('http://localhost:8080/api/location/region', {
                         params: { latitude, longitude }
@@ -190,6 +196,9 @@ const ExchangePost = () => {
                         params: { address: simpleAddress },
                     });
                     const { latitude, longitude } = coordRes.data;
+
+                    setCoordinates({ lat: latitude, lng: longitude });
+                    // ↑↑↑↑↑↑ 이 코드가 검색한 주소의 좌표를 state에 저장합니다.
 
                     // 3. 좌표 → 행정동 코드 조회
                     const regionRes = await axios.get("http://localhost:8080/api/location/region", {
@@ -261,6 +270,12 @@ const ExchangePost = () => {
             alert('지역을 설정해 주세요.');
             return;
         }
+
+        if (!coordinates) {
+            alert('위치를 설정해야 합니다. "내 위치" 또는 "주소 검색" 버튼을 사용해주세요.');
+            return;
+        }
+        // ↑↑↑↑↑↑ 위치 버튼을 눌러 좌표가 설정되었는지 확인합니다.
 
         if (deliveryMethods.length === 0) {
             alert('거래 방식을 선택해 주세요.');
@@ -343,6 +358,10 @@ const ExchangePost = () => {
                 ? parcelOptions.halfDetailOption : null,
 
             imageUrls: imageUrls, // 업로드된 이미지 URL 배열 사용
+
+            // ↓↓↓↓↓↓ 여기에 아래 두 줄을 추가하세요 ↓↓↓↓↓↓
+            latitude: coordinates.lat,
+            longitude: coordinates.lng,
         };
 
 

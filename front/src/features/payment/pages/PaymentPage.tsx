@@ -57,6 +57,9 @@ const PaymentPage = () => {
     setIsProcessing(true);
 
     try {
+
+      // 결제창을 띄우기 직전에 배송 정보를 sessionStorage에 저장합니다.
+        sessionStorage.setItem('shippingInfo', JSON.stringify(shippingInfo));
       // 1. 토스페이먼츠 SDK 로드
       const tossPayments = await loadTossPayments(TOSS_TEST_CLIENT_KEY);
 

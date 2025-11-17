@@ -1,9 +1,11 @@
 import type React from 'react';
 import reportIcon from '../../../assets/images/ReportIcon.png';
 import * as s from './CommUserInfoModalStyle';
+import { useReport } from '../../report/ReportContext';
 
 
 interface Props {
+  userId: number;  
   nickname: string;
   badgeName: string;
   badgeImage: string;
@@ -11,12 +13,30 @@ interface Props {
   onClose: () => void;
 }
 
-const CommUserInfoModal: React.FC<Props> = ({ nickname, badgeName, badgeImage, userProfile, onClose }) => {
+const CommUserInfoModal: React.FC<Props> = ({userId, nickname, badgeName, badgeImage, userProfile, onClose }) => {
+  
+  const { openReport } = useReport();
+
+  const onClickReport = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (userId == null) {
+      alert('유저 ID가 없어 신고할 수 없어요.');
+      return;
+    }
+    openReport({
+      targetType: 'USER',
+      targetId: Number(userId),
+      reportTargetUserId: Number(userId),
+    });
+    onClose();
+  };
+
   return (
     <s.Overlay>
       <s.Modal>
         <s.TopBar>
-          <s.Report><img src={reportIcon} alt="신고 아이콘" />신고하기</s.Report>
+          <s.Report onClick={onClickReport} role="button" tabIndex={0}>
+            <img src={reportIcon} alt="신고 아이콘" />신고하기</s.Report>
         </s.TopBar>
 
         <s.CenterBar>

@@ -100,7 +100,7 @@ export const Tr = styled.tr<{ $isInactive?: boolean }>`
   text-decoration: ${({ $isInactive }) => $isInactive ? 'line-through' : 'none'};
 `;
 
-export const ActionButton = styled.button<{ variant: string }>`
+export const ActionButton = styled.button<{ $variant: string }>`
   padding: 6px 12px;
   border: none;
   border-radius: 6px;
@@ -108,7 +108,7 @@ export const ActionButton = styled.button<{ variant: string }>`
   cursor: pointer;
   font-size: 12px;
   margin: 0 4px;
-  background-color: ${({ variant }) => variant === '수정' ? '#997BEB' : '#444444'};
+  background-color: ${({ $variant }) => $variant === '수정' ? '#997BEB' : '#444444'};
 `;
 
 // ✨ 페이지네이션 컴포넌트를 감싸고 중앙 정렬하기 위한 Wrapper

@@ -22,7 +22,6 @@ const NoticeList = () => {
 
 
     useEffect(() => {
-        if (page === 1) setNotices([]);
         fetchNotices(page);
     }, [page]);
 
@@ -33,7 +32,13 @@ const NoticeList = () => {
             });
             const fetchedNotices: NoticeItem[] = response.data;
 
-            setNotices(prev => [...prev, ...fetchedNotices]);
+            setNotices(prev => {
+                const combined = pageNum === 1 ? fetchedNotices : [...prev, ...fetchedNotices];
+                // 중복 제거 (noticeId 기준)
+                const unique = Array.from(new Map(combined.map(n => [n.noticeId, n])).values());
+                return unique;
+            });
+
             setHasMore(fetchedNotices.length === PAGE_SIZE); // 한 페이지가 꽉 차면 더 불러올 가능성 있음
         } catch (error) {
             console.error('공지사항 조회 실패:', error);
