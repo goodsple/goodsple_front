@@ -7,12 +7,14 @@ import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 
+// ===== 내 거래글 관리 컴포넌트 =====
 
 const statusOptions = ['거래가능', '거래중', '거래완료'];
 
 const FILTERS = ['전체', ...statusOptions] as const;
 type FilterType = typeof FILTERS[number];
 
+// 거래글 데이터 인터페이스
 interface ExchangePost {
     exchangePostId: number;
     imageUrl: string;
@@ -44,6 +46,7 @@ const MyExchangePosts = () => {
         COMPLETED: '거래완료',
     };
 
+    // 거래상태 역매핑
     const statusReverseMap: Record<string, string> = {
         거래가능: 'AVAILABLE',
         거래중: 'ONGOING',
@@ -90,7 +93,9 @@ const MyExchangePosts = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                console.log(res.data.posts);
+                // 디버깅용 콘솔 로그
+                console.log("res.data.posts:", res.data.posts);
+                console.log("imageUrl:", res.data.posts[0].imageUrl);
 
                 setData(res.data.posts);
                 setTotalPages(Math.ceil(res.data.totalCount / itemsPerPage));
@@ -102,14 +107,17 @@ const MyExchangePosts = () => {
         fetchData();
     }, [activeFilter, currentPage]);
 
+    // 필터 변경 시 페이지 초기화
     useEffect(() => {
         setCurrentPage(1);
     }, [activeFilter]);
 
+    // 드롭다운 토글 핸들러
     const toggleDropdown = (id: number) => {
         setOpenDropdownId(prev => (prev === id ? null : id));
     };
 
+    // 거래상태 변경 핸들러
     const handleStatusChange = async (id: number, newStatusKor: string) => {
         try {
             const token = localStorage.getItem('accessToken');
@@ -146,6 +154,7 @@ const MyExchangePosts = () => {
         }
     };
 
+    // 거래글 삭제 핸들러
     const handleDelete = async (postId: number) => {
         try {
             const token = localStorage.getItem('accessToken');
@@ -169,7 +178,7 @@ const MyExchangePosts = () => {
         }
     };
 
-
+    // 필터 클릭 핸들러
     const handleFilterClick = (filter: FilterType) => {
         setActiveFilter(filter);
     };

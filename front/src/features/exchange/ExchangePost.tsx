@@ -1,8 +1,10 @@
-
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as S from './ExchangePost.styles';
+
+
+// ===== 교환게시글 작성 컴포넌트 =====
 
 // 백엔드 DTO와 필드명이 동일하게 
 interface Category {
