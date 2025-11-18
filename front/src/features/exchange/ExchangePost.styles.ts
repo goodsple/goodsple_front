@@ -356,3 +356,82 @@ export const SubmitButton = styled.button`
 //     display: block;
 //   }
 // `;
+
+
+export const ImageUploadBox = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+`;
+
+export const ImagePreview = styled.div`
+  position: relative;
+  width: 160px;
+  height: 160px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #d9d9d9;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover .overlay {
+    opacity: 1;
+  }
+`;
+
+export const UploadLabel = styled.label`
+  width: 100px;
+  height: 100px;
+  border: 1px solid #9A9A9A;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 24px;
+  color: #997beb;
+  flex-direction: column;
+
+  span {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #997beb;
+  }
+`;

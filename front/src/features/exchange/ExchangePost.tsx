@@ -487,7 +487,21 @@ const ExchangePost = () => {
                                     ×</S.DeleteButton>
                             </S.ImageBox>
                         ))}
-                        <S.Input type="file" accept="image/*" multiple onChange={handleImageChange} />
+
+                        {selectedImages.length < 5 && (
+                            <S.UploadLabel htmlFor="image-upload">
+                                +
+                                <span>이미지 추가</span>
+                                <input
+                                    id="image-upload"
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleImageChange}
+                                    style={{ display: 'none' }}
+                                />
+                            </S.UploadLabel>
+                        )}
                     </S.ImagePreviewWrapper>
                 </S.SectionRow>
 
