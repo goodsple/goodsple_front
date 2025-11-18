@@ -18,9 +18,9 @@ import { useReport } from '../report/ReportContext';
 // 채팅 api
 import { startRoom } from '../exchangeChat/api/ExchangeChatApi';
 
-interface JwtPayload {
-    userId: number;
-}
+// interface JwtPayload {
+//     userId: number;
+// }
 
 // 게시글 인터페이스
 interface Post {
@@ -53,13 +53,13 @@ interface Post {
 }
 
 // 사용자 인터페이스
-interface User {
-    id: number;
-    profileImageUrl: string | null;
-    nickname: string;
-    level: number;
-    badgeImageUrl: string | null;
-}
+// interface User {
+//     id: number;
+//     profileImageUrl: string | null;
+//     nickname: string;
+//     level: number;
+//     badgeImageUrl: string | null;
+// }
 
 // 폴더 인터페이스
 interface Folder {
@@ -75,15 +75,11 @@ const ExchangePostDetail = () => {
     const postIdNum = Number(postId);
 
     const [post, setPost] = useState<Post | null>(null);
-    const [user, setUser] = useState<User | null>(null);
+    // const [user, setUser] = useState<User | null>(null);
     const [isWriter, setIsWriter] = useState<boolean>(false);
 
-    const [showStatusOptions, setShowStatusOptions] = useState(false)
     const [currentIndex, setCurrentIndex] = useState(0);
     const sliderRef = useRef<HTMLDivElement>(null);
-
-    const accessToken = localStorage.getItem('accessToken'); // ✅ 토큰 불러오기
-    const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
 
     const [folders, setFolders] = useState<Folder[]>([]);
     const [isSelectorOpen, setIsSelectorOpen] = useState(false);
@@ -181,16 +177,6 @@ const ExchangePostDetail = () => {
     //     const index = Math.round(scrollLeft / width);
     //     setCurrentIndex(index);
     // };
-
-    const toggleStatusOptions = () => setShowStatusOptions(prev => !prev);
-
-    const handleStatusSelect = (status: string) => {
-        if (!post) return;
-
-        // 서버 호출 제거하고, 프론트에서만 상태 변경
-        setPost({ ...post, status });
-        setShowStatusOptions(false);
-    };
 
     const scrollToIndex = (index: number) => {
         if (sliderRef.current && post?.images) {
