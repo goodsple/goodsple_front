@@ -8,13 +8,13 @@ import bookmarkIcon from '../../assets/images/bookmarkIcon.png';
 import chatIcon from '../../assets/images/chatIcon.png';
 import clockIcon from '../../assets/images/clock.png';
 import defaultProfile from '../../assets/images/default_profile.png';
-import dropdownArrow from '../../assets/images/dropdownArrow.png';
 import locationIcon from '../../assets/images/placeholder.png';
 import deliveryIcon from '../../assets/images/shipping-fee.png';
 import BookmarkFolderSelector from '../bookmark/components/BookmarkFolderSelector';
 import FolderCreationModal from '../bookmark/components/FolderCreationModal';
 import * as S from './ExchangePostDetail.styles';
 import { useReport } from '../report/ReportContext';
+
 // 채팅 api
 import { startRoom } from '../exchangeChat/api/ExchangeChatApi';
 
@@ -22,13 +22,14 @@ interface JwtPayload {
     userId: number;
 }
 
+// 게시글 인터페이스
 interface Post {
     postId: number;
     title: string;
     category: string;
     viewCount: number;
     description: string;
-    status: string;
+    status: 'AVAILABLE' | 'ONGOING' | 'COMPLETED';
     // writerId: number;
     location: string;
     tradeType: 'DIRECT' | 'DELIVERY' | 'BOTH';
@@ -51,6 +52,7 @@ interface Post {
 
 }
 
+// 사용자 인터페이스
 interface User {
     id: number;
     profileImageUrl: string | null;
@@ -59,6 +61,7 @@ interface User {
     badgeImageUrl: string | null;
 }
 
+// 폴더 인터페이스
 interface Folder {
     folderId: number;
     folderName: string;
@@ -66,7 +69,7 @@ interface Folder {
 }
 
 
-
+// 교환게시글 상세 컴포넌트
 const ExchangePostDetail = () => {
     const { postId } = useParams<{ postId: string }>(); // postId는 string
     const postIdNum = Number(postId);
@@ -444,6 +447,7 @@ const ExchangePostDetail = () => {
                         {post.tradeType === 'DIRECT' || post.tradeType === 'BOTH' ? <S.Tag>직거래</S.Tag> : null}
                         {post.tradeType === 'DELIVERY' || post.tradeType === 'BOTH' ? <S.Tag>택배거래</S.Tag> : null}
 
+                        {/* 거래 상태 표시 */}
                         <S.TradeStatus status={post.status}>
                             {statusMap[post.status]}
                         </S.TradeStatus>
