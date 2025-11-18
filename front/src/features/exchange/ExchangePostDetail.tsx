@@ -66,6 +66,7 @@ interface Folder {
 }
 
 
+
 const ExchangePostDetail = () => {
     const { postId } = useParams<{ postId: string }>(); // postId는 string
     const postIdNum = Number(postId);
@@ -180,15 +181,12 @@ const ExchangePostDetail = () => {
 
     const toggleStatusOptions = () => setShowStatusOptions(prev => !prev);
 
-    const handleStatusSelect = async (status: string) => {
+    const handleStatusSelect = (status: string) => {
         if (!post) return;
-        try {
-            await axios.put(`/api/posts/${postIdNum}/status`, { status }, { headers });
-            setPost({ ...post, status });
-            setShowStatusOptions(false);
-        } catch (err) {
-            console.error(err);
-        }
+
+        // 서버 호출 제거하고, 프론트에서만 상태 변경
+        setPost({ ...post, status });
+        setShowStatusOptions(false);
     };
 
     const scrollToIndex = (index: number) => {
@@ -218,24 +216,9 @@ const ExchangePostDetail = () => {
 
     const statusMap: { [key: string]: string } = {
         AVAILABLE: "거래가능",
-        IN_PROGRESS: "거래중",
-        DONE: "거래완료"
+        ONGOING: "거래중",
+        COMPLETED: "거래완료"
     };
-
-    // // 거래상태 드롭다운
-    // const [showStatusOptions, setShowStatusOptions] = useState(false);
-    // const [selectedStatus, setSelectedStatus] = useState("거래가능");
-
-    // const toggleStatusOptions = () => {
-    //     setShowStatusOptions((prev) => !prev);
-    // };
-
-    // const handleStatusSelect = (status: string) => {
-    //     setSelectedStatus(status);
-    //     setShowStatusOptions(false);
-    //     // TODO: 서버 API 호출로 거래상태 업데이트 구현
-    // };
-
 
     // 북마크 코드 ----------------------------------------------
 
@@ -386,30 +369,30 @@ const ExchangePostDetail = () => {
 
         try {
 
-        // 방 생성/재사용
-        const { roomId, room, isNew } = await startRoom(post.writer.id, post.postId);
-    
-        // 채팅 화면 이동 + 우측 인트로 카드용 데이터 전달
-        navigate(`/exchange-chat/${roomId}`, {
-            state: {
-            isNewRoom: isNew,
-            isWriter: false, // 상세에서 구매자 진입이므로 기본 false (상황에 맞게 조절)
-            peer: {
-                userId: post.writer.id,
-                nickname: post.writer.nickname,
-                avatar: post.writer.profileImageUrl ?? undefined,
-                levelText: `Lv.${post.writer.level ?? 1} 교환러`,
-            },
-            postPreview: {
-                title: post.title,
-                thumb: post.images?.[0],
-                method: decideMethod(post.tradeType), // ★ 직거래 | 택배
-                regionText: post.location || '',      // ★ 직거래 희망지역
-                // 필요하면 태그 유지
-                tags: [post.category].filter(Boolean),
-            },
-            },
-        });
+            // 방 생성/재사용
+            const { roomId, room, isNew } = await startRoom(post.writer.id, post.postId);
+
+            // 채팅 화면 이동 + 우측 인트로 카드용 데이터 전달
+            navigate(`/exchange-chat/${roomId}`, {
+                state: {
+                    isNewRoom: isNew,
+                    isWriter: false, // 상세에서 구매자 진입이므로 기본 false (상황에 맞게 조절)
+                    peer: {
+                        userId: post.writer.id,
+                        nickname: post.writer.nickname,
+                        avatar: post.writer.profileImageUrl ?? undefined,
+                        levelText: `Lv.${post.writer.level ?? 1} 교환러`,
+                    },
+                    postPreview: {
+                        title: post.title,
+                        thumb: post.images?.[0],
+                        method: decideMethod(post.tradeType), // ★ 직거래 | 택배
+                        regionText: post.location || '',      // ★ 직거래 희망지역
+                        // 필요하면 태그 유지
+                        tags: [post.category].filter(Boolean),
+                    },
+                },
+            });
 
         } catch (e) {
             console.error("채팅방 생성 실패:", e);
@@ -461,27 +444,9 @@ const ExchangePostDetail = () => {
                         {post.tradeType === 'DIRECT' || post.tradeType === 'BOTH' ? <S.Tag>직거래</S.Tag> : null}
                         {post.tradeType === 'DELIVERY' || post.tradeType === 'BOTH' ? <S.Tag>택배거래</S.Tag> : null}
 
-                        {isWriter && (
-                            <S.StatusDropdownWrapper>
-                                <S.StatusButton selected={post.status} onClick={toggleStatusOptions}>
-                                    {statusMap[post.status] || post.status}
-                                    <S.DropdownIcon src={dropdownArrow} alt="드롭다운 화살표" />
-                                </S.StatusButton>
-                                {showStatusOptions && (
-                                    <S.StatusOptions>
-                                        {["거래가능", "거래중", "거래완료"].map((status) => (
-                                            <S.StatusOption
-                                                key={status}
-                                                selected={post.status === status}
-                                                onClick={() => handleStatusSelect(status)}
-                                            >
-                                                {status}
-                                            </S.StatusOption>
-                                        ))}
-                                    </S.StatusOptions>
-                                )}
-                            </S.StatusDropdownWrapper>
-                        )}
+                        <S.TradeStatus status={post.status}>
+                            {statusMap[post.status]}
+                        </S.TradeStatus>
                     </S.TagWrapper>
 
                     {/* 직거래 / 배송비 */}
