@@ -1,4 +1,3 @@
-// RoomList.tsx
 import type { Room } from '../types/exchangeChat';
 import * as S from './RoomListStyle';
 import { forwardRef, useEffect, useState } from 'react';

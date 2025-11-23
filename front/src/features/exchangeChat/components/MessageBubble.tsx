@@ -1,39 +1,40 @@
 import * as S from './MessageBubbleStyle';
 
-type MsgStatus = 'sent' | 'read'; // ← 전송중 제거
+type MsgStatus = 'sent' | 'read';
 
-const statusLabel = (s?: MsgStatus) => (s === 'read' ? '읽음' : '안읽음');
+type Props = {
+  mine: boolean;
+  text: string;
+  time: string;
+  status?: MsgStatus;
+  /** 최신 내 메시지에 한해 안읽음 표시할지 */
+  showUnreadWhenNotRead?: boolean;
+};
 
 export default function MessageBubble({
   mine,
   text,
   time,
   status,
-}: {
-  mine: boolean;
-  text: string;
-  time: string;
-  status?: MsgStatus; // ← 타입 수정
-}) {
+  showUnreadWhenNotRead = false,
+}: Props) {
+  const showRead   = mine && status === 'read';
+  const showUnRead = mine && showUnreadWhenNotRead && status !== 'read';
+
   return (
-    <S.Row mine={mine}>
-      {/* 내가 보낸 말풍선이면 메타가 왼쪽으로 오도록 먼저 렌더링 */}
+    <S.Row $mine={mine}>
       {mine && (
-        <S.Meta mine={mine}>
+        <S.Meta $mine={mine}>
           <span>{time}</span>
-          {typeof status !== 'undefined' && (
-            <span className={status === 'read' ? 'read' : 'unread'}>
-              {statusLabel(status)}
-            </span>
-          )}
+          {showRead   && <span className="read">읽음</span>}
+          {showUnRead && <span className="unread">안읽음</span>}
         </S.Meta>
       )}
 
-      <S.Bubble mine={mine}>{text}</S.Bubble>
+      <S.Bubble $mine={mine}>{text}</S.Bubble>
 
-      {/* 상대 메시지일 땐 기존처럼 말풍선 오른쪽에 메타 */}
       {!mine && (
-        <S.Meta mine={mine}>
+        <S.Meta $mine={mine}>
           <span>{time}</span>
         </S.Meta>
       )}

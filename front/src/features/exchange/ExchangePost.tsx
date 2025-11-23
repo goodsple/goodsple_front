@@ -1,8 +1,10 @@
-
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as S from './ExchangePost.styles';
+
+
+// ===== 교환게시글 작성 컴포넌트 =====
 
 // 백엔드 DTO와 필드명이 동일하게 
 interface Category {
@@ -487,7 +489,21 @@ const ExchangePost = () => {
                                     ×</S.DeleteButton>
                             </S.ImageBox>
                         ))}
-                        <S.Input type="file" accept="image/*" multiple onChange={handleImageChange} />
+
+                        {selectedImages.length < 5 && (
+                            <S.UploadLabel htmlFor="image-upload">
+                                +
+                                <span>이미지 추가</span>
+                                <input
+                                    id="image-upload"
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleImageChange}
+                                    style={{ display: 'none' }}
+                                />
+                            </S.UploadLabel>
+                        )}
                     </S.ImagePreviewWrapper>
                 </S.SectionRow>
 

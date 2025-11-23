@@ -155,6 +155,45 @@ export const Tag = styled.span`
   font-weight: bold;
 `;
 
+interface TradeStatusProps {
+    status: 'AVAILABLE' | 'ONGOING' | 'COMPLETED';
+}
+
+
+export const TradeStatus = styled.span<TradeStatusProps>`
+    padding: 7px 14px;
+    border-radius: 18px;
+    font-size: 13px;
+    font-weight: 800;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+    letter-spacing: -0.3px;
+    box-shadow: 0 2px 3px rgba(115, 74, 255, 0.25), inset 0 0 2px rgba(255, 255, 255, 0.6);
+
+    /* 글자 깜빡임 정의 */
+    @keyframes text-blink {
+        0% { color: #6037ff; }
+        50% { color: #fa54a7ff; }
+        100% { color: #6037ff; }
+    }
+
+    background: ${({ status }) => 
+        status === 'AVAILABLE' ? 'linear-gradient(135deg, #ffbdf0 0%, #cdd8ff 100%)' :
+        status === 'ONGOING' ? 'linear-gradient(135deg, #ffd27f 0%, #ffb85c 100%)' :
+        '#e0e0e0'};
+    
+    color: ${({ status }) => 
+        status === 'AVAILABLE' ? '#6037ff' :
+        status === 'ONGOING' ? '#743d07ff' :
+        '#444444'};
+    
+    animation: ${({ status }) =>
+        status === 'AVAILABLE' ? 'text-blink 1.5s ease-in-out infinite' : 'none'};
+`;
+
 
 export const InfoItem = styled.div`
   flex: 1;

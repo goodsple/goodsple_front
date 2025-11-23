@@ -1,8 +1,7 @@
 
 import * as S from '../components/CategoryBoard.styles';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import {  useState } from 'react';
 import dayjs from 'dayjs';
 import Pagination from '../../../components/common/pagination/Pagination';
 
@@ -17,24 +16,16 @@ interface PostListDto {
 }
 
 interface CategoryBoardProps {
-  firstCateId: number;
+  firstCateId?: number;
+  posts: PostListDto[];
 }
 
-function CategoryBoard({ firstCateId }: CategoryBoardProps) {
+function CategoryBoard({ posts }: CategoryBoardProps) {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState<PostListDto[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
   const postsPerPage = 10;
   const totalPages = Math.ceil(posts.length / postsPerPage);
-
-  // ✅ API 호출
-  useEffect(() => {
-    if (!firstCateId) return; // id 없으면 호출 안함
-    axios.get<PostListDto[]>(`/api/posts/by-category?categoryId=${firstCateId}`)
-      .then(res => setPosts(res.data))
-      .catch(console.error);
-  }, [firstCateId]);
 
   // 페이지별 게시글
   const indexOfLastPost = currentPage * postsPerPage;
@@ -87,7 +78,11 @@ function CategoryBoard({ firstCateId }: CategoryBoardProps) {
         <tbody>
           {currentPosts.length > 0 ? (
             currentPosts.map(post => (
-              <S.TableRow key={post.exchangePostId} onClick={() => handlePostClick(post.exchangePostId)} style={{ cursor: 'pointer' }}>
+              <S.TableRow
+                key={post.exchangePostId}
+                onClick={() => handlePostClick(post.exchangePostId)}
+                style={{ cursor: 'pointer' }}
+              >
                 <S.TableData>{post.exchangePostId}</S.TableData>
                 <S.TableData>{post.writerNickname}</S.TableData>
                 <S.TableData>{dayjs(post.exchangePostCreatedAt).format('YY.MM.DD')}</S.TableData>
@@ -112,7 +107,6 @@ function CategoryBoard({ firstCateId }: CategoryBoardProps) {
 }
 
 export default CategoryBoard;
-
 
 
 // import * as S from '../components/CategoryBoard.styles';
