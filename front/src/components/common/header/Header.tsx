@@ -68,9 +68,9 @@ function Header() {
                   <img src={chatImg} alt="채팅" />
                 </style.IconBox>
 
-                <style.IconBox $iconType="alarm">
+                {/* <style.IconBox $iconType="alarm">
                   <img src={alarmImg} alt="알림" />
-                </style.IconBox>
+                </style.IconBox> */}
 
 
                 <style.ProfileWrapper 

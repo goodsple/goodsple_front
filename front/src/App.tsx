@@ -44,6 +44,7 @@ import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
 import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview.tsx';
 import UserMain from './features/usermain/pages/UserMain.tsx';
+import Main from './main/pages/Main.tsx';
 
 // 관리자화면 컴포넌트
 import AdminAuctionCreatePage from './features/admin/wansu/pages/AdminAuctionCreatePage.tsx';
@@ -70,6 +71,7 @@ import SearchResultsPage from './features/search/components/SearchResultPage.tsx
 import CategoryMain from './features/category/components/CategoryMain.tsx';
 
 
+
 function App() {
   return (
     <AuthProvider>
@@ -79,7 +81,7 @@ function App() {
             {/* 사용자 레이아웃 적용 */}
             <Route element={<Layout />}>
               <Route path="/kakao/callback" element={<KakaoCallback />} />
-              <Route index element={<UserMain />} />
+              <Route index element={<Main />} />
               <Route path="/mypage" element={<MyPage />} />
               <Route path="/editprofile" element={<EditProfile />} />
               <Route path="/writereview" element={<WriteReview />} />
