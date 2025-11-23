@@ -6,11 +6,11 @@ import KnowledgeModal from './../modals/KnowledgeModal';
 import * as S from './AdminKnowledgeBasePageStyle';
 
 import {
-  createKnowledge,
-  deleteKnowledge,
-  getKnowledgeList,
-  updateKnowledge,
-  type KnowledgeItem
+    createKnowledge,
+    deleteKnowledge,
+    getKnowledgeList,
+    updateKnowledge,
+    type KnowledgeItem
 } from '../api/knowledgeApi';
 
 const ITEMS_PER_PAGE = 10;
@@ -27,19 +27,43 @@ const AdminKnowledgeBasePage = () => {
     const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
     const [selectedItem, setSelectedItem] = useState<KnowledgeItem | null>(null);
 
+    // const fetchKnowledgeData = useCallback(async () => {
+    //     setIsLoading(true);
+    //     try {
+    //         // 오직 이 API만 호출되어야 합니다.
+    //         const data = await getKnowledgeList();
+    //         setKnowledgeBase(data);
+    //     } catch (error) {
+    //         console.error("지식 베이스 목록을 불러오는 데 실패했습니다:", error);
+    //         alert("데이터를 불러오는 데 실패했습니다. 페이지를 새로고침 해주세요.");
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // }, []);
+
+    // 수정된 부분 1
     const fetchKnowledgeData = useCallback(async () => {
         setIsLoading(true);
         try {
-            // 오직 이 API만 호출되어야 합니다.
-            const data = await getKnowledgeList();
+            let data: KnowledgeItem[] = [];
+
+            if (activeTab === 'FAQ') {
+                const allData: KnowledgeItem[] = await getKnowledgeList();
+                data = allData.filter(item => item.knowledgeIsFaq);
+            } else {
+                data = await getKnowledgeList();
+            }
+
             setKnowledgeBase(data);
+
         } catch (error) {
             console.error("지식 베이스 목록을 불러오는 데 실패했습니다:", error);
             alert("데이터를 불러오는 데 실패했습니다. 페이지를 새로고침 해주세요.");
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [activeTab]);
+
 
     useEffect(() => {
         fetchKnowledgeData();
@@ -47,9 +71,7 @@ const AdminKnowledgeBasePage = () => {
 
     useEffect(() => {
         let result = knowledgeBase;
-        if (activeTab === 'FAQ') {
-            result = result.filter(item => item.knowledgeIsFaq);
-        }
+
         if (intentFilter) {
             result = result.filter(item => item.knowledgeIntent.toLowerCase().includes(intentFilter.toLowerCase()));
         }
