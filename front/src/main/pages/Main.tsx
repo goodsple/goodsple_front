@@ -1,12 +1,36 @@
+import { useEffect, useState } from 'react';
+
+import { getMainPageData, type UserMainPageResponse } from '../api/mainPageApi';
+
 import AuctionSection from "../components/AuctionSection";
 import MainBannerSection from "../components/MainBannerSection";
 import WhatsNewSection from "../components/WhatsNewSection";
 
-import SearchBox from "../../features/usermain/components/SearchBox";
 import CateButtons from "../../features/usermain/components/CateButtons";
 import CommMegaPhoneBox from "../../features/usermain/components/CommMegaPhoneBox";
+import SearchBox from "../../features/usermain/components/SearchBox";
 
 function Main() {
+
+    const [pageData, setPageData] = useState<UserMainPageResponse | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setIsLoading(true);
+                const data = await getMainPageData();
+                setPageData(data);
+            } catch (error) {
+                console.error("메인 페이지 데이터 로딩 실패:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     return(
         <>
         {/* 검색 + 카테고리 */}
@@ -19,7 +43,10 @@ function Main() {
         {/* 컨텐츠 영역 */}
         <MainBannerSection/>
         <WhatsNewSection/>
-        <AuctionSection/>
+        <AuctionSection 
+                data={pageData?.mainAuction || null} 
+                isLoading={isLoading} 
+            />
         </>
     )
 }

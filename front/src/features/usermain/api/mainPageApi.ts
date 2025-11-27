@@ -1,15 +1,34 @@
 /**
- * 파일 경로: src/features/usermain/api/mainPageApi.ts (새로 만드세요)
- * 설명: 사용자 메인 페이지 관련 API 요청 함수들을 모아놓은 파일입니다.
+ * 파일 경로: src/main/api/mainPageApi.ts
  */
-import axiosInstance from '../../../api/axiosInstance';
-import type { UserMainPageData } from '../types/mainPage';
 
-/**
- * 사용자 메인 페이지에 필요한 모든 경매 목록을 조회하는 API 함수
- */
-export const getMainPageData = async (): Promise<UserMainPageData> => {
-  // 이전에 Swagger로 테스트했던 /api/main/auctions 엔드포인트를 호출합니다.
-  const response = await axiosInstance.get('/main/auction');
+// [수정 전] 깡통 axios (토큰 처리 안 됨, 변환 안 됨)
+// import axios from 'axios'; 
+
+// [수정 후] 우리가 만든 똑똑한 axiosInstance 가져오기
+// (경로는 실제 파일 위치에 맞춰주세요. 예: ../../api/axiosInstance)
+import axiosInstance from '../../../api/axiosInstance';
+
+export interface AuctionData {
+  auctionId: number;
+  auctionTitle: string; 
+  imageUrl: string;
+  startPrice: number;
+  currentPrice: number;
+  startTime: string; 
+  endTime: string;   
+  status: string;    
+}
+
+export interface UserMainPageResponse {
+  mainAuction: AuctionData;
+}
+
+export const getMainPageData = async (): Promise<UserMainPageResponse> => {
+  // [수정] axios.get -> axiosInstance.get 으로 변경
+  // baseURL이 이미 '/api'로 설정되어 있으므로, 여기서는 '/main/auction'만 적으면 됩니다.
+  // (기존: /api/main/auction -> 변경: /main/auction)
+  const response = await axiosInstance.get<UserMainPageResponse>('/main/auction');
+  
   return response.data;
 };
