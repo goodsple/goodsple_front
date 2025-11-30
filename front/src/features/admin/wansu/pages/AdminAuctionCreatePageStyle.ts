@@ -3,11 +3,10 @@ import styled from 'styled-components';
 
 export const PageContainer = styled.div`
   padding: 40px;
-  /* background-color: #f8f9fa; ✨ 회색 배경 제거 */
+  /* background-color: #f8f9fa;  회색 배경 제거 */
   min-height: calc(100vh - 70px);
 `;
 
-// ✨ Title 컴포넌트는 더 이상 사용하지 않으므로 삭제합니다.
 
 export const ContentCard = styled.div`
   background-color: #ffffff;
@@ -40,7 +39,7 @@ export const Input = styled.input`
   font-size: 15px;
   font-family: 'pretendard', sans-serif;
 
-  /* ✨ 파일 선택 input의 테두리만 투명하게 처리 */
+  /*  파일 선택 input의 테두리만 투명하게 처리 */
   &[type="file"] {
     border-color: transparent;
     padding-left: 0;
@@ -56,7 +55,6 @@ export const Textarea = styled.textarea`
   resize: vertical;
 `;
 
-// ✨ 이미지 미리보기와 취소 버튼을 감싸는 Wrapper 추가
 export const ImagePreviewWrapper = styled.div`
   position: relative;
   width: fit-content; /* 내용물 크기에 맞게 조절 */
@@ -71,7 +69,6 @@ export const ImagePreview = styled.img`
   object-fit: cover;
 `;
 
-// ✨ 이미지 취소 버튼 스타일 추가
 export const ImageCancelButton = styled.button`
   position: absolute;
   top: -10px;

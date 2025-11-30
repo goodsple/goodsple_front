@@ -1,8 +1,7 @@
 import axiosInstance from '../../../api/axiosInstance';
 import type { PagedResponse } from '../../../types/common';
-import type { MyWonAuction } from '../types/mybids'; // 아래에서 생성할 타입
+import type { MyWonAuction } from '../types/mybids';
 
-// 페이지네이션 파라미터 타입을 정의합니다.
 export interface MyBidsParams {
   page: number;
   size: number;

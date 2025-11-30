@@ -1,6 +1,3 @@
-/**
- * 파일 경로: src/features/admin/components/AuctionTable.tsx
- */
 import { useNavigate } from 'react-router-dom';
 import type { AdminAuction } from '../mock/adminAuctionData';
 import { translateStatusToKo } from '../utils/statusUtils';
@@ -9,7 +6,6 @@ import * as S from './AuctionTableStyle';
 const formatDateTime = (isoString: string | null) => {
   if (!isoString) return '-';
   const date = new Date(isoString);
-  // 한국 시간(KST)에 맞게 표시되도록 합니다.
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -20,7 +16,6 @@ const formatDateTime = (isoString: string | null) => {
 
 interface Props {
   auctions: AdminAuction[];
-  // 부모로부터 받을 onStatusChange 함수의 타입을 정의합니다.
   onStatusChange: (auctionId: number, newStatus: string, statusKo: string) => void;
 }
 

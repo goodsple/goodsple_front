@@ -1,8 +1,5 @@
-// admin/pages/AdminAuctionCreatePage.tsx (수정본)
-
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// API 함수들을 import 합니다.
 import { createAdminAuction, uploadImage } from '../api/auctionApi';
 import * as S from './AdminAuctionCreatePageStyle';
 
@@ -12,15 +9,14 @@ const AdminAuctionCreatePage = () => {
     productName: '',
     description: '',
     startPrice: '',
-    minBidUnit: '1000', // 최소 입찰 단위 기본값 설정
+    minBidUnit: '1000',
     startTime: '',
     endTime: '',
   });
   
-  // 상태 변수들을 추가/수정합니다.
-  const [imageFile, setImageFile] = useState<File | null>(null); // 이미지 파일 자체를 저장
+  const [imageFile, setImageFile] = useState<File | null>(null); 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false); // 전송 중 상태
+  const [isSubmitting, setIsSubmitting] = useState(false); 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -31,7 +27,7 @@ const AdminAuctionCreatePage = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file); // 파일 상태에 저장
+      setImageFile(file); 
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -48,7 +44,6 @@ const AdminAuctionCreatePage = () => {
     }
   };
   
-  // handleSubmit 함수를 API 호출 로직으로 교체합니다.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!imageFile) {
@@ -58,26 +53,23 @@ const AdminAuctionCreatePage = () => {
     setIsSubmitting(true);
 
     try {
-      // 1. 이미지 업로드 API 호출 (현재는 임시 목업 함수)
       const imageUrl = await uploadImage(imageFile);
 
-      // 2. 경매 생성 API 호출
       await createAdminAuction({
         productName: auctionData.productName,
         description: auctionData.description,
         startPrice: Number(auctionData.startPrice),
         minBidUnit: Number(auctionData.minBidUnit),
-        startTime: new Date(auctionData.startTime).toISOString(), // ISO 형식으로 변환
+        startTime: new Date(auctionData.startTime).toISOString(), 
         endTime: new Date(auctionData.endTime).toISOString(),
-        imageUrls: [imageUrl], // 업로드된 이미지 URL 사용
+        imageUrls: [imageUrl], 
       });
 
       alert('새로운 경매가 성공적으로 등록되었습니다!');
-      navigate('/admin/auctions'); // 성공 시 목록 페이지로 이동
+      navigate('/admin/auctions'); 
 
     } catch (error) {
       console.error('경매 등록에 실패했습니다:', error);
-      // 백엔드에서 보낸 에러 메시지를 보여주는 것이 더 좋습니다.
       alert('경매 등록에 실패했습니다. 입력 값을 확인해주세요.');
     } finally {
       setIsSubmitting(false);
@@ -88,7 +80,6 @@ const AdminAuctionCreatePage = () => {
     <S.PageContainer>
       <S.ContentCard>
         <S.Form onSubmit={handleSubmit}>
-          {/* 폼의 다른 부분들은 기존과 동일합니다. */}
           <S.FormGroup>
             <S.Label htmlFor="productName">상품명</S.Label>
             <S.Input type="text" id="productName" name="productName" value={auctionData.productName} onChange={handleChange} required />

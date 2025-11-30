@@ -1,17 +1,12 @@
 import type { AuctionStatus, Bid, ChatMessage, ItemInfo } from "../types/auction";
 
-// ✨ 1. 경매 시간 연장 관련 상수 추가 및 export
-export const AUCTION_EXTEND_THRESHOLD = 60; // 60초
-export const AUCTION_EXTEND_TIME = 60;      // 60초
+export const AUCTION_EXTEND_THRESHOLD = 60; 
+export const AUCTION_EXTEND_TIME = 60;      
 
-// --- 타입 확장 ---
-// 기존 AuctionStatus 타입에 initialTimeLeft 추가
 interface ExtendedAuctionStatus extends AuctionStatus {
   initialTimeLeft: number;
 }
 
-// --- 실제 목업 데이터 ---
-// 타입을 위에서 확장한 타입으로 지정
 export const mockAuctionPageData: {
   itemInfo: ItemInfo;
   status: ExtendedAuctionStatus;
@@ -35,7 +30,7 @@ export const mockAuctionPageData: {
     currentPrice: 127000,
     highestBidderNickname: '민지팬',
     minBidUnit: 1000,
-    initialTimeLeft: 300, // ✨ 2. 초기 남은 시간 (5분 = 300초) 추가
+    initialTimeLeft: 300, 
   },
   bidHistory: [
     { bidId: 3, userNickname: '민지팬', bidAmount: 127000, timestamp: '2025-07-23T20:15:30Z' },

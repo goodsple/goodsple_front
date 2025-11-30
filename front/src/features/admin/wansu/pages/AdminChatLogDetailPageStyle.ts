@@ -3,21 +3,20 @@ import styled from 'styled-components';
 
 export const PageContainer = styled.div`
   padding: 40px;
-  /* background-color: #f8f9fa; ✨ 회색 배경 제거 */
+  /* background-color: #f8f9fa;  회색 배경 제거 */
   min-height: calc(100vh - 70px);
 `;
 
 export const Header = styled.div`
   display: flex;
-  justify-content: flex-end; /* ✨ 오른쪽 정렬로 변경 */
+  justify-content: flex-end; /*  오른쪽 정렬로 변경 */
   align-items: center;
   margin-bottom: 20px;
 `;
 
-/* ✨ PageTitle은 더 이상 사용하지 않으므로 삭제 */
 
 export const BackLink = styled(Link)`
-  /* ✨ 새로운 버튼 디자인 */
+  /*  새로운 버튼 디자인 */
   background-color: #e9ecef;
   color: #495057;
   padding: 10px 25px;

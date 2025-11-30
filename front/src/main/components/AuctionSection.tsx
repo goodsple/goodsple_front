@@ -1,14 +1,10 @@
-/**
- * 파일 경로: src/components/AuctionSection.tsx
- */
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as Ac from "./AuctionSectionStyle";
 
-// [중요] 백엔드 UserMainAuctionDto.java와 100% 일치시킨 타입 정의
 export interface AuctionData {
   auctionId: number;
-  auctionTitle: string;  // 백엔드 이름(auctionTitle)에 맞춤!
+  auctionTitle: string;  
   imageUrl: string;
   startPrice: number;
   currentPrice: number;
@@ -18,11 +14,10 @@ export interface AuctionData {
 }
 
 interface Props {
-  data: AuctionData | null; // 부모에게서 받은 데이터
+  data: AuctionData | null; 
   isLoading: boolean;
 }
 
-// 시간 계산 함수 (기존 동일)
 const formatTimeLeft = (endTime: string) => {
   const now = new Date().getTime();
   const end = new Date(endTime).getTime();
@@ -50,7 +45,6 @@ const AuctionSection = ({ data, isLoading }: Props) => {
 
   if (isLoading) return <Ac.Section><div>Loading...</div></Ac.Section>;
   
-  // 데이터가 없거나(null), mainAuction이 비어있을 경우 처리
   if (!data) {
      return (
         <Ac.Section>
@@ -63,8 +57,6 @@ const AuctionSection = ({ data, isLoading }: Props) => {
      );
   }
 
-  // 상태가 'scheduled' (대문자/소문자 확인 필요, 보통 백엔드 enum은 대문자일 수 있음)
-  // 안전하게 대소문자 무시하고 비교
   const isScheduled = data.status?.toUpperCase() === 'SCHEDULED';
 
   return (
@@ -91,7 +83,6 @@ const AuctionSection = ({ data, isLoading }: Props) => {
               {isScheduled ? '곧 시작될 경매' : '현재 진행중인 경매'}
             </Ac.InfoTopLabel>
             
-            {/* 여기를 title -> auctionTitle로 변경 */}
             <Ac.AuctionTitle>{data.auctionTitle}</Ac.AuctionTitle>
 
             <Ac.PriceTable>

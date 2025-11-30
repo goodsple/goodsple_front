@@ -1,5 +1,3 @@
-// admin/pages/AdminAuctionPage.tsx (최종 수정본)
-
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Pagination from '../../../../components/common/pagination/Pagination';
@@ -10,9 +8,8 @@ import * as S from './AdminAuctionPageStyle';
 
 const ITEMS_PER_PAGE = 10;
 
-// ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 이 "번역기" 객체가 가장 중요합니다! ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
 const STATUS_MAP: { [key: string]: string } = {
-  '전체': '', // '전체'는 값을 보내지 않음
+  '전체': '', 
   '예정': 'scheduled',
   '진행': 'active',
   '종료': 'ended',
@@ -23,7 +20,7 @@ const AdminAuctionPage = () => {
   const [auctions, setAuctions] = useState<AdminAuction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
-  const [statusFilter, setStatusFilter] = useState('전체'); // 이 상태는 한글 이름('전체', '예정' 등)을 가집니다.
+  const [statusFilter, setStatusFilter] = useState('전체'); 
   const [currentPage, setCurrentPage] = useState(1);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   
@@ -59,13 +56,12 @@ const AdminAuctionPage = () => {
     const fetchAuctions = async () => {
       setIsLoading(true);
       try {
-        // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ API 호출 시, "번역기"를 사용해서 한글 상태를 영어로 변환합니다. ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
         const apiStatus = STATUS_MAP[statusFilter];
 
         const response = await getAdminAuctions({
           page: currentPage - 1,
           size: ITEMS_PER_PAGE,
-          status: apiStatus, // 변환된 영어 값을 파라미터로 사용
+          status: apiStatus, 
           productName: searchTerm,
           startDate: startDate,
           endDate: endDate,
@@ -111,7 +107,7 @@ const AdminAuctionPage = () => {
               <S.StatusTab 
                 key={status}
                 onClick={() => {
-                  setCurrentPage(1); // 탭 클릭 시 1페이지로 리셋
+                  setCurrentPage(1); 
                   setStatusFilter(status);
                 }}
                 $isActive={statusFilter === status}

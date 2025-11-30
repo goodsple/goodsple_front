@@ -74,7 +74,6 @@ export const WindowBody = styled.div`
   }
 `;
 
-// 왼쪽 썸네일 영역
 export const ThumbArea = styled.div`
   display: flex;
   justify-content: center;

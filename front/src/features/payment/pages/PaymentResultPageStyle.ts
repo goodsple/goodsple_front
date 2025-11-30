@@ -108,7 +108,6 @@ export const Actions = styled.div`
   gap: 15px;
 `;
 
-// buttonStyles의 타입 정의에 '$'를 추가합니다.
 const buttonStyles = css<{ $primary?: boolean; $danger?: boolean }>`
   padding: 12px 24px;
   border-radius: 8px;

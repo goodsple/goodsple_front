@@ -24,10 +24,7 @@ const BidPanel: React.FC<Props> = ({ status, currentUserNickname, onPlaceBid }) 
   };
 
   const handleQuickBid = (amount: number) => {
-    // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 이 부분이 핵심 수정 사항입니다. ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-    // status.currentPrice를 Number()로 감싸서 명시적으로 숫자로 변환해줍니다.
     onPlaceBid(Number(status.currentPrice) + amount);
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
   };
 
   return (

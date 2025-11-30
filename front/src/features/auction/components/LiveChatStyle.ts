@@ -17,7 +17,7 @@ export const Title = styled.h3`
   margin-bottom: 16px;
 `;
 
-export const MessageList = styled.ul` /* ✨ div -> ul */
+export const MessageList = styled.ul` /* div -> ul */
   flex-grow: 1;
   overflow-y: auto;
   margin-bottom: 16px;
@@ -31,7 +31,7 @@ export const MessageList = styled.ul` /* ✨ div -> ul */
   }
 `;
 
-export const MessageItem = styled.li` /* ✨ Message -> MessageItem, div -> li */
+export const MessageItem = styled.li` /* Message -> MessageItem, div -> li */
   display: flex;
   justify-content: space-between;
   align-items: flex-start;

@@ -1,6 +1,3 @@
-// myBidsData.ts (수정 완료된 코드)
-
-// 낙찰 내역 아이템의 타입을 정의합니다.
 export interface WonAuction {
   id: number;
   productName: string;
@@ -11,7 +8,6 @@ export interface WonAuction {
   paymentDueDate: Date | null;
 }
 
-// 기존 목업 데이터 배열을 정의합니다.
 const initialMockData: WonAuction[] = [
   {
     id: 1,
@@ -47,11 +43,10 @@ const initialMockData: WonAuction[] = [
     finalPrice: 12000,
     endDate: '2025-06-26',
     paymentStatus: '미결제(기한초과)',
-    paymentDueDate: new Date('2025-07-01'), // 명확한 과거 날짜
+    paymentDueDate: new Date('2025-07-01'), 
   },
 ];
 
-// ✨ 동적으로 목업 데이터를 생성하는 함수
 const generateMoreData = (count: number, startId: number): WonAuction[] => {
   const moreData: WonAuction[] = [];
   const statuses: WonAuction['paymentStatus'][] = ['미결제', '결제 완료', '미결제(기한초과)'];
@@ -62,18 +57,17 @@ const generateMoreData = (count: number, startId: number): WonAuction[] => {
     const status = statuses[i % 3];
     let paymentDueDate: Date | null = null;
     
-    // 현재 날짜(2025-08-13)를 기준으로 논리적인 날짜 생성
     if (status === '미결제') {
-        paymentDueDate = new Date(now.getTime() + (i % 5 + 1) * 24 * 60 * 60 * 1000); // 1~5일 후
+        paymentDueDate = new Date(now.getTime() + (i % 5 + 1) * 24 * 60 * 60 * 1000); 
     } else if (status === '미결제(기한초과)') {
-        paymentDueDate = new Date(now.getTime() - (i % 5 + 1) * 24 * 60 * 60 * 1000); // 1~5일 전
+        paymentDueDate = new Date(now.getTime() - (i % 5 + 1) * 24 * 60 * 60 * 1000); 
     }
 
     moreData.push({
       id: newId,
       productName: `샘플 상품 ${newId}`,
       imageUrl: `https://picsum.photos/seed/sample${newId}/200/200`,
-      finalPrice: Math.floor(Math.random() * 1000) * 100 + 10000, // 10,000 ~ 109,900
+      finalPrice: Math.floor(Math.random() * 1000) * 100 + 10000, 
       endDate: `2025-07-${String(i % 30 + 1).padStart(2, '0')}`,
       paymentStatus: status,
       paymentDueDate: paymentDueDate,
@@ -82,8 +76,7 @@ const generateMoreData = (count: number, startId: number): WonAuction[] => {
   return moreData;
 };
 
-// 기존 데이터와 생성된 데이터를 합쳐서 최종 export
 export const mockMyBidsData: WonAuction[] = [
   ...initialMockData,
-  ...generateMoreData(21, 5), // 21개의 데이터를 추가로 생성 (총 25개)
+  ...generateMoreData(21, 5), 
 ];

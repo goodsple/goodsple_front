@@ -1,4 +1,3 @@
-// 결제할 상품 아이템의 타입
 export interface OrderItem {
   id: number;
   productName: string;
@@ -6,7 +5,6 @@ export interface OrderItem {
   finalPrice: number;
 }
 
-// 배송 정보 타입
 export interface ShippingInfo {
   name: string;
   phone: string;
@@ -15,10 +13,8 @@ export interface ShippingInfo {
   message: string;
 }
 
-// 배송비 상수
 export const SHIPPING_FEE = 3000;
 
-// 목업 데이터
 export const mockOrderItemData: OrderItem = {
   id: 1,
   productName: 'NEW JEANS 1st EP NEW JEANS BAG (희귀 민지 버전)',

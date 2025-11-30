@@ -25,7 +25,6 @@ export const SummarySection = styled.div`
   height: fit-content;
 `;
 
-// ShippingFormStyle과 중복되지만, 페이지 특화 스타일을 위해 별도 정의
 export const FormGroup = styled.div`
   margin-bottom: 40px;
 `;

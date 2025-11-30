@@ -34,7 +34,6 @@ export const Tr = styled.tr``;
 export const Th = styled.th``;
 export const Td = styled.td``;
 
-// ✨ '경매 상태' 배지: 색상 통일
 export const StatusBadge = styled.span`
   padding: 6px 12px;
   border-radius: 6px;
@@ -49,7 +48,6 @@ export const StatusBadge = styled.span`
   box-sizing: border-box;
 `;
 
-// ✨ '결제 상태' 배지: 타입 수정
 export const PaymentStatusBadge = styled.span<{ $status: '결제 완료' | '결제대기' | '기한초과' }>`
   padding: 6px 12px;
   border-radius: 6px;
@@ -63,9 +61,9 @@ export const PaymentStatusBadge = styled.span<{ $status: '결제 완료' | '결�
   color: ${({ $status }) => ($status === '결제대기' ? '#444' : '#fff')};
   background-color: ${({ $status }) => {
     switch($status) {
-      case '결제 완료': return '#B1FF90'; // 연두
-      case '결제대기': return '#F8FFC7'; // 노랑
-      case '기한초과': return '#FA5252'; // 빨강
+      case '결제 완료': return '#B1FF90'; 
+      case '결제대기': return '#F8FFC7'; 
+      case '기한초과': return '#FA5252'; 
       default: return '#ced4da';
     }
   }};

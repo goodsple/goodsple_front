@@ -1,8 +1,4 @@
-// map/components/GoodsListStyle.ts (최종본)
-
 import styled from 'styled-components';
-
-// ✨ ListContainer는 MapViewPageStyle로 옮겨지므로 여기서는 제거합니다.
 
 export const ListHeader = styled.div`
   padding: 20px;

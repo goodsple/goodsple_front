@@ -1,5 +1,3 @@
-// admin/mock/knowledgeBaseData.ts (최종본)
-
 export interface KnowledgeItem {
   id: number;
   intent: string;
@@ -16,7 +14,6 @@ const initialData: KnowledgeItem[] = [
   { id: 4, intent: 'payment_method', question: '결제는 어떻게 하나요?', answer: '신용카드, 무통장 입금, 계좌 이체를 통해 결제할 수 있습니다.', isFaq: true, isActive: false },
 ];
 
-// ✨ 동적으로 데이터를 생성하는 함수
 const generateMoreKnowledge = (count: number, startId: number): KnowledgeItem[] => {
   const moreData: KnowledgeItem[] = [];
   const intents = ['shipping_inquiry', 'product_details', 'cancel_order', 'user_info', 'event_details'];
@@ -42,15 +39,13 @@ const generateMoreKnowledge = (count: number, startId: number): KnowledgeItem[] 
       intent: `${intents[i % intents.length]}_${newId}`,
       question: `${questions[i % questions.length]} #${newId}`,
       answer: answers[i % answers.length],
-      isFaq: i % 2 === 0, // FAQ와 QNA를 번갈아 생성
-      isActive: i % 10 !== 0, // 10개 중 1개는 비활성 상태로 생성
+      isFaq: i % 2 === 0, 
+      isActive: i % 10 !== 0, 
     });
   }
   return moreData;
 };
 
-
-// ✨ 기존 데이터와 생성된 데이터를 합쳐서 최종 export (총 30개)
 export const mockKnowledgeBaseData: KnowledgeItem[] = [
   ...initialData,
   ...generateMoreKnowledge(26, 5),

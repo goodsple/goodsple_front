@@ -1,20 +1,16 @@
-// admin/pages/AdminAuctionEditPage.tsx (수정본)
-
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getAdminAuctionDetail, updateAdminAuction, uploadImage } from '../api/auctionApi';
-import * as S from './AdminAuctionCreatePageStyle'; // 등록 페이지 스타일 재사용
+import * as S from './AdminAuctionCreatePageStyle';
 
-// datetime-local input 형식에 맞게 ISO 문자열을 변환하는 함수
 const formatDateTimeForInput = (isoString: string) => {
   if (!isoString) return '';
-  // 'YYYY-MM-DDTHH:mm:ss.sssZ' 형식에서 'YYYY-MM-DDTHH:mm' 부분만 잘라냅니다.
   return isoString.slice(0, 16);
 };
 
 const AdminAuctionEditPage = () => {
   const navigate = useNavigate();
-  const { auctionId } = useParams(); // URL에서 경매 ID를 가져옴
+  const { auctionId } = useParams(); 
   const [auctionData, setAuctionData] = useState({
     productName: '',
     description: '',
@@ -84,8 +80,7 @@ const AdminAuctionEditPage = () => {
     setIsSubmitting(true);
 
     try {
-      let imageUrl = imagePreview; // 기본값은 기존 이미지
-      // 새 이미지를 선택한 경우에만 업로드 API 호출
+      let imageUrl = imagePreview; 
       if (imageFile) {
         imageUrl = await uploadImage(imageFile);
       }
@@ -121,7 +116,6 @@ const AdminAuctionEditPage = () => {
     <S.PageContainer>
       <S.ContentCard>
         <S.Form onSubmit={handleSubmit}>
-          {/* 폼 UI는 기존과 동일, value가 상태와 연결되어 자동으로 채워짐 */}
           <S.FormGroup>
             <S.Label htmlFor="productName">상품명</S.Label>
             <S.Input type="text" id="productName" name="productName" value={auctionData.productName} onChange={handleChange} required />

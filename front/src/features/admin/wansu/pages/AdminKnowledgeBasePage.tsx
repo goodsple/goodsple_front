@@ -1,5 +1,3 @@
-// src/features/admin/wansu/pages/AdminKnowledgeBasePage.tsx (진짜 최종 완성본)
-
 import { useCallback, useEffect, useState } from 'react';
 import Pagination from '../../../../components/common/pagination/Pagination';
 import KnowledgeModal from './../modals/KnowledgeModal';
@@ -27,21 +25,6 @@ const AdminKnowledgeBasePage = () => {
     const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
     const [selectedItem, setSelectedItem] = useState<KnowledgeItem | null>(null);
 
-    // const fetchKnowledgeData = useCallback(async () => {
-    //     setIsLoading(true);
-    //     try {
-    //         // 오직 이 API만 호출되어야 합니다.
-    //         const data = await getKnowledgeList();
-    //         setKnowledgeBase(data);
-    //     } catch (error) {
-    //         console.error("지식 베이스 목록을 불러오는 데 실패했습니다:", error);
-    //         alert("데이터를 불러오는 데 실패했습니다. 페이지를 새로고침 해주세요.");
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // }, []);
-
-    // 수정된 부분 1
     const fetchKnowledgeData = useCallback(async () => {
         setIsLoading(true);
         try {
