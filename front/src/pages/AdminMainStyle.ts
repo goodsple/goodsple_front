@@ -1,56 +1,53 @@
 import styled from 'styled-components';
 
 export const PageContainer = styled.div`
-  padding: 2rem;
+  width: 100%;
   background-color: #FFFDFA;
 `;
 
 export const BannerSection = styled.section`
-  background-color: #E7DEFF;
-  border-radius: 15px; 
-  padding: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
-  margin-bottom: 2rem; 
-`;
-
-export const TextContent = styled.div`
-  h2 {
-    font-size: 24px;
-    font-weight: bold;
-    margin-top: 0;
-    margin-bottom: 1rem;
-  }
-
-  p {
-    font-size: 14px;
-    line-height: 1.6;
-    margin: 0;
-  }
+  width: calc(100% + 80px); 
+  margin-left: -40px;       
+  margin-right: -40px;      
+  margin-bottom: 2rem;
 `;
 
 export const CharacterImage = styled.img`
   height: 220px;
 `;
 
+export const BannerImage = styled.img`
+  width: 100%;
+  height: clamp(300px, 32vw, 480px); 
+  display: block;
+  object-fit: cover;
+`;
+
+export const ContentWrapper = styled.div`
+  max-width: 1400px;      
+  margin: 0 auto;
+  padding: 24px 32px;     
+`;
+
 export const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr); 
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
 `;
 
 export const InfoBox = styled.div`
-  background-color: #E0E0E0;
+  background-color: #ffffff;
   border-radius: 15px;
-  padding: 1.5rem;
-  height: 150px;
+  padding: 1.5rem 2rem;
+  min-height: 180px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  font-weight: bold;
+  align-items: flex-start;
+  justify-content: flex-start;
+  font-size: 14px;
+  font-weight: 400;
 
   &.full-width {
     grid-column: 1 / -1;
