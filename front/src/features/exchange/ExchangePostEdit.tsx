@@ -248,20 +248,25 @@ const ExchangePostEdit = () => {
             return urls;
         };
 
-        let imageUrls: string[] = [...imagePreviews];
+        // 1. 기존 이미지 (S3 URL만)
+        let imageUrls: string[] = imagePreviews.filter(
+            url => !url.startsWith('blob:')
+        );
+
+        // 2. 새 이미지 업로드
         if (selectedImages.length > 0) {
-        try {
-            const newUrls = await uploadImages();
-            imageUrls = [...imagePreviews, ...newUrls]; // 기존 + 새 이미지
-        } catch {
-            return alert('이미지 업로드 실패');
+            try {
+                const newUrls = await uploadImages();
+                imageUrls = [...imageUrls, ...newUrls];
+            } catch {
+                return alert('이미지 업로드 실패');
+            }
         }
-    }
 
-    if (imageUrls.length === 0) return alert('이미지는 최소 1개 이상 필요합니다.');
-
-
-        // try { imageUrls = await uploadImages(); } catch { return alert('이미지 업로드 실패'); }
+        // 3. 최소 1장 체크
+        if (imageUrls.length === 0) {
+            return alert('이미지는 최소 1개 이상 필요합니다.');
+        }
 
         const postData = {
             thirdCateId: parseInt(thirdCateId),
