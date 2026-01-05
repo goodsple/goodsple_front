@@ -6,7 +6,7 @@ export const PageWrapper = styled.div`
   padding: 40px;
 //   padding-top: 120px;
   
-  width: 100%; /* ✨ 이 한 줄을 추가합니다. */
+  width: 100%; 
 `;
 
 export const Title = styled.h1`

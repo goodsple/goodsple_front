@@ -8,23 +8,28 @@ import bookmarkIcon from '../../assets/images/bookmarkIcon.png';
 import chatIcon from '../../assets/images/chatIcon.png';
 import clockIcon from '../../assets/images/clock.png';
 import defaultProfile from '../../assets/images/default_profile.png';
-import dropdownArrow from '../../assets/images/dropdownArrow.png';
 import locationIcon from '../../assets/images/placeholder.png';
 import deliveryIcon from '../../assets/images/shipping-fee.png';
 import BookmarkFolderSelector from '../bookmark/components/BookmarkFolderSelector';
 import FolderCreationModal from '../bookmark/components/FolderCreationModal';
 import * as S from './ExchangePostDetail.styles';
+import { useReport } from '../report/ReportContext';
+
+// 채팅 api
+import { startRoom } from '../exchangeChat/api/ExchangeChatApi';
 
 interface JwtPayload {
     userId: number;
 }
 
+// 게시글 인터페이스
 interface Post {
     postId: number;
     title: string;
     category: string;
+    viewCount: number;
     description: string;
-    status: string;
+    status: 'AVAILABLE' | 'ONGOING' | 'COMPLETED';
     // writerId: number;
     location: string;
     tradeType: 'DIRECT' | 'DELIVERY' | 'BOTH';
@@ -47,6 +52,7 @@ interface Post {
 
 }
 
+// 사용자 인터페이스
 interface User {
     id: number;
     profileImageUrl: string | null;
@@ -55,13 +61,15 @@ interface User {
     badgeImageUrl: string | null;
 }
 
+// 폴더 인터페이스
 interface Folder {
-    folderId? : number;
-    name: string;
-    color: string;
+    folderId: number;
+    folderName: string;
+    folderColor: string;
 }
 
 
+// 교환게시글 상세 컴포넌트
 const ExchangePostDetail = () => {
     const { postId } = useParams<{ postId: string }>(); // postId는 string
     const postIdNum = Number(postId);
@@ -86,87 +94,18 @@ const ExchangePostDetail = () => {
 
     const navigate = useNavigate(); // 훅으로 navigate 함수 가져오기
 
+    const { openReport } = useReport();
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const postRes = await axios.get(`/api/posts/${postIdNum}`);
-    //             setPost(postRes.data);
+    const handleOpenReport = () => {
+        if (!post) return;
+        openReport({
+            targetType: 'POST',
+            targetId: post.postId,
+            reportTargetUserId: post.writer?.id ?? null,
+        });
+    };
 
-    //             const accessToken = localStorage.getItem('accessToken');
-    //             if (accessToken) {
-    //                 const userRes = await axios.get(`/api/users/me`, {
-    //                     headers: { Authorization: `Bearer ${accessToken}` }
-    //                 });
-    //                 setUser(userRes.data);
-    //             }
-    //         } catch (err) {
-    //             console.error(err);
-    //         }
-    //     };
-    //     fetchData();
-    // }, [postIdNum]);
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const accessToken = localStorage.getItem('accessToken');
-    //             let currentUser = null;
-    //             if (accessToken) {
-    //                 const userRes = await axios.get(`/api/users/me`, {
-    //                     headers: { Authorization: `Bearer ${accessToken}` }
-    //                 });
-    //                 currentUser = userRes.data;
-    //                 setUser(currentUser);
-    //             }
-
-    //             const postRes = await axios.get(`/api/posts/${postIdNum}`);
-    //             setPost(postRes.data);
-
-    //             // 💡 여기서 isWriter 상태를 업데이트
-    //             if (currentUser && postRes.data) {
-    //                 setIsWriter(currentUser.id === postRes.data.writer.id);
-    //             }
-
-    //         } catch (err) {
-    //             console.error(err);
-    //         }
-    //     };
-    //     fetchData();
-    // }, [postIdNum]); // 의존성 배열에 postIdNum만 유지
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const accessToken = localStorage.getItem('accessToken');
-
-    //             let currentUser = null;
-    //             if (accessToken) {
-    //                 const userRes = await axios.get(`/api/users/me`, {
-    //                     headers: { Authorization: `Bearer ${accessToken}` }
-    //                 });
-    //                 console.log('userRes.data:', userRes.data); // 유저 정보 확인
-    //                 currentUser = userRes.data;
-    //                 setUser(currentUser);
-    //             }
-
-    //             const postRes = await axios.get(`/api/posts/${postIdNum}`);
-    //             const postData = postRes.data;
-    //             console.log('postData:', postData); // 게시글 정보 확인
-    //             setPost(postData);
-
-    //             if (currentUser) {
-    //                 setIsWriter(String(currentUser.id) === String(postData.writer.id));
-    //                 console.log('isWriter 계산:', String(currentUser.id) === String(postData.writer.id));
-    //             }
-    //         } catch (err) {
-    //             console.error(err);
-    //         }
-    //     };
-    //     fetchData();
-
-    // }, [postIdNum]); // 의존성 배열에 postIdNum만 유지
-
+    // 게시글 데이터 불러오기
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -180,6 +119,7 @@ const ExchangePostDetail = () => {
                     currentUserId = Number(decoded.sub); // 여기서 sub 사용
                 }
 
+                // 게시글 상세 정보 API 호출
                 const postRes = await axios.get(`/api/posts/${postIdNum}`);
                 const postData = postRes.data;
                 setPost(postData);
@@ -206,26 +146,29 @@ const ExchangePostDetail = () => {
     }, [postIdNum]);
 
     // 북마크 코드 ----------------------------------------------
+
+    // 폴더 불러오기
     useEffect(() => {
         const fetchFolders = async () => {
             try {
-                    const token = localStorage.getItem("accessToken");
-                    if (!token) return;
-                    const res = await axiosInstance.get("/bookmark-folders", {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-                    const mapped = res.data.map((f: any) => ({
-                        folderId: f.folderId,
-                        name: f.folderName,
-                        color: f.folderColor,
-                    }));
-                    setFolders(mapped);
-                    } catch (err) {
-                        console.error("폴더 로딩 실패", err);
-                    }
-            };
-            fetchFolders();
+                const token = localStorage.getItem("accessToken");
+                if (!token) return;
+                const res = await axiosInstance.get("/bookmark-folders", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const mapped: Folder[] = res.data.map((f: any) => ({
+                    folderId: f.folderId,
+                    folderName: f.folderName,
+                    folderColor: f.folderColor,
+                }));
+                setFolders(mapped);
+            } catch (err) {
+                console.error("폴더 로딩 실패", err);
+            }
+        };
+        fetchFolders();
     }, []);
+
     // 북마크 코드 ----------------------------------------------
 
     if (!post) {
@@ -241,15 +184,12 @@ const ExchangePostDetail = () => {
 
     const toggleStatusOptions = () => setShowStatusOptions(prev => !prev);
 
-    const handleStatusSelect = async (status: string) => {
+    const handleStatusSelect = (status: string) => {
         if (!post) return;
-        try {
-            await axios.put(`/api/posts/${postIdNum}/status`, { status }, { headers });
-            setPost({ ...post, status });
-            setShowStatusOptions(false);
-        } catch (err) {
-            console.error(err);
-        }
+
+        // 서버 호출 제거하고, 프론트에서만 상태 변경
+        setPost({ ...post, status });
+        setShowStatusOptions(false);
     };
 
     const scrollToIndex = (index: number) => {
@@ -279,87 +219,88 @@ const ExchangePostDetail = () => {
 
     const statusMap: { [key: string]: string } = {
         AVAILABLE: "거래가능",
-        IN_PROGRESS: "거래중",
-        DONE: "거래완료"
+        ONGOING: "거래중",
+        COMPLETED: "거래완료"
     };
-
-    // // 거래상태 드롭다운
-    // const [showStatusOptions, setShowStatusOptions] = useState(false);
-    // const [selectedStatus, setSelectedStatus] = useState("거래가능");
-
-    // const toggleStatusOptions = () => {
-    //     setShowStatusOptions((prev) => !prev);
-    // };
-
-    // const handleStatusSelect = (status: string) => {
-    //     setSelectedStatus(status);
-    //     setShowStatusOptions(false);
-    //     // TODO: 서버 API 호출로 거래상태 업데이트 구현
-    // };
-
 
     // 북마크 코드 ----------------------------------------------
 
     // 폴더 생성
     const handleCreateFolder = async (name: string, color: string) => {
         try {
-        const token = localStorage.getItem("accessToken");
-        const res = await axiosInstance.post(
-            "/bookmark-folders",
-            { folderName: name, folderColor: color },
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
-        const newFolder = { folderId: res.data.folderId, name, color };
-        setFolders((prev) => [...prev, newFolder]);
-        setIsFolderModalOpen(false);
+            const token = localStorage.getItem("accessToken");
+            if (!token) throw new Error("로그인이 필요합니다.");
+
+            const res = await axiosInstance.post(
+                "/bookmark-folders",
+                { folderName: name, folderColor: color },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // Folder 타입에 맞게 필드 이름 수정
+            const newFolder: Folder = {
+                folderId: res.data.folderId,
+                folderName: name,
+                folderColor: color,
+            };
+
+            setFolders((prev) => [...prev, newFolder]);
+            setIsFolderModalOpen(false);
         } catch (err) {
-        console.error("폴더 생성 실패", err);
+            console.error("폴더 생성 실패", err);
         }
     };
 
+
     // 북마크 버튼 클릭 시
-    const handleSelectFolder = async (folderName: string) => {
-        if (!post) return;
+    // 폴더 선택 핸들러
+    const handleSelectFolder = async (folderId: number, mode: "add" | "move") => {
+        const folder = folders.find(f => f.folderId === folderId);
+        if (!folder || !post) return;
+
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
 
         try {
-            const folder = folders.find(f => f.name === folderName);
-            if (!folder?.folderId) {
-                alert("폴더 정보를 찾을 수 없습니다.");
-                return;
+            if (mode === "add") {
+                await axiosInstance.post("/bookmarks", { postId: postIdNum, folderId: folder.folderId }, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                alert(`'${folder.folderName}' 폴더에 북마크로 저장되었습니다.`);
+                setIsBookmarked(true);
+            } else if (mode === "move") {
+                const userBookmarksRes = await axiosInstance.get("/bookmarks", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const bookmarkToMove = userBookmarksRes.data.find((b: any) => b.postId === postIdNum);
+                if (!bookmarkToMove) {
+                    alert("이동할 북마크를 찾을 수 없습니다.");
+                    return;
+                }
+
+                await axiosInstance.put(`/bookmarks/${bookmarkToMove.bookmarkId}/move`, { folderId: folder.folderId }, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                alert(`북마크가 '${folder.folderName}' 폴더로 이동되었습니다.`);
             }
 
-            const token = localStorage.getItem("accessToken");
-            if (!token) {
-                alert("로그인이 필요합니다.");
-                return;
-            }
-
-            const payload = {
-                postId: postIdNum,
-                folderId: folder.folderId,
-            };
-
-            await axiosInstance.post("/bookmarks", payload, {
-                headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-            });
-
-            alert(`'${folderName}' 폴더에 북마크로 저장되었습니다.`);
             setIsSelectorOpen(false);
 
-            // 북마크 상태 즉시 true로 업데이트
-            setIsBookmarked(true);
-
-            // 최신 북마크 수 가져오기
+            // 북마크 상태 갱신
             const infoRes = await axiosInstance.get(`/bookmarks/${postIdNum}/bookmark-info`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setBookmarkCount(infoRes.data.bookmarkCount ?? 0);
 
         } catch (err: any) {
-            console.error("북마크 저장 실패:", err.response || err);
-            alert(err.response?.data?.message || "북마크 저장에 실패했습니다. 다시 시도해주세요.");
+            console.error("폴더 선택 처리 실패:", err.response || err);
+            alert(err.response?.data?.message || "처리에 실패했습니다.");
         }
     };
+
 
     const handleBookmarkToggle = async () => {
         const token = localStorage.getItem("accessToken");
@@ -370,7 +311,7 @@ const ExchangePostDetail = () => {
 
         try {
             if (isBookmarked) {
-                // 1️⃣ 현재 게시글(postId)에 해당하는 북마크Id 가져오기
+                // 1️현재 게시글(postId)에 해당하는 북마크Id 가져오기
                 const userBookmarksRes = await axiosInstance.get("/bookmarks", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -383,15 +324,15 @@ const ExchangePostDetail = () => {
                     return;
                 }
 
-                // 2️⃣ 북마크 삭제
+                // 북마크 삭제
                 await axiosInstance.delete(`/bookmarks/${bookmarkToDelete.bookmarkId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                // 3️⃣ 삭제 후 상태 업데이트
+                // 삭제 후 상태 업데이트
                 setIsBookmarked(false);
 
-                // 4️⃣ 최신 북마크 수 가져오기
+                // 최신 북마크 수 가져오기
                 const infoRes = await axiosInstance.get(`/bookmarks/${postIdNum}/bookmark-info`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -409,6 +350,60 @@ const ExchangePostDetail = () => {
 
 
     // 북마크 코드 ----------------------------------------------
+
+    // 채팅하기 핸들러
+    const handleStartChat = async () => {
+        if (!post) return;
+
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            alert("로그인이 필요합니다.");
+            navigate("/login", { replace: true });
+            return;
+        }
+
+        // tradeType → '직거래' | '택배' 로만 매핑
+        const decideMethod = (tradeType: Post["tradeType"]): '직거래' | '택배' => {
+            if (tradeType === 'DELIVERY') return '택배';
+            if (tradeType === 'DIRECT') return '직거래';
+            // BOTH 일 때 기본 정책: 직거래 우선(지역 있으면 직거래, 없으면 택배)
+            return post.location && post.location.trim() ? '직거래' : '택배';
+        };
+
+        try {
+
+            // 방 생성/재사용
+            const { roomId, room, isNew } = await startRoom(post.writer.id, post.postId);
+
+            // 채팅 화면 이동 + 우측 인트로 카드용 데이터 전달
+            navigate(`/exchange-chat/${roomId}`, {
+                state: {
+                    isNewRoom: isNew,
+                    isWriter: false, // 상세에서 구매자 진입이므로 기본 false (상황에 맞게 조절)
+                    peer: {
+                        userId: post.writer.id,
+                        nickname: post.writer.nickname,
+                        avatar: post.writer.profileImageUrl ?? undefined,
+                        levelText: `Lv.${post.writer.level ?? 1} 교환러`,
+                    },
+                    postPreview: {
+                        title: post.title,
+                        thumb: post.images?.[0],
+                        method: decideMethod(post.tradeType), // ★ 직거래 | 택배
+                        regionText: post.location || '',      // ★ 직거래 희망지역
+                        // 필요하면 태그 유지
+                        tags: [post.category].filter(Boolean),
+                    },
+                },
+            });
+
+        } catch (e) {
+            console.error("채팅방 생성 실패:", e);
+            alert("채팅방을 만들 수 없어요. 잠시 후 다시 시도해주세요.");
+        }
+    };
+
+
 
     return (
         <S.Container>
@@ -437,13 +432,13 @@ const ExchangePostDetail = () => {
                         <S.Category>{post.category}</S.Category>
                         <S.Title>{post.title}</S.Title>
                         <S.StatusRow>
-                            <S.StatusInfo>찜 {bookmarkCount}   조회수 0
+                            <S.StatusInfo>찜 {bookmarkCount}   조회수 {post.viewCount}
                                 <S.TimeWrapper>
                                     <S.StatusIcon src={clockIcon} alt="시계 아이콘" />
                                     {getTimeAgo(post.createdAt)}
                                 </S.TimeWrapper>
                             </S.StatusInfo>
-                            {!isWriter && <S.ReportButton>신고하기</S.ReportButton>}
+                            {!isWriter && <S.ReportButton onClick={handleOpenReport}>신고하기</S.ReportButton>}
                         </S.StatusRow>
                     </S.TitleRow>
 
@@ -452,27 +447,10 @@ const ExchangePostDetail = () => {
                         {post.tradeType === 'DIRECT' || post.tradeType === 'BOTH' ? <S.Tag>직거래</S.Tag> : null}
                         {post.tradeType === 'DELIVERY' || post.tradeType === 'BOTH' ? <S.Tag>택배거래</S.Tag> : null}
 
-                        {isWriter && (
-                            <S.StatusDropdownWrapper>
-                                <S.StatusButton selected={post.status} onClick={toggleStatusOptions}>
-                                    {statusMap[post.status] || post.status}
-                                    <S.DropdownIcon src={dropdownArrow} alt="드롭다운 화살표" />
-                                </S.StatusButton>
-                                {showStatusOptions && (
-                                    <S.StatusOptions>
-                                        {["거래가능", "거래중", "거래완료"].map((status) => (
-                                            <S.StatusOption
-                                                key={status}
-                                                selected={post.status === status}
-                                                onClick={() => handleStatusSelect(status)}
-                                            >
-                                                {status}
-                                            </S.StatusOption>
-                                        ))}
-                                    </S.StatusOptions>
-                                )}
-                            </S.StatusDropdownWrapper>
-                        )}
+                        {/* 거래 상태 표시 */}
+                        <S.TradeStatus status={post.status}>
+                            {statusMap[post.status]}
+                        </S.TradeStatus>
                     </S.TagWrapper>
 
                     {/* 직거래 / 배송비 */}
@@ -537,22 +515,25 @@ const ExchangePostDetail = () => {
                                 isOpen={isSelectorOpen}
                                 onClose={() => setIsSelectorOpen(false)}
                                 folders={folders}
+                                mode={isBookmarked ? "move" : "add"}
                                 onSelect={handleSelectFolder}
                                 onAddFolder={() => {
-                                setIsSelectorOpen(false);
-                                setIsFolderModalOpen(true);
-                            }}
+                                    setIsSelectorOpen(false);
+                                    setIsFolderModalOpen(true);
+                                }}
                             />
+
 
                             {/* 새 폴더 추가 모달 */}
                             <FolderCreationModal
                                 isOpen={isFolderModalOpen}
                                 onClose={() => setIsFolderModalOpen(false)}
                                 mode="create"
-                                folders={folders}
+                                folders={folders.map(f => ({ name: f.folderName, color: f.folderColor }))}
                                 onSubmit={handleCreateFolder}
                             />
-                            <S.ActionButton $main>
+
+                            <S.ActionButton $main onClick={handleStartChat}>
                                 <img src={chatIcon} alt="채팅하기 아이콘" />
                                 채팅하기
                             </S.ActionButton>

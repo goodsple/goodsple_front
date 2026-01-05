@@ -1,9 +1,6 @@
-// features/auction/pages/LiveAuctionPage.tsx (최종 수정본)
-
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-// 컴포넌트 임포트
 import ConfirmModal from '../../../components/common/modal/ConfirmModal';
 import ReportModal from '../../../components/common/modal/ReportModal';
 import AuctionItemInfo from '../components/AuctionItemInfo';
@@ -13,11 +10,9 @@ import BidPanel from '../components/BidPanel';
 import LiveChat from '../components/LiveChat';
 import AuctionRulesModal from '../modals/AuctionRulesModal';
 
-// API 및 커스텀 훅 import
 import { getAuctionPageData } from '../api/auctionApi';
 import { useAuctionSocket } from '../hooks/useAuctionSocket';
 
-// 타입 import
 import type { AuctionPageData, ChatMessage } from '../types/auction';
 import * as S from './LiveAuctionPageStyle';
 
@@ -31,7 +26,7 @@ const LiveAuctionPage = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportingUser, setReportingUser] = useState<string | null>(null);
   
-  // [추가] 모달의 상태를 관리할 새로운 state
+  
   const [modalInfo, setModalInfo] = useState({
     isOpen: false,
     title: '',
@@ -40,11 +35,9 @@ const LiveAuctionPage = () => {
   });
 
   const numericAuctionId = Number(auctionId);
-  // [수정] 훅에서 systemMessage를 받아옵니다.
-  const { auctionUpdate, chatMessage, systemMessage, sendBid, sendChat } = useAuctionSocket(numericAuctionId);
+  const { auctionUpdate, chatMessage, systemMessage, errorMessage, sendBid, sendChat } = useAuctionSocket(numericAuctionId);
 
-  
-  // 페이지 최초 로드 시 데이터 불러오기
+
   useEffect(() => {
     if (!numericAuctionId) return;
     const fetchInitialData = async () => {
@@ -63,7 +56,6 @@ const LiveAuctionPage = () => {
     fetchInitialData();
   }, [numericAuctionId, navigate]);
 
-  // WebSocket으로 '경매 상태 업데이트' 메시지 수신 시 처리
   useEffect(() => {
     if (!auctionUpdate || !auctionData) return;
     setAuctionData(prev => {
@@ -81,7 +73,6 @@ const LiveAuctionPage = () => {
     });
   }, [auctionUpdate]);
 
-  // WebSocket으로 '채팅 메시지' 수신 시 처리
   useEffect(() => {
     if (!chatMessage || !auctionData) return;
     const newChatMessage: ChatMessage = {
@@ -96,7 +87,6 @@ const LiveAuctionPage = () => {
     }) : null);
   }, [chatMessage]);
 
-  // [추가] 시스템 메시지를 수신했을 때 모달을 띄우는 useEffect
   useEffect(() => {
     if (!systemMessage) return;
 
@@ -105,17 +95,23 @@ const LiveAuctionPage = () => {
         isOpen: true,
         title: '경매 중지',
         content: systemMessage.message,
-        onConfirm: () => navigate('/'), // 확인 버튼 누르면 메인으로 이동
+        onConfirm: () => navigate('/'), 
       });
     } else if (systemMessage.type === 'AUCTION_ENDED') {
       setModalInfo({
         isOpen: true,
         title: '경매 종료',
         content: systemMessage.message,
-        onConfirm: () => navigate('/'), // 확인 버튼 누르면 메인으로 이동
+        onConfirm: () => navigate('/'), 
       });
     }
   }, [systemMessage, navigate]);
+
+  useEffect(() => {
+    if (errorMessage) {
+      alert(errorMessage.message); 
+    }
+  }, [errorMessage]);
 
   const handlePlaceBid = useCallback((amount: number) => {
     if (!auctionData) return false;
@@ -187,26 +183,17 @@ const LiveAuctionPage = () => {
         onClose={() => setIsRulesModalOpen(false)} 
       />
       
-      {/* 
-        ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 이 부분이 핵심 수정 사항입니다. ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-        기존에 있던 2개의 ConfirmModal을 아래 1개로 통합합니다.
-        이제 이 모달은 '경매 참여 불가' 알림과 '경매 중지/종료' 알림을 모두 처리합니다.
-      */}
       <ConfirmModal
-        // [수정] 참여 불가 상태이거나, 또는 시스템 메시지로 인해 모달이 열려야 할 때 isOpen은 true가 됩니다.
         isOpen={auctionData.currentUser.isBanned || modalInfo.isOpen}
         
-        // [수정] 시스템 메시지 모달이 우선적으로 표시되고, 그렇지 않으면 참여 불가 메시지가 표시됩니다.
         title={modalInfo.isOpen ? modalInfo.title : "경매 참여 불가"}
         content={modalInfo.isOpen ? modalInfo.content : "회원님은 현재 경매 참여가 제한된 상태입니다."}
         
         confirmText="메인으로"
         
-        // [수정] 확인 버튼 클릭 시 동작도 동적으로 결정됩니다.
         onConfirm={modalInfo.isOpen ? modalInfo.onConfirm : () => navigate('/')}
       />
       
-      {/* 신고 모달 (기존과 동일) */}
       {isReportModalOpen && (
         <ReportModal
           onConfirm={handleConfirmReport}

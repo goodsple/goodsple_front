@@ -2,6 +2,8 @@
  * 파일 경로: src/features/usermain/pages/UserMain.tsx
  */
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import chatbotIcon from '../../../assets/images/chatbot.png';
 import PopupNotice from '../../notice/PopupNotice';
 import { getMainPageData } from '../api/mainPageApi';
 import BasicComponents from '../components/BasicComponents';
@@ -13,6 +15,9 @@ import CSS from '../components/UserMainComponents.module.css';
 import type { UserMainPageData } from '../types/mainPage';
 
 function UserMain() {
+
+  const navigate = useNavigate();
+
   const [pageData, setPageData] = useState<UserMainPageData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,6 +35,10 @@ function UserMain() {
     };
     fetchData();
   }, []);
+
+  const handleChatbotClick = () => {
+    navigate("/chatbot");
+  };
 
   return (
     <>
@@ -58,6 +67,11 @@ function UserMain() {
       )}
 
       <BestPost />
+
+      <button className={CSS.chatbotButton} onClick={handleChatbotClick}>
+        <img src={chatbotIcon} alt='Chatbot Icon' />
+      </button>
+
     </>
   );
 }

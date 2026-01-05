@@ -1,16 +1,20 @@
-import type { OrderItem } from '../mock/paymentData';
 import { SHIPPING_FEE } from '../mock/paymentData';
 import * as S from './OrderSummaryStyle';
 
+interface OrderItemSummary {
+  productName: string;
+  imageUrl: string;
+  finalPrice: number;
+}
+
 interface Props {
-  orderItem: OrderItem;
+  orderItem: OrderItemSummary; 
   isProcessing: boolean;
   onSubmit: (e: React.FormEvent) => void;
 }
 
 const OrderSummary: React.FC<Props> = ({ orderItem, isProcessing, onSubmit }) => {
-  const totalPrice = orderItem.finalPrice + SHIPPING_FEE;
-
+  const totalPrice = Number(orderItem.finalPrice) + SHIPPING_FEE;
   return (
     <S.SummaryCard>
       <S.Title>주문 상품 정보</S.Title>

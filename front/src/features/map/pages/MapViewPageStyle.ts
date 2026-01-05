@@ -1,4 +1,3 @@
-// map/pages/MapViewPageStyle.ts (수정)
 import styled from 'styled-components';
 
 export const PageLayout = styled.div`
@@ -8,7 +7,6 @@ export const PageLayout = styled.div`
   box-sizing: border-box;
 `;
 
-// ✨ 아래 Wrapper 스타일을 추가합니다.
 export const ListWrapper = styled.div`
   width: 380px;
   height: 100%;
@@ -26,4 +24,19 @@ export const ListWrapper = styled.div`
   &::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
   }
+`;
+
+export const LoadingOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  z-index: 10; // 다른 요소들 위에 보이도록 z-index 설정
 `;

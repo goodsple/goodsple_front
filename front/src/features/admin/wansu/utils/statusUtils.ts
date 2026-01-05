@@ -1,17 +1,10 @@
-/**
- * 파일 경로: src/features/admin/utils/statusUtils.ts (새로 만드세요)
- * 설명: 백엔드에서 받은 영어 상태 값을 한글로 변환하는 유틸리티 함수들을 모아놓은 파일입니다.
- */
-
-// 경매 상태 한글 맵
 const AUCTION_STATUS_KO: { [key: string]: string } = {
   scheduled: '예정',
   active: '진행',
   ended: '종료',
-  cancelled: '중지', // '중지' 상태에 해당하는 백엔드 값이 'cancelled'라고 가정
+  cancelled: '중지', 
 };
 
-// 결제 상태 한글 맵
 const PAYMENT_STATUS_KO: { [key: string]: string } = {
   pending: '미결제',
   paid: '결제 완료',

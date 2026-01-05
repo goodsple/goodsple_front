@@ -1,7 +1,4 @@
-/**
- * 파일 경로: src/features/auction/components/LiveChat.tsx
- */
-import React, { useEffect, useRef, useState } from 'react'; // 1. React를 import 합니다.
+import React, { useEffect, useRef, useState } from 'react';
 import type { ChatMessage } from '../types/auction';
 import * as S from './LiveChatStyle';
 
@@ -11,7 +8,6 @@ interface Props {
   onReport: (user: string) => void;
 }
 
-// 2. 기존 컴포넌트 로직을 별도의 상수로 분리합니다.
 const LiveChatComponent: React.FC<Props> = ({ chatHistory, onSendChat, onReport }) => {
   const [newMessage, setNewMessage] = useState('');
   const messageListRef = useRef<HTMLUListElement>(null);
@@ -65,6 +61,4 @@ const LiveChatComponent: React.FC<Props> = ({ chatHistory, onSendChat, onReport 
   );
 };
 
-// 3. React.memo로 컴포넌트를 감싸서 export 합니다.
-// 이렇게 하면 props가 변경되지 않는 한, 부모 컴포넌트가 리렌더링되어도 LiveChat은 리렌더링되지 않습니다.
 export default React.memo(LiveChatComponent);

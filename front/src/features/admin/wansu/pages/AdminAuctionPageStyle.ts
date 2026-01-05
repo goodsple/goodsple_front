@@ -1,5 +1,3 @@
-// admin/pages/AdminAuctionPageStyle.ts (최종본)
-
 import styled from 'styled-components';
 
 export const PageContainer = styled.div`
@@ -13,7 +11,6 @@ export const ContentCard = styled.div`
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 `;
 
-// ✨ 아래부터 추가된 스타일 컴포넌트
 
 export const FilterSection = styled.div`
   display: flex;
@@ -54,7 +51,6 @@ export const PaginationWrapper = styled.div`
   margin-top: 24px;
 `;
 
-// ✨ 여기까지 추가
 
 export const TabGroup = styled.div`
   display: flex;

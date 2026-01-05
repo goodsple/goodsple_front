@@ -1,15 +1,31 @@
-import CSS from './UserMainComponents.module.css';
+import { useNavigate } from 'react-router-dom';
+import * as s from "./CateButtonsStyle";
 
-const CateButtons:React.FC = () => {
+const categories = [
+    { id: 1, name: 'K-POP' },
+    { id: 2, name: '애니메이션' },
+    { id: 3, name: '영화/드라마' },
+    { id: 4, name: '게임' },
+];
+
+const CateButtons: React.FC = () => {
+    const navigate = useNavigate();
+
+    const handleClick = (id: number) => {
+        navigate(`/category/${id}`);
+    };
 
     return (
-        <div className={CSS.buttonWrap}>
-            <button className={CSS.cateButton}>K-POP</button>
-            <button className={CSS.cateButton}>애니메이션</button>
-            <button className={CSS.cateButton}>영화/드라마</button>
-            <button className={CSS.cateButton}>게임</button>
-        </div>
-    )   
-}
+        <s.ButtonWrap>
+            {categories.map((cat) => (
+                <s.CateButton key={cat.id} onClick={() => handleClick(cat.id)}
+                >
+                    {cat.name}
+                </s.CateButton>
+            ))}
+        </s.ButtonWrap>
+    );
+};
 
 export default CateButtons;
+

@@ -1,5 +1,3 @@
-// admin/pages/AdminAuctionResultPage.tsx (수정본)
-
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getAdminAuctionResult } from '../api/auctionApi';

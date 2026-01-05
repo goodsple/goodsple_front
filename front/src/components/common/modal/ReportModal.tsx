@@ -8,46 +8,71 @@ import type { ReportErrorType } from '../../../features/report/types/report';
 interface Reason {
     reportReasonId: number;
     reportReasonText: string;
+    // 백엔드가 snake_case로 주는 경우도 대비
+    report_reason_id?: number
+    report_reason_text?: string
 }
 
-interface Props {
-    onConfirm: (selectedIds: number[], detailText: string) => void
-    onCancel: () => void;
-}
+// interface Props {
+//     onConfirm: (selectedIds: number[], detailText: string) => void
+//     onCancel: () => void;
+// }
 
-const ReportModal: React.FC<Props> = ({ onConfirm, onCancel }) => {
+type Props = {
+    // Provider가 내려주는 데이터/상태
+    reasons: Reason[]
+    loading: boolean
+    submitting: boolean
+    // 실제 신고 호출은 Provider가 담당
+    // 성공 시 true/실패 시 false를 반환해야 함
+    onConfirm: (selectedIds: number[], detailText: string) => Promise<boolean> | boolean
+    onCancel: () => void
+  }
 
-    // 백엔드에서 불러올 옵션
-    const [reasonOptions, setReasonOptions] = useState<Reason[]>([]);
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
-    const [detailText, setDetailText] = useState("");
+const ReportModal: React.FC<Props> = ({ 
+    reasons,
+    loading,
+    submitting,
+    onConfirm,
+    onCancel, 
+}) => {
+    
+    // 선택 상태/입력값
+    const [selectedIds, setSelectedIds] = useState<number[]>([])
+    const [detailText, setDetailText] = useState('')
 
-    // 최소 1개 사유 선택 + 상세 텍스트가 공백이 아닐 때만 true
-    const isSubmitEnabled = selectedIds.length > 0 && detailText.trim() !== "";
-
-    // 모달
-    const [isConfirmOpen, setIsConfirmOpen] = useState(false)
-    const [isResultOpen, setIsResultOpen] = useState(false)
-
+    // 유효성 에러 메시지
     const [errors, setErrors] = useState<ReportErrorType>({
         reason: '',
         detail: '',
     });
 
+    // 백엔드에서 불러올 옵션
+    const [reasonOptions, setReasonOptions] = useState<Reason[]>([]);
+
+    // 최소 1개 사유 + 상세 텍스트 필요
+    const isSubmitEnabled = selectedIds.length > 0 && detailText.trim() !== '' && !submitting
+
+    // 모달
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false)
+    const [isResultOpen, setIsResultOpen] = useState(false)
+
+   
+
     // 신고사유 리스트 가져오기 
-    useEffect(() => {
-        axiosInstance
-          .get<Reason[]>('/reports/reasons')
-          .then(res => setReasonOptions(res.data))
-          .catch(console.error)
-    }, [])
+    // useEffect(() => {
+    //     axiosInstance
+    //       .get<Reason[]>('/reports/reasons')
+    //       .then(res => setReasonOptions(res.data))
+    //       .catch(console.error)
+    // }, [])
 
      // 이유 토글: 선택된 ID 리스트에 개별 ID 추가/제거
     const toggleReason = (id: number) => {
         setSelectedIds(prev => {
-            const updated = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-            setErrors(prevErr => ({ ...prevErr, reason: updated.length === 0 ? '❗신고 사유를 한 가지 이상 선택해주세요.' : '' }))
-            return updated
+            const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+            setErrors(prevErr => ({ ...prevErr, reason: next.length === 0 ? '❗신고 사유를 한 가지 이상 선택해주세요.' : '' }))
+            return next
         })
     }
 
@@ -76,21 +101,30 @@ const ReportModal: React.FC<Props> = ({ onConfirm, onCancel }) => {
     }
 
     // 확인 모달에서 확인 클릭 → 상위로 선택된 사유·설명 전달
-    const handleConfirm = () => {
+    // const handleConfirm = () => {
+    //     setIsConfirmOpen(false)
+    //     axiosInstance.post(
+    //         `/reports?${selectedIds.map(id => `reasonIds=${id}`).join('&')}`,
+    //         { reportDescription: detailText }
+    //     )
+    //     .then(() => {
+    //         setIsResultOpen(true);
+    //         onConfirm(selectedIds, detailText)
+    //     })
+    //     .catch(err => {
+    //         console.error(err);
+    //         alert('신고 중 오류가 발생했습니다.');
+    //     });
+    // };
+
+    // 확인 모달에서 “확인” → Provider의 onConfirm 호출
+    const handleConfirm = async () => {
         setIsConfirmOpen(false)
-        axiosInstance.post(
-            `/reports?${selectedIds.map(id => `reasonIds=${id}`).join('&')}`,
-            { reportDescription: detailText }
-        )
-        .then(() => {
-            setIsResultOpen(true);
-            onConfirm(selectedIds, detailText)
-        })
-        .catch(err => {
-            console.error(err);
-            alert('신고 중 오류가 발생했습니다.');
-        });
-    };
+        const ok = await onConfirm(selectedIds, detailText)
+        if (ok) setIsResultOpen(true)
+        // 성공/실패 알림/닫기는 Provider 쪽에서 처리(전역 일관성)
+        // (성공 시 Provider가 모달을 닫으므로 여기서 따로 결과 모달은 띄우지 않음)
+    }
     
     // 결과 모달 확인 → 모달 닫고 부모 onCancel 호출
     const handleResultConfirm = () => {
@@ -104,38 +138,45 @@ const ReportModal: React.FC<Props> = ({ onConfirm, onCancel }) => {
         <rm.ReportContainer>
             <rm.ReportWrap>
                 <rm.ReportTitle>신고 사유를 선택해 주세요.</rm.ReportTitle>
+                {loading ? (
+                <div style={{ padding: '12px 0' }}>사유 불러오는 중...</div>
+                ) : (
+                <>
                 <rm.ReportList>
-                    {reasonOptions.map((reason, idx) => {
-                    const id = reason.reportReasonId ?? idx
-                    const isSelected = selectedIds.includes(id)
-                    return (
+                    {reasons.map((reason, idx) => {
+                        // 백엔드가 camelCase든 snake_case든 안전하게 처리
+                        const id = (reason.reportReasonId ?? reason.report_reason_id ?? idx) as number
+                        const text = (reason.reportReasonText ?? reason.report_reason_text ?? '') as string
+                        const isSelected = selectedIds.includes(id)
+                        return (
                         <rm.ReasonButton
-                        key={id}
-                        onClick={() => toggleReason(id)}
-                        $selected={isSelected}
+                            key={id}
+                            onClick={() => toggleReason(id)}
+                            $selected={isSelected}
                         >
-                        {reason.reportReasonText}
+                            {text}
                         </rm.ReasonButton>
-                    )
+                        )
                     })}
                 </rm.ReportList>
                 {errors.reason && <rm.ErrorMessage>{errors.reason}</rm.ErrorMessage>}
+                </>
+            )}
                 <rm.ReportTextArea 
                     value={detailText}
                     onChange={handleTextChange}
                     placeholder='신고 사유에 대한 상세 설명을 적어주세요.'
                     rows={4}
+                    disabled={submitting}
                 />
                
                 {errors.detail && <rm.ErrorMessage>{errors.detail}</rm.ErrorMessage>} 
                 <rm.ButtonRow>
-                <rm.CancelButton onClick={onCancel}>취소</rm.CancelButton>
-                <rm.ReportButton 
-                    disabled={!isSubmitEnabled}
-                    onClick={handleSubmit} 
-                    >
-                    신고하기
-                </rm.ReportButton>
+                    <rm.CancelButton onClick={onCancel} disabled={submitting}>취소</rm.CancelButton>
+                    <rm.ReportButton disabled={!isSubmitEnabled} onClick={handleSubmit}>
+                    {submitting ? '전송 중...' : '신고하기'}
+                    </rm.ReportButton>
+
                     {/* 확인 모달 */}
                     {isConfirmOpen && (
                         <ConfirmModal

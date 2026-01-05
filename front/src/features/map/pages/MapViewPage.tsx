@@ -1,46 +1,102 @@
-// map/pages/MapViewPage.tsx (최종본)
-
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Pagination from '../../../components/common/pagination/Pagination';
+import { getGoodsInBounds } from '../api/mapApi';
 import GoodsList from '../components/GoodsList';
 import GoodsMap from '../components/GoodsMap';
-import type { MapGood } from '../mock/mapData';
-import { mockMapGoodsData } from '../mock/mapData';
+import type { MapGood } from '../types/map';
 import * as S from './MapViewPageStyle';
 
-const ITEMS_PER_PAGE = 5; // 아이템 개수 5개로 수정
+const ITEMS_PER_PAGE = 5;
 
 const MapViewPage = () => {
-  const [location, setLocation] = useState<{ lat: number; lng: number }>({ lat: 35.824223, lng: 127.147953 });
-  const [visibleGoods, setVisibleGoods] = useState<MapGood[]>(mockMapGoodsData);
+  const navigate = useNavigate(); 
+  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 37.566826, lng: 126.9786567 }); 
+  const [goodsOnMap, setGoodsOnMap] = useState<MapGood[]>([]); 
+  const [visibleGoods, setVisibleGoods] = useState<MapGood[]>([]); 
   const [selectedMarker, setSelectedMarker] = useState<{ items: MapGood[], position: { lat: number, lng: number } } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true); 
   
+  const mapRef = useRef<kakao.maps.Map>(null); 
   const debounceTimer = useRef<number | null>(null);
 
-  const handleMapIdle = (map: kakao.maps.Map) => {
-    if (debounceTimer.current) { clearTimeout(debounceTimer.current); }
-    debounceTimer.current = setTimeout(() => {
+  const [isMapMoved, setIsMapMoved] = useState(false); 
+
+    const handleMapDragStart = useCallback(() => {
+        setIsMapMoved(true);
+    }, []);
+
+  const handleMapIdle = useCallback((map: kakao.maps.Map) => {
+    if (debounceTimer.current) { 
+      clearTimeout(debounceTimer.current); 
+    }
+    debounceTimer.current = window.setTimeout(async () => {
+      setIsLoading(true);
       const bounds = map.getBounds();
-      const newVisibleGoods = mockMapGoodsData.filter(good =>
-        bounds.contain(new kakao.maps.LatLng(good.lat, good.lng))
-      );
-      setVisibleGoods(newVisibleGoods);
-      setCurrentPage(1);
+      const sw = bounds.getSouthWest();
+      const ne = bounds.getNorthEast();
+      try {
+        const data = await getGoodsInBounds({
+          swLat: sw.getLat(),
+          swLng: sw.getLng(),
+          neLat: ne.getLat(),
+          neLng: ne.getLng(),
+        });
+        setGoodsOnMap(data); 
+        setVisibleGoods(data); 
+        setCurrentPage(1);
+      } catch (error) {
+        console.error("지도 굿즈 정보를 불러오는 데 실패했습니다:", error);
+        alert("데이터를 불러올 수 없습니다.");
+      } finally {
+        setIsLoading(false);
+
+        setIsMapMoved(false); 
+      }
     }, 300);
-  };
+  }, []); 
+
+    const handleResearchClick = useCallback(() => {
+        if (mapRef.current) {
+            handleMapIdle(mapRef.current);
+            setIsMapMoved(false);
+        }
+    }, [handleMapIdle]);
 
   useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setMapCenter({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (err) => {
+          console.warn(`Geolocation 에러: ${err.message}`);
+        }
+      );
+    }
     return () => { if (debounceTimer.current) clearTimeout(debounceTimer.current); };
   }, []);
 
-  const handleMarkerClick = (markerPosition: { lat: number, lng: number }) => {
-    const itemsAtSamePosition = mockMapGoodsData.filter(
+  /**
+   * 지도가 처음 생성되었을 때 호출되는 함수
+   * @param map 생성된 카카오맵 인스턴스
+   */
+  const handleMapCreate = useCallback((map: kakao.maps.Map) => {
+    console.log("!!! 지도 생성이 완료되어 handleMapCreate가 호출되었습니다. !!!"); 
+    mapRef.current = map; 
+    handleMapIdle(map); 
+  }, [handleMapIdle]); 
+
+  const handleMarkerClick = useCallback((markerPosition: { lat: number, lng: number }) => {
+    const itemsAtSamePosition = goodsOnMap.filter(
       good => good.lat === markerPosition.lat && good.lng === markerPosition.lng
     );
     setSelectedMarker({ items: itemsAtSamePosition, position: markerPosition });
     
-    // ✨ 마커-리스트 연동 로직 (이전 코드에 빠져있었을 수 있는 부분)
     const clickedItem = itemsAtSamePosition[0];
     if (clickedItem) {
       const itemIndexInVisibleList = visibleGoods.findIndex(g => g.id === clickedItem.id);
@@ -49,12 +105,12 @@ const MapViewPage = () => {
         setCurrentPage(targetPage);
       }
     }
-  };
+  }, [goodsOnMap, visibleGoods]);
   
-  const handleListItemClick = (good: MapGood) => {
-    setLocation({ lat: good.lat, lng: good.lng });
+const handleListItemClick = useCallback((good: MapGood) => {
+    setMapCenter({ lat: good.lat, lng: good.lng });
     handleMarkerClick({ lat: good.lat, lng: good.lng }); 
-  };
+}, [handleMarkerClick]); 
 
   const totalPages = Math.ceil(visibleGoods.length / ITEMS_PER_PAGE);
   const paginatedGoods = visibleGoods.slice(
@@ -65,15 +121,20 @@ const MapViewPage = () => {
   return (
     <S.PageLayout>
       <GoodsMap 
-        goodsList={mockMapGoodsData}
-        center={location}
+        isLoading={isLoading} 
+        goodsList={goodsOnMap} 
+        center={mapCenter}
+        onCreate={handleMapCreate} 
         onIdle={handleMapIdle}
         onMarkerClick={handleMarkerClick}
         selectedMarker={selectedMarker}
         setSelectedMarker={setSelectedMarker}
+        onDragStart={handleMapDragStart} 
+                isMapMoved={isMapMoved}         
+                onResearch={handleResearchClick} 
       />
 
-      <S.ListWrapper> {/* ✨ 스크롤과 레이아웃을 담당하는 Wrapper */}
+      <S.ListWrapper>
         <GoodsList 
           visibleGoods={paginatedGoods}
           totalCount={visibleGoods.length}

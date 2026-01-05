@@ -82,9 +82,26 @@ export const InfoPrice = styled.div`
 `;
 
 export const InfoLink = styled.a`
-  font-size: 13px;
-  color: #666;
-  text-decoration: underline;
+  display: inline-block; /* 버튼처럼 영역을 가지도록 설정 */
+  margin-top: 8px; /* 위쪽 가격 정보와 간격을 둡니다 */
+  padding: 6px 12px; /* 버튼의 안쪽 여백을 설정합니다 */
+  border-radius: 4px; /* 버튼 모서리를 부드럽게 만듭니다 */
+  
+  /* ↓↓↓ 프로젝트의 메인 색상으로 변경하시면 더 좋습니다 ↓↓↓ */
+  background-color: #997BEB; 
+  color: white; /* 글자색은 흰색으로 하여 잘 보이게 합니다 */
+  
+  font-size: 13px; /* 글자 크기 */
+  font-weight: bold; /* 글자를 두껍게 하여 버튼 느낌을 강조합니다 */
+  text-align: center; /* 글자를 가운데 정렬합니다 */
+  text-decoration: none; /* 밑줄을 제거합니다 */
+  
+  cursor: pointer; /* 마우스를 올리면 클릭 가능하다는 손가락 모양으로 바꿉니다 */
+
+  /* 마우스를 올렸을 때의 스타일 변화 */
+  &:hover {
+    background-color: #4a4cc7; /* 배경색을 살짝 어둡게 만들어 상호작용을 표시합니다 */
+  }
 `;
 
 export const MultiInfoWindow = styled.div`
@@ -113,7 +130,8 @@ export const MultiItemList = styled.ul`
   &::-webkit-scrollbar { display: none; }
   .multi-item {
     display: flex; align-items: center; padding: 12px 16px;
-    border-bottom: 1px solid #f1f3f5; cursor: pointer;
+    border-bottom: 1px solid #f1f3f5; 
+    cursor: pointer; /* <<-- 마우스를 올리면 손가락 모양으로 변경됩니다. */
     &:last-child { border-bottom: none; }
     &:hover { background-color: #f8f9fa; }
     img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; margin-right: 12px; }
@@ -129,4 +147,20 @@ export const MultiItemList = styled.ul`
         color: #868e96;
     }
   }
+`;
+
+export const LoadingOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20; // 정보창보다 위에 오도록
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
 `;

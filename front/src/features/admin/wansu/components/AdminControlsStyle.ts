@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Wrapper = styled.div`
   display: flex;
-  flex-direction: column; /* ✨ 세로 나열 */
+  flex-direction: column; /*  세로 나열 */
   gap: 16px;
 `;
 

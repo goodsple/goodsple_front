@@ -1,27 +1,25 @@
-import { useEffect, useState } from 'react'; // useEffect 추가
+import { useEffect, useState } from 'react';
 import Pagination from '../../../components/common/pagination/Pagination';
-import { getMyWonAuctions } from '../../mybids/api/myBidsApi'; // [수정] 새로 만든 API 함수 import
-import type { MyWonAuction } from '../../mybids/types/mybids'; // [수정] 새로 만든 타입 import
+import { getMyWonAuctions } from '../../mybids/api/myBidsApi';
+import type { MyWonAuction } from '../../mybids/types/mybids';
 import MyBidCard from '../components/MyBidCard';
 import * as S from './MyBidsPageStyle';
 
 const ITEMS_PER_PAGE = 6;
 
 const MyBidsPage = () => {
-  // [추가] 로딩 및 데이터 상태 관리
   const [wonAuctions, setWonAuctions] = useState<MyWonAuction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
-  // [추가] API 호출을 위한 useEffect
   useEffect(() => {
     const fetchWonAuctions = async () => {
       setIsLoading(true);
       try {
         const response = await getMyWonAuctions({
-          page: currentPage - 1, // 백엔드는 page가 0부터 시작
+          page: currentPage - 1, 
           size: ITEMS_PER_PAGE,
         });
         setWonAuctions(response.content);
@@ -35,14 +33,13 @@ const MyBidsPage = () => {
     };
 
     fetchWonAuctions();
-  }, [currentPage]); // currentPage가 변경될 때마다 API를 다시 호출
+  }, [currentPage]); 
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     window.scrollTo(0, 0);
   };
   
-  // [추가] 로딩 중 UI 처리
   if (isLoading) {
     return (
       <S.PageWrapper>
@@ -56,7 +53,6 @@ const MyBidsPage = () => {
     <S.PageWrapper>
       <S.Title>나의 낙찰 내역</S.Title>
       <S.AuctionList>
-        {/* [수정] 목업 데이터 대신 API로부터 받아온 wonAuctions 사용 */}
         {wonAuctions.length > 0 ? (
           wonAuctions.map((auction) => (
             <MyBidCard key={auction.auctionId} auction={auction} />

@@ -24,10 +24,7 @@ const BidPanel: React.FC<Props> = ({ status, currentUserNickname, onPlaceBid }) 
   };
 
   const handleQuickBid = (amount: number) => {
-    // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 이 부분이 핵심 수정 사항입니다. ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-    // status.currentPrice를 Number()로 감싸서 명시적으로 숫자로 변환해줍니다.
     onPlaceBid(Number(status.currentPrice) + amount);
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
   };
 
   return (
@@ -40,7 +37,7 @@ const BidPanel: React.FC<Props> = ({ status, currentUserNickname, onPlaceBid }) 
           type="number" 
           value={myBidAmount} 
           onChange={(e) => setMyBidAmount(e.target.value)} 
-          placeholder={`${(Number(status.currentPrice) + status.minBidUnit).toLocaleString()}원 이상`} // 여기도 Number()로 감싸주면 더 안전합니다.
+          placeholder={`${(Number(status.currentPrice) + Number(status.minBidUnit)).toLocaleString()}원 이상`}
           step="1000"
         />
         <S.BidButton type="submit">입찰하기</S.BidButton>

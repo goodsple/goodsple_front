@@ -17,7 +17,6 @@ function Footer(){
                 <style.ContactList>
                     <li>정예인<span>yein181677@naver.com</span></li>
                     <li>최완수<span>ys615098@naver.com</span></li>
-                    <li>홍성경<span>hsg200528@gmail.com</span></li>
                     <li>진보경<span>qhrud4231@naver.com</span></li>
                     <li>조수민<span>tnals030927@gmail.com</span></li>
                 </style.ContactList>

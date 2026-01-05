@@ -1,12 +1,12 @@
-import type { MyWonAuction } from '../../mybids/types/mybids'; // [수정] 타입을 새로 만든 것으로 변경
+import { useNavigate } from 'react-router-dom';
+import type { MyWonAuction } from '../../mybids/types/mybids';
 import CountdownTimer from './CountdownTimer';
 import * as S from './MyBidCardStyle';
 
 interface Props {
-  auction: MyWonAuction; // [수정] Props 타입 변경
+  auction: MyWonAuction; 
 }
 
-// [추가] 백엔드 상태값을 한글로 변환하는 함수
 const translatePaymentStatus = (status: string) => {
   switch (status) {
     case 'pending': return '미결제';
@@ -17,6 +17,8 @@ const translatePaymentStatus = (status: string) => {
 };
 
 const MyBidCard: React.FC<Props> = ({ auction }) => {
+  const navigate = useNavigate(); 
+
   const paymentStatusKo = translatePaymentStatus(auction.paymentStatus);
 
   const getStatusClass = () => {
@@ -28,7 +30,13 @@ const MyBidCard: React.FC<Props> = ({ auction }) => {
   const getButton = () => {
     switch (paymentStatusKo) {
       case '미결제':
-        return <S.PayButton>결제하기</S.PayButton>;
+        return (
+          <S.PayButton 
+            onClick={() => navigate(`/payment/${auction.orderId}`)}
+          >
+            결제하기
+          </S.PayButton>
+        );
       case '미결제(기한초과)':
         return <S.PayButton className="expired" disabled>결제 기한 만료</S.PayButton>;
       case '결제 완료':
@@ -42,12 +50,10 @@ const MyBidCard: React.FC<Props> = ({ auction }) => {
     <S.Card>
       <S.CardImage src={auction.imageUrl} alt={auction.productName} />
       <S.CardBody>
-        {/* [수정] 백엔드 필드명(auctionEndTime)에 맞게 수정하고, 날짜 포맷팅 적용 */}
         <S.CardEndDate>경매 종료일: {new Date(auction.auctionEndTime).toLocaleDateString()}</S.CardEndDate>
         <S.CardTitle>{auction.productName}</S.CardTitle>
         <S.CardPrice>최종 낙찰가: {auction.finalPrice.toLocaleString()}원</S.CardPrice>
         
-        {/* [수정] paymentDueDate가 null이 아닐 때만 타이머 렌더링 */}
         {paymentStatusKo === '미결제' && auction.paymentDueDate && (
           <S.CountdownTimer>
             <CountdownTimer dueDate={new Date(auction.paymentDueDate)} />

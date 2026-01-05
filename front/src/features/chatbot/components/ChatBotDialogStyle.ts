@@ -65,7 +65,8 @@ export const UserMessage = styled.div`
 // FAQ/QNA 버튼 영역
 export const SelectBtnWrapper = styled.div`
         display: flex;
-        justify-content: flex-end;
+        flex-direction: column;
+        align-items: flex-end;
         gap: 15px;
         margin-top: 10px;
 `;
@@ -89,6 +90,11 @@ export const SelectBtn = styled.button<{ selected?: boolean }>`
 // FAQ => option 버튼들 
 export const OptionBtn = styled.button`
         padding: 10px 20px;
+
+        min-width: 100px;
+        max-width: 250px;
+        white-space: nowrap;
+
         border-radius: 10px;
         border: 1px solid #997beb;
         background-color: white;
@@ -163,6 +169,8 @@ export const SendBtn = styled.button`
             height: 30px;
         }
 `;
+
+export const ChatEndRef = styled.div``;
 
 
 

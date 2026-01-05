@@ -1,28 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import type { KnowledgeItem } from '../../wansu/mock/knowledgeBaseData';
+import type { KnowledgeItem } from '../api/knowledgeApi';
 import * as S from './KnowledgeModalStyle';
+
+type SubmitData = Omit<KnowledgeItem, 'knowledgeId' | 'knowledgeIsFaq' | 'knowledgeIsActive' | 'knowledgeCreatedAt' | 'knowledgeUpdatedAt'>;
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: Omit<KnowledgeItem, 'id' | 'isFaq' | 'isActive'>) => void;
+  onSubmit: (data: SubmitData) => void;
   initialData?: KnowledgeItem | null;
   mode: 'create' | 'edit';
 }
 
 const KnowledgeModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, initialData, mode }) => {
-  const [formData, setFormData] = useState({ intent: '', question: '', answer: '' });
+  const [formData, setFormData] = useState({ knowledgeIntent: '', knowledgeQuestion: '', knowledgeAnswer: '' });
 
   useEffect(() => {
     if (mode === 'edit' && initialData) {
       setFormData({
-        intent: initialData.intent,
-        question: initialData.question,
-        answer: initialData.answer,
+        knowledgeIntent: initialData.knowledgeIntent,
+        knowledgeQuestion: initialData.knowledgeQuestion,
+        knowledgeAnswer: initialData.knowledgeAnswer,
       });
     } else {
-      setFormData({ intent: '', question: '', answer: '' });
+      setFormData({ knowledgeIntent: '', knowledgeQuestion: '', knowledgeAnswer: '' });
     }
   }, [isOpen, initialData, mode]);
 
@@ -44,17 +46,17 @@ const KnowledgeModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, initialDat
         <S.Title>{mode === 'create' ? '새로운 지식 추가' : '지식 수정'}</S.Title>
         <S.Form onSubmit={handleSubmit}>
           <S.FormGroup>
-            <S.Label htmlFor="intent">의도 (Intent)</S.Label>
-            <S.Input type="text" id="intent" name="intent" value={formData.intent} onChange={handleChange} placeholder="예: delivery_fee" required />
+            <S.Label htmlFor="knowledgeIntent">의도 (Intent)</S.Label>
+            <S.Input type="text" id="knowledgeIntent" name="knowledgeIntent" value={formData.knowledgeIntent} onChange={handleChange} placeholder="예: delivery_fee" required />
             <S.HelpText>영문 소문자와 언더스코어(_)만 사용해주세요.</S.HelpText>
           </S.FormGroup>
           <S.FormGroup>
-            <S.Label htmlFor="question">대표 질문</S.Label>
-            <S.Input type="text" id="question" name="question" value={formData.question} onChange={handleChange} placeholder="예: 배송비는 얼마인가요?" required />
+            <S.Label htmlFor="knowledgeQuestion">대표 질문</S.Label>
+            <S.Input type="text" id="knowledgeQuestion" name="knowledgeQuestion" value={formData.knowledgeQuestion} onChange={handleChange} placeholder="예: 배송비는 얼마인가요?" required />
           </S.FormGroup>
           <S.FormGroup>
-            <S.Label htmlFor="answer">챗봇 답변</S.Label>
-            <S.Textarea id="answer" name="answer" value={formData.answer} onChange={handleChange} required />
+            <S.Label htmlFor="knowledgeAnswer">챗봇 답변</S.Label>
+            <S.Textarea id="knowledgeAnswer" name="knowledgeAnswer" value={formData.knowledgeAnswer} onChange={handleChange} required />
           </S.FormGroup>
           <S.ButtonArea>
             <S.CancelButton type="button" onClick={onClose}>취소</S.CancelButton>

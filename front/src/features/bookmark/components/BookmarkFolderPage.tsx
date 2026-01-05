@@ -27,7 +27,7 @@ interface BookmarkWithPost extends BookmarkResponse {
 
 interface Folder {
     folderId: number;
-    name: string;
+    folderName: string;
 }
 
 const BookmarkFolderPage: React.FC = () => {
@@ -88,7 +88,7 @@ const BookmarkFolderPage: React.FC = () => {
     const fetchFolders = async () => {
         try {
             const token = localStorage.getItem("accessToken");
-            const res = await axiosInstance.get(`/bookmarks`, {
+            const res = await axiosInstance.get(`/bookmark-folders`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setFolders(res.data);
@@ -245,10 +245,8 @@ const BookmarkFolderPage: React.FC = () => {
                 isOpen={isSelectorOpen}
                 onClose={() => setIsSelectorOpen(false)}
                 folders={folders}
-                onSelect={(folderName) => {
-                    const target = folders.find(f => f.name === folderName);
-                    if (target) handleMove(target.folderId);
-                }}
+                mode="move" 
+                onSelect={(folderId) => handleMove(folderId)} 
                 onAddFolder={() => alert("새 폴더 추가 기능 준비중")}
             />
         </s.BookmarkFolderPageContainer>

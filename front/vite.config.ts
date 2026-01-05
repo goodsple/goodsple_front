@@ -8,7 +8,9 @@ export default defineConfig({
     global: "window",
   },
   server: {
+    allowedHosts: ['33cf56de0ac8.ngrok-free.app'], // ngrok 도메인 허용 (추가)
     proxy: {
+      
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,

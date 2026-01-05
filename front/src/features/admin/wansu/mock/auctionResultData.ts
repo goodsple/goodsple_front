@@ -29,7 +29,6 @@ export interface AuctionResult {
   bidHistory: Bid[];
 }
 
-// ✨ 모든 목업 데이터를 하나의 배열로 통합
 const mockAllAuctionResults: AuctionResult[] = [
   { 
     id: 1, 
@@ -66,7 +65,6 @@ const mockAllAuctionResults: AuctionResult[] = [
   },
 ];
 
-// ✨ ID로 특정 경매 결과를 찾는 함수 (API 호출 시뮬레이션)
 export const findAuctionResultById = (id: number): AuctionResult | undefined => {
   return mockAllAuctionResults.find(auction => auction.id === id);
 };
