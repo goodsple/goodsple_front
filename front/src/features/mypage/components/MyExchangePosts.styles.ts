@@ -148,3 +148,137 @@ export const FilterButton = styled.button<{ $active: boolean }>`
     color: #000;
   }
 `;
+
+/* ===============================
+   거래상대 선택 모달
+================================ */
+
+export const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const ModalContent = styled.div`
+  width: 413px;
+  height: 597px;
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 24px 20px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+`;
+
+/* 모달 제목_최근 대화한 계정 */
+export const ModalTitle = styled.h2`
+  font-size: 24px;
+  font-weight: bold;
+  margin: 10px 0px 18px 5px;
+`;
+
+/* 미사용 */
+export const RecentTitle = styled.div`
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 12px;
+`;
+
+/* 사용자 리스트 */
+export const UserList = styled.div`
+  flex: 1;
+  overflow-y: auto;
+`;
+
+/* 개별 사용자 아이템 */
+export const UserItem = styled.div<{ $selected?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 10px 12px;
+  // border-radius: 12px;
+  cursor: pointer;
+
+  background-color: ${({ $selected }) => ($selected ? 'rgba(153, 123, 235, 0.5)' : 'transparent')};
+  color: #444444;
+
+  border-bottom: 1px solid #D9D9D9;
+
+  &:hover {
+    background-color: ${({ $selected }) => $selected ? 'rgba(153, 123, 235, 0.5)' : '#F5F5F5'};
+  }
+
+`;
+
+// 'rgba(153, 123, 235, 0.5)'
+
+/* 프로필 이미지 */
+export const ProfileImage = styled.img`
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+/* 사용자 정보 영역 */
+export const UserInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+/* 닉네임 + 배지 */
+export const NicknameRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+export const Nickname = styled.span`
+  font-size: 15px;
+  font-weight: 600;
+`;
+
+export const BadgeIcon = styled.img`
+  width: 16px;
+  height: 16px;
+`;
+
+/* 마지막 대화 시점 */
+export const LastMessageTime = styled.span`
+  font-size: 12px;
+  color: #999999;
+`;
+
+/* 하단 버튼 영역 */
+export const ModalFooter = styled.div`
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+`;
+
+/* 거래상대 선택 모달 버튼 */
+export const ModalButton = styled.button<{ $active?: boolean }>`
+  flex: 1;
+  height: 44px;
+  border-radius: 15px;
+  border: 1px solid #444444;
+  background-color: ${({ $active }) => ($active ? '#444444' : '#FFFFFF')};
+  color: ${({ $active }) => ($active ? '#FFFFFF' : '#444444')};
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #444444;
+    color: #ffffff;
+  }
+`;
+
