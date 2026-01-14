@@ -206,6 +206,18 @@ const ChatBotDialog: React.FC = () => {
         ]);
     };
 
+
+    // 세션 ID 생성 함수
+    const getSessionId = () => {
+        let id = localStorage.getItem("chat_session_id");
+        if (!id) {
+            id = crypto.randomUUID();
+            localStorage.setItem("chat_session_id", id);
+        }
+        return id;
+    };
+
+
     const handleSend = async () => {
         if (!inputText.trim()) return;
 
@@ -228,6 +240,7 @@ const ChatBotDialog: React.FC = () => {
                 body: JSON.stringify({
                     text: userMessage,
                     source: selectedBtn?.toUpperCase(), // FAQ 또는 QNA
+                    sessionId: getSessionId(),          // ✨ 추가된 부분
                 }),
             });
 
