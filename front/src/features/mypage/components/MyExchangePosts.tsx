@@ -9,8 +9,10 @@ import { useNavigate } from 'react-router-dom';
 
 // ===== 내 거래글 관리 컴포넌트 =====
 
+// 거래상태 옵션
 const statusOptions = ['거래가능', '거래중', '거래완료'];
 
+// 필터 탭 옵션
 const FILTERS = ['전체', ...statusOptions] as const;
 type FilterType = typeof FILTERS[number];
 
@@ -25,13 +27,29 @@ interface ExchangePost {
     updatedAt: string;
 }
 
+// JWT 토큰 페이로드 인터페이스
+// sub 필드에 userId가 담겨있음
 interface TokenPayload {
     sub: string; // ExchangePostDetail처럼 sub 필드 사용
 }
 
+// 거래 상대(채팅 유저) 인터페이스
+interface ChatUser {
+    userId: number;
+    nickname: string;
+    profileImageUrl: string;
+    lastChatDaysAgo: number;
+    // badgeIcon?: string; // 배지 아이콘 URL (나중에 추가하기)
+}
+
 const MyExchangePosts = () => {
+    // 드롭다운 열려있는 게시글 ID
     const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+
+    // 현재 선택된 필터
     const [activeFilter, setActiveFilter] = useState<FilterType>('전체');
+
+    // 페이지네이션 관련 상태
     const [currentPage, setCurrentPage] = useState(1);
     const [data, setData] = useState<ExchangePost[]>([]);
     const [totalPages, setTotalPages] = useState(1);
@@ -39,14 +57,14 @@ const MyExchangePosts = () => {
 
     const navigate = useNavigate();
 
-    // 거래상태
+    // 서버 에서 사용하는 거래상태 매핑 (영어 -> 한글)
     const statusMap: Record<string, string> = {
         AVAILABLE: '거래가능',
         ONGOING: '거래중',
         COMPLETED: '거래완료',
     };
 
-    // 거래상태 역매핑
+    // 거래상태 역매핑 (한글 -> 영어) 서버 전송용
     const statusReverseMap: Record<string, string> = {
         거래가능: 'AVAILABLE',
         거래중: 'ONGOING',
@@ -60,8 +78,16 @@ const MyExchangePosts = () => {
         BOTH: '직거래 • 택배거래',
     };
 
+    // 거래상대 선택 모달 관련
+    const [showBuyerModal, setShowBuyerModal] = useState(false);                    // 모달 표시 여부
+    const [targetPostId, setTargetPostId] = useState<number | null>(null);          // 선택 중인 게시글 ID
+    const [chatUsers, setChatUsers] = useState<ChatUser[]>([]);                     // 채팅 사용자 목록
+    const [selectedBuyerId, setSelectedBuyerId] = useState<number | null>(null);    // 선택된 거래상대 ID
 
-    // API 호출
+
+
+    // 내 거래글 목록 조회
+    // 필터, 페이지 변경 시 자동 조회
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -85,6 +111,7 @@ const MyExchangePosts = () => {
                 const res = await axios.get('/api/my-exchange-posts', {
                     params: {
                         userId,
+                        // '전체' 필터 선택 시 status 파라미터에서 제외
                         status: activeFilter === '전체' ? null : statusReverseMap[activeFilter],
                         page: currentPage,
                         size: itemsPerPage,
@@ -118,6 +145,7 @@ const MyExchangePosts = () => {
     };
 
     // 거래상태 변경 핸들러
+    // 거래완료 선택 시 거래상대 선택 모달 오픈
     const handleStatusChange = async (id: number, newStatusKor: string) => {
         try {
             const token = localStorage.getItem('accessToken');
@@ -148,11 +176,69 @@ const MyExchangePosts = () => {
             );
 
             setOpenDropdownId(null);
+
+            // 거래완료 시 거래상대 선택 모달 오픈
+            if (englishStatus === 'COMPLETED') {
+                fetchChatUsers(id);
+            }
         } catch (err) {
             console.error(err);
             alert('거래상태 변경에 실패했습니다.');
         }
     };
+
+    // 해당 게시글에 연결된 채팅 사용자 목록 조회
+    // 판매자만 거래상대 선택 가능 (백엔드에서 검증)
+    const fetchChatUsers = async (postId: number) => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) return;
+
+            const res = await axios.get(
+                `/api/my-exchange-posts/${postId}/chat-users`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            setChatUsers(res.data); // [{ userId, nickname }]
+            setTargetPostId(postId);
+            setShowBuyerModal(true);
+
+        } catch (err) {
+            console.error(err);
+            alert('채팅 상대 목록을 불러오지 못했습니다.');
+        }
+    };
+
+    // 거래상대 선택(확정) 모달
+    const confirmBuyerSelection = async () => {
+        if (!selectedBuyerId || !targetPostId) return;
+
+        try {
+            const token = localStorage.getItem('accessToken');
+            await axios.post(
+                `/api/my-exchange-posts/${targetPostId}/buyer`,
+                { buyerId: selectedBuyerId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // 성공 시 모달 닫기 및 상태 초기화
+            setShowBuyerModal(false);
+            setSelectedBuyerId(null);
+            setTargetPostId(null);
+        } catch (e) {
+            alert('거래 상대 지정 실패');
+        }
+    };
+
+    // 거래상대 나중에 선택
+    // 거래완료 상태 유지, buyerId는 null로 저장됨
+    const skipBuyerSelection = () => {
+        setShowBuyerModal(false);
+        setSelectedBuyerId(null);
+        setTargetPostId(null);
+    };
+
+
 
     // 거래글 삭제 핸들러
     const handleDelete = async (postId: number) => {
@@ -288,6 +374,54 @@ const MyExchangePosts = () => {
                         onPageChange={setCurrentPage}
                     />
                 </PC.PaginationContainer>
+            )}
+
+            {/* 거래상대 선택 모달 */}
+            {showBuyerModal && (
+                <S.ModalOverlay>
+                    <S.ModalContent>
+                        <S.ModalTitle>최근 대화한 계정</S.ModalTitle>
+                        {/* <S.RecentTitle>최근 대화한 계정</S.RecentTitle> */}
+
+                        <S.UserList>
+                            {chatUsers.map(user => (
+                                <S.UserItem
+                                    key={user.userId}
+                                    $selected={selectedBuyerId === user.userId}
+                                    onClick={() => setSelectedBuyerId(user.userId)}
+                                >
+                                    <S.ProfileImage src={user.profileImageUrl || '/default-profile.png'} />
+                                    <S.UserInfo>
+                                        <S.NicknameRow>
+                                            <S.Nickname>{user.nickname}</S.Nickname>
+                                            {/* 배지 나중에 연결하기 */}
+                                            <S.BadgeIcon src="/LV1.png" alt="배지 아이콘" />
+                                            {/* {user.badgeIcon && <S.BadgeIcon src={user.badgeIcon} />} */}
+                                        </S.NicknameRow>
+                                        <S.LastMessageTime>
+                                            {/* lastChatDaysAgo === 0 이면 '오늘'로 표시 */}
+                                            • {user.lastChatDaysAgo === 0
+                                                ? '오늘'
+                                                : `${user.lastChatDaysAgo}일 전`}
+                                        </S.LastMessageTime>
+                                    </S.UserInfo>
+                                </S.UserItem>
+                            ))}
+                        </S.UserList>
+
+                        <S.ModalFooter>
+                            <S.ModalButton onClick={skipBuyerSelection}>
+                                나중에 선택
+                            </S.ModalButton>
+                            <S.ModalButton
+
+                                onClick={confirmBuyerSelection}
+                            >
+                                선택 완료
+                            </S.ModalButton>
+                        </S.ModalFooter>
+                    </S.ModalContent>
+                </S.ModalOverlay>
             )}
         </S.Container>
     );
