@@ -1,52 +1,79 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Pagination from '../../../../components/common/pagination/Pagination';
 import { Table, Tbody, Td, Th, Thead, Tr } from '../components/AuctionTableStyle';
 import ChatLogControls from '../components/ChatLogControls';
-import type { ChatLog } from '../mock/chatLogData';
-import { mockChatLogData } from '../mock/chatLogData';
+import type { ChatLog } from '../types/chatLog';
 import * as PageStyle from './AdminAuctionPageStyle';
 import * as S from './AdminChatLogPageStyle';
 
-const ITEMS_PER_PAGE = 10; 
+const ITEMS_PER_PAGE = 10;
 
 const AdminChatLogPage = () => {
-  const [logs] = useState(mockChatLogData);
-  const [filteredLogs, setFilteredLogs] = useState<ChatLog[]>(logs);
+  const navigate = useNavigate();
+
+  const [logs, setLogs] = useState<ChatLog[]>([]);
   const [activeTab, setActiveTab] = useState<'FAQ' | 'QNA'>('QNA');
-  const [currentPage, setCurrentPage] = useState(1); 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const result = logs.filter(log => log.type === activeTab);
-    setFilteredLogs(result);
-    setCurrentPage(1); 
-  }, [activeTab, logs]);
+   const fetchLogs = async () => {
+    setLoading(true);
 
-  const totalPages = Math.ceil(filteredLogs.length / ITEMS_PER_PAGE);
-  const paginatedLogs = filteredLogs.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+    try {
+      const res = await fetch(
+        `/api/admin/chatbot/logs?type=${activeTab}&page=${currentPage}&size=${ITEMS_PER_PAGE}`
+      );
+
+      if (!res.ok) throw new Error('로그 목록 조회 실패');
+
+      const data = await res.json();
+
+      setLogs(data);
+      // setTotalPages(Math.ceil(data.length / ITEMS_PER_PAGE));
+      setTotalPages(data.length < ITEMS_PER_PAGE ? currentPage : currentPage + 1);
+    } catch (error) {
+      console.error(error);
+      setLogs([]);
+      setTotalPages(0);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+    fetchLogs();
+  }, [activeTab, currentPage]);
+
+  // 탭 변경 시 페이지 초기화
+  const handleTabChange = (tab: 'FAQ' | 'QNA') => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+  };
 
   return (
     <PageStyle.PageContainer>
       <PageStyle.ContentCard>
         <ChatLogControls />
-        
+
+        {/* 탭 */}
         <S.TabGroup>
-          <S.TabButton 
+          <S.TabButton
             $isActive={activeTab === 'FAQ'}
-            onClick={() => setActiveTab('FAQ')}
+            onClick={() => handleTabChange('FAQ')}
           >
             FAQ
           </S.TabButton>
-          <S.TabButton 
+          <S.TabButton
             $isActive={activeTab === 'QNA'}
-            onClick={() => setActiveTab('QNA')}
+            onClick={() => handleTabChange('QNA')}
           >
             QNA
           </S.TabButton>
         </S.TabGroup>
 
+        {/* 테이블 */}
         <Table>
           <Thead>
             <Tr>
@@ -57,25 +84,45 @@ const AdminChatLogPage = () => {
               <Th>날짜</Th>
             </Tr>
           </Thead>
+
           <Tbody>
-            {paginatedLogs.map(log => (
-              <Tr key={log.id}>
-                <Td>{log.userId}</Td>
-                <Td style={{textAlign: 'left'}}>{log.question}</Td>
-                <Td>{log.predictedIntent}</Td>
-                <Td>{log.confidence}%</Td>
-                <Td>{log.timestamp}</Td>
+            {loading ? (
+              <Tr>
+                <Td colSpan={5} style={{ textAlign: 'center' }}>
+                  로딩 중입니다...
+                </Td>
               </Tr>
-            ))}
+            ) : logs.length === 0 ? (
+              <Tr>
+                <Td colSpan={5} style={{ textAlign: 'center' }}>
+                  조회된 로그가 없습니다.
+                </Td>
+              </Tr>
+            ) : (
+              logs.map(log => (
+                <Tr
+                  key={log.logId}
+                  onClick={() => navigate(`/admin/chatbot/logs/${log.logId}`)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <Td>{log.loginId ?? '비회원'}</Td>
+                  <Td>{log.logInitialQuestion}</Td>
+                  <Td>{log.logPredictedIntent}</Td>
+                  <Td>{(log.logConfidenceScore * 100).toFixed(0)}%</Td>
+                  <Td>{log.logCreatedAt}</Td>
+                </Tr>
+              ))
+            )}
           </Tbody>
         </Table>
 
+        {/* 페이지네이션 */}
         {totalPages > 1 && (
           <PageStyle.PaginationWrapper>
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={(page) => setCurrentPage(page)}
+              onPageChange={setCurrentPage}
             />
           </PageStyle.PaginationWrapper>
         )}

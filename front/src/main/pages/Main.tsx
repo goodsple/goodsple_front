@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { getMainPageData, type UserMainPageResponse } from '../api/mainPageApi';
 
-import { useNavigate } from 'react-router-dom';
 
 import chatbotIcon from '../../assets/images/chatbot.png';
-import CSS from '../../features/usermain/components/UserMainComponents.module.css';
 
 import AuctionSection from '../components/AuctionSection';
 import MainBannerSection from '../components/MainBannerSection';
@@ -16,7 +15,8 @@ import CommMegaPhoneBox from '../../features/usermain/components/CommMegaPhoneBo
 import SearchBox from '../../features/usermain/components/SearchBox';
 
 function Main() {
-  const navigate = useNavigate();
+
+    const navigate = useNavigate();
 
   const [pageData, setPageData] = useState<UserMainPageResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,21 +47,32 @@ function Main() {
       <SearchBox />
       <CateButtons />
 
-      {/* 확성기 공지 */}
-      <CommMegaPhoneBox />
+        {/* 확성기 공지 */}
+        <CommMegaPhoneBox />
+        
+        {/* 컨텐츠 영역 */}
+        <MainBannerSection/>
+        <WhatsNewSection/>
+        <AuctionSection 
+                data={pageData?.mainAuction || null} 
+                isLoading={isLoading} 
+            />
 
-      {/* 컨텐츠 영역 */}
-      <MainBannerSection />
-      <WhatsNewSection />
-      <AuctionSection
-        data={pageData?.mainAuction || null}
-        isLoading={isLoading}
-      />
-
-      <button className={CSS.chatbotButton} onClick={handleChatbotClick}>
-        <img src={chatbotIcon} alt="Chatbot Icon" />
-      </button>
-    </>
-  );
+            <img
+                src={chatbotIcon}
+                alt="챗봇"
+                onClick={() => navigate('/chatbot')}
+                style={{
+                    position: 'fixed',
+                    right: '30px',
+                    bottom: '30px',
+                    width: '100px',
+                    // height: '64px',
+                    cursor: 'pointer',
+                    zIndex: 1000,
+                }}
+            />
+        </>
+    )
 }
 export default Main;

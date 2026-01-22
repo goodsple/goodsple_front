@@ -13,6 +13,14 @@ const ChatBotDialog: React.FC = () => {
     const [faqOptions, setFaqOptions] = useState<string[]>([]); // FAQ 의도(intent) 옵션 리스트
     const [faqQuestions, setFaqQuestions] = useState<string[]>([]); // 의도 선택 후 질문(question) 리스트
 
+    const [logId, setLogId] = useState<number | null>(null);
+    const storedUserId = localStorage.getItem("userId");
+    const userId = storedUserId ? Number(storedUserId) : null;
+
+    const [selectedIntent, setSelectedIntent] = useState<string | null>(null);
+
+
+
     // 마지막 메시지 위치 추적용 ref
     const chatEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -21,32 +29,6 @@ const ChatBotDialog: React.FC = () => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [chatHistory]);
 
-    // const handleSelectFAQ = () => {
-    //     if (selectedBtn) return; 
-
-    //     setSelectedBtn('faq');
-    //     setChatHistory(prev => [
-    //         ...prev,
-
-    //         <s.SelectBtnWrapper key="selected-faq">
-    //             <s.SelectBtn selected>FAQ</s.SelectBtn> 
-    //         </s.SelectBtnWrapper>,
-
-    //         // 챗봇 응답
-    //         <BotMessage
-    //             key={`faq-box-${prev.length}`}
-    //             messages={['안녕하세요 FAQ는 아래 버튼을 선택해 주시면 안내 도와드릴게요.']}
-    //         />,
-
-    //         // FAQ 옵션 버튼 예시
-    //         <s.SelectBtnWrapper key="faq-options">
-    //             <s.OptionBtn>배송</s.OptionBtn>
-    //             <s.OptionBtn>회원가입</s.OptionBtn>
-    //             <s.OptionBtn>카테고리</s.OptionBtn>
-    //             <s.OptionBtn>경매</s.OptionBtn>
-    //         </s.SelectBtnWrapper>
-    //     ]);
-    // };
 
     // FAQ 버튼 클릭 -> 의도(intent) 목록 출력
     const handleSelectFAQ = async () => {
@@ -84,71 +66,27 @@ const ChatBotDialog: React.FC = () => {
         }
     };
 
-    // 의도(intent) 클릭 -> 해당 질문(question) 목록 출력
+
     const handleSelectIntent = async (intent: string) => {
-        // 클릭한 Intent도 말풍선처럼 표시
+
+        // 의도 클릭 말풍선 출력
         setChatHistory(prev => [
             ...prev,
-            <UserMessage key={`intent-${prev.length}`} content={intent} />,
+            <UserMessage
+                key={`intent-${prev.length}`}
+                content={intent}
+            />,
         ]);
 
-        // 의도(intent) 버튼 숨기기
+        // 의도 목록 숨김 
         setFaqOptions([]);
 
-        try {
-            const response = await fetch(`http://localhost:8080/api/questions?intent=${intent}`, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
-                },
-            });
-
-            const data = await response.json();
-            setFaqQuestions(data);
-            // setFaqOptions(data); // 선택한 intent 에 대한 question만 표시
-
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    // 질문(question) 목록 클릭 -> 답변(answer) 받아서 말풍선 출력
-    // const handleSelectQuestion = async (question: string) => {
-    //     // 질문 클릭도 메시지로 출력
-    //     setChatHistory(prev => [
-    //         ...prev,
-    //         <UserMessage key={`q-${prev.length}`} content={question} />,
-    //     ]);
-
-    //     try {
-    //         const response = await fetch(`http://localhost:8080/api/answer?question=${question}`, {
-    //             method: "GET",
-    //             headers: {
-    //                 "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
-    //             },
-    //         });
-
-    //         const data = await response.json(); // { answer: "..." }
-
-    //         setChatHistory(prev => [
-    //             ...prev,
-    //             <BotMessage key={`a-${prev.length}`} messages={[data.answer]} />,
-    //         ]);
-
-    //     } catch (err) {
-    //         console.error(err);
-    //     }
-    // };
-
-    const handleSelectQuestion = async (question: string) => {
-        setChatHistory(prev => [
-            ...prev,
-            <UserMessage key={`question-${prev.length}`} content={question} />,
-        ]);
+        // 질문 목록 초기화
+        setFaqQuestions([]);
 
         try {
             const response = await fetch(
-                `http://localhost:8080/api/answer?question=${question}`,
+                `http://localhost:8080/api/questions?intent=${encodeURIComponent(intent)}`,
                 {
                     method: "GET",
                     headers: {
@@ -157,7 +95,61 @@ const ChatBotDialog: React.FC = () => {
                 }
             );
 
+            if (!response.ok) {
+                throw new Error("FAQ 질문 조회 실패");
+            }
+
+            const data: string[] = await response.json();
+
+            // 질문 목록 출력
+            setFaqQuestions(data);
+
+        } catch (err) {
+            console.error("handleSelectIntent error:", err);
+
+            setChatHistory(prev => [
+                ...prev,
+                <BotMessage
+                    key={`faq-error-${prev.length}`}
+                    messages={["질문 목록을 불러오지 못했습니다."]}
+                />,
+            ]);
+        }
+    };
+
+    const handleSelectQuestion = async (question: string) => {
+
+        // 질문 말풍선 출력
+        setChatHistory(prev => [
+            ...prev,
+            <UserMessage key={`question-${prev.length}`} content={question} />,
+        ]);
+
+        const isNewChat = logId === null;
+
+        try {
+            // AQ 답변 요청 (로그 저장 포함)
+            const response = await fetch("http://localhost:8080/api/chatbot/messages", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+                body: JSON.stringify({
+                    text: question,
+                    source: "FAQ",
+                    sessionId: getSessionId(),
+                    isNewChat,
+                    logId,
+                    userId,
+                }),
+            });
+
             const data = await response.json();
+
+            if (isNewChat && data.logId) {
+                setLogId(data.logId);
+            }
 
             // 답변 출력
             setChatHistory(prev => [
@@ -165,25 +157,33 @@ const ChatBotDialog: React.FC = () => {
                 <BotMessage key={`answer-${prev.length}`} messages={[data.answer]} />,
             ]);
 
-            // 질문 리스트 제거
+            // 질문 목록 제거 (의도는 아직 안 보임)
             setFaqQuestions([]);
 
-            // 다시 intent 목록 불러오기
-            const intentsResponse = await fetch(`http://localhost:8080/api/intents`, {
+            // 의도 목록 다시 불러오기
+            const intentRes = await fetch("http://localhost:8080/api/intents", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
                 },
             });
-            const intents = await intentsResponse.json();
 
-            // intent 버튼 다시 표시
+            const intents = await intentRes.json();
+
+            // 의도 목록 재출력
             setFaqOptions(intents);
 
         } catch (err) {
-            console.error(err);
+            console.error("handleSelectQuestion error:", err);
+
+            setChatHistory(prev => [
+                ...prev,
+                <BotMessage messages={["답변을 불러오지 못했습니다."]} />,
+            ]);
         }
     };
+
+
 
 
     // QNA 선택
@@ -228,6 +228,8 @@ const ChatBotDialog: React.FC = () => {
         ]);
         setInputText('');
 
+        const isNewChat = logId === null;
+
         try {
             // 백엔드(Spring Boot) 요청
             const response = await fetch("http://localhost:8080/api/chatbot/messages", {
@@ -240,12 +242,20 @@ const ChatBotDialog: React.FC = () => {
                 body: JSON.stringify({
                     text: userMessage,
                     source: selectedBtn?.toUpperCase(), // FAQ 또는 QNA
-                    sessionId: getSessionId(),          // ✨ 추가된 부분
+                    sessionId: getSessionId(),         
+                    isNewChat: isNewChat, 
+                    logId: logId,
+                    userId: userId           
                 }),
             });
 
             const data = await response.json();
             console.log("📩 Chatbot response:", data);
+
+            // 첫 응답일 경우 logId 저장 (백엔드에서 내려줘야 함)
+            if (isNewChat && data.logId) {
+                setLogId(data.logId);
+            }
 
             // 응답 형태: { answer: "...", intent: "...", confidence: 0.92 }
             const botMessage = data.answer || "답변을 불러오지 못했습니다.";
@@ -254,6 +264,7 @@ const ChatBotDialog: React.FC = () => {
                 ...prev,
                 <BotMessage key={`bot-${prev.length}`} messages={[botMessage]} />,
             ]);
+
         } catch (error) {
             console.error("Chatbot API error:", error);
             setChatHistory(prev => [
