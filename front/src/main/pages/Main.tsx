@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { getMainPageData, type UserMainPageResponse } from '../api/mainPageApi';
 
@@ -10,7 +11,11 @@ import CateButtons from "../../features/usermain/components/CateButtons";
 import CommMegaPhoneBox from "../../features/usermain/components/CommMegaPhoneBox";
 import SearchBox from "../../features/usermain/components/SearchBox";
 
+import chatbotIcon from '../../assets/images/chatbot.png';
+
 function Main() {
+
+    const navigate = useNavigate();
 
     const [pageData, setPageData] = useState<UserMainPageResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -46,6 +51,21 @@ function Main() {
         <AuctionSection 
                 data={pageData?.mainAuction || null} 
                 isLoading={isLoading} 
+            />
+
+        <img
+                src={chatbotIcon}
+                alt="챗봇"
+                onClick={() => navigate('/chatbot')}
+                style={{
+                    position: 'fixed',
+                    right: '30px',
+                    bottom: '30px',
+                    width: '100px',
+                    // height: '64px',
+                    cursor: 'pointer',
+                    zIndex: 1000,
+                }}
             />
         </>
     )
