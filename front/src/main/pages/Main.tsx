@@ -67,7 +67,6 @@ function Main() {
                     right: '30px',
                     bottom: '30px',
                     width: '100px',
-                    // height: '64px',
                     cursor: 'pointer',
                     zIndex: 1000,
                 }}
