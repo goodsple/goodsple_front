@@ -46,7 +46,8 @@ const Community: React.FC = () => {
 
     // 금칙어 체크
     try {
-      await axiosInstance.post('/admin/prohibited-words/check', input);
+      // await axiosInstance.post('/admin/prohibited-words/check', input);
+      await axiosInstance.post('/prohibited-words/check', input); // ✔️✔️0126 수정됨
     } catch (err: any) {
       // 금칙어 포함 시 alert
       alert(err.response?.data?.message || '금칙어가 포함되었습니다.');
