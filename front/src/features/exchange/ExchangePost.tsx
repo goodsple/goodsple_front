@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as S from './ExchangePost.styles';
+import axiosInstance from '../../api/axiosInstance';
 
 
 // ===== 교환게시글 작성 컴포넌트 =====
@@ -61,7 +62,7 @@ const ExchangePost = () => {
             try {
                 // 이 API 경로는 백엔드에서 카테고리 목록을 제공하는 엔드포인트로 변경해야 합니다.
                 // 예를 들어, GET /api/categories 또는 GET /api/categories/list
-                const response = await axios.get('http://localhost:8080/api/post-categories');
+                const response = await axiosInstance.get('/post-categories');
                 setAllCategories(response.data);
             } catch (error) {
                 console.error('카테고리 불러오기 실패:', error);
@@ -158,14 +159,14 @@ const ExchangePost = () => {
                 // ↑↑↑↑↑↑ 이 코드가 현재 위치의 좌표를 state에 저장합니다.
 
                 try {
-                    const res = await axios.get('http://localhost:8080/api/location/region', {
+                    const res = await axiosInstance.get('/location/region', {
                         params: { latitude, longitude }
                     });
 
                     if (res.data.documents && res.data.documents.length > 0) {
-                        const region = res.data.documents[0];
+                        const region = res.data.documents.find((item: any) => item.regionType === 'H') || res.data.documents[0];
                         // 시/구/동만 합치기
-                        const fullAddress = `${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`;
+                        const fullAddress = `${region.region_1depthName} ${region.region_2depthName} ${region.region_3depthName}`;
                         setLocation(fullAddress);
 
                         setLocationCode(region.code); // region.code가 실제 행정동 코드라고 가정
@@ -194,7 +195,7 @@ const ExchangePost = () => {
                     const simpleAddress = `${city} ${district} ${dong}`;
 
                     // 2. 주소 → 좌표 변환 (백엔드 API 호출)
-                    const coordRes = await axios.get("http://localhost:8080/api/location/coord", {
+                    const coordRes = await axiosInstance.get("/location/coord", {
                         params: { address: simpleAddress },
                     });
                     const { latitude, longitude } = coordRes.data;
@@ -203,13 +204,13 @@ const ExchangePost = () => {
                     // ↑↑↑↑↑↑ 이 코드가 검색한 주소의 좌표를 state에 저장합니다.
 
                     // 3. 좌표 → 행정동 코드 조회
-                    const regionRes = await axios.get("http://localhost:8080/api/location/region", {
+                    const regionRes = await axiosInstance.get("/location/region", {
                         params: { latitude, longitude },
                     });
 
                     if (regionRes.data.documents && regionRes.data.documents.length > 0) {
-                        const region = regionRes.data.documents[0];
-                        const fullAddress = `${region.region_1depth_name} ${region.region_2depth_name} ${region.region_3depth_name}`;
+                        const region = regionRes.data.documents.find((item: any) => item.regionType === 'H') || regionRes.data.documents[0];
+                        const fullAddress = `${region.region_1depthName} ${region.region_2depthName} ${region.region_3depthName}`;
 
                         // 4. state 업데이트
                         setLocation(fullAddress);          // "서울특별시 중랑구 면목동"
@@ -368,8 +369,8 @@ const ExchangePost = () => {
 
 
         try {
-            const response = await axios.post(
-                'http://localhost:8080/api/exchange-posts',
+            const response = await axiosInstance.post(
+                '/exchange-posts',
                 postData,
                 {
                     headers: {

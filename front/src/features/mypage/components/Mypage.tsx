@@ -84,7 +84,7 @@ const MyPage:React.FC = () => {
                 <s.Activity>
                     <s.ActivityHeader>나의 활동</s.ActivityHeader>
                     <s.StyledHr />
-                    <s.ActivityLink to="/mypage">후기</s.ActivityLink>
+                    <s.ActivityLink to="/reviews">후기</s.ActivityLink>
                     <s.ActivityLink to="/mypage">이벤트존 활동 내역</s.ActivityLink>
                     <s.ActivityLink to="/mypage">내 알림</s.ActivityLink>
                     <s.ActivityLink to="/bookmarkPage">찜 목록</s.ActivityLink>

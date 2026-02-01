@@ -52,6 +52,17 @@ interface Post {
 
 }
 
+interface ReviewItem {
+    reviewId: number;
+    writerId: number;
+    writerNickname: string;
+    writerProfileImage: string | null;
+    rating: number;
+    content: string;
+    createdAt: string;
+    images: string[];
+}
+
 // 사용자 인터페이스
 interface User {
     id: number;
@@ -77,6 +88,7 @@ const ExchangePostDetail = () => {
     const [post, setPost] = useState<Post | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [isWriter, setIsWriter] = useState<boolean>(false);
+    const [reviews, setReviews] = useState<ReviewItem[]>([]);
 
     const [showStatusOptions, setShowStatusOptions] = useState(false)
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -143,6 +155,20 @@ const ExchangePostDetail = () => {
             }
         };
         fetchData();
+    }, [postIdNum]);
+
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const res = await axiosInstance.get(`/reviews/by-post/${postIdNum}`);
+                setReviews(res.data ?? []);
+            } catch (err) {
+                console.error('후기 조회 실패', err);
+            }
+        };
+        if (!Number.isNaN(postIdNum)) {
+            fetchReviews();
+        }
     }, [postIdNum]);
 
     // 북마크 코드 ----------------------------------------------
@@ -578,6 +604,39 @@ const ExchangePostDetail = () => {
                     <p key={idx}>{line}</p>
                 ))}
             </S.Content>
+            <S.Divider />
+
+            <S.ReviewSection>
+                <S.ReviewTitle>
+                    후기 <S.ReviewCount>({reviews.length})</S.ReviewCount>
+                </S.ReviewTitle>
+                {reviews.length === 0 ? (
+                    <S.EmptyReview>곧 좋은 후기가 찾아올 거에요.</S.EmptyReview>
+                ) : (
+                    <S.ReviewList>
+                        {reviews.map((review) => (
+                            <S.ReviewCard key={review.reviewId}>
+                                <S.ReviewHeader>
+                                    <S.ReviewUser>
+                                        <S.ReviewAvatar>
+                                            <img
+                                                src={review.writerProfileImage || defaultProfile}
+                                                alt="작성자 프로필"
+                                            />
+                                        </S.ReviewAvatar>
+                                        <div>
+                                            <S.ReviewNickname>{review.writerNickname}</S.ReviewNickname>
+                                            <S.ReviewDate>{review.createdAt}</S.ReviewDate>
+                                        </div>
+                                    </S.ReviewUser>
+                                    <S.ReviewRating>⭐ {review.rating}</S.ReviewRating>
+                                </S.ReviewHeader>
+                                <S.ReviewContent>{review.content}</S.ReviewContent>
+                            </S.ReviewCard>
+                        ))}
+                    </S.ReviewList>
+                )}
+            </S.ReviewSection>
             <S.Divider />
         </S.Container>
     );
