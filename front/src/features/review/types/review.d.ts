@@ -7,4 +7,6 @@ export type ReviewType = {
     content: string;
     images: string[];
     thumbnail: string | null;
+    writerId?: number | null;
+    targetUserId?: number | null;
   };
