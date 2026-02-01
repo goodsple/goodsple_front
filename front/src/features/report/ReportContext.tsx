@@ -25,36 +25,42 @@ export function ReportProvider({ children }: { children: React.ReactNode }){
     const [submitting, setSubmitting] = useState(false)
     // 모달이 띄워졌을 때의 타겟(대상 엔티티 정보)
     const [target, setTarget] = useState<OpenReportParams | null>(null)
+    const [successCallback, setSuccessCallback] = useState<(() => void) | null>(null)
 
     // ─────────────────────────────────────────────────────────────
     // 1) 신고 사유 목록을 앱 최초 1회 로드
     // ─────────────────────────────────────────────────────────────
-    useEffect(()=>{
-        let mounted = true; // 언마운트 이후 setState 방지용 플래그
-        (async()=>{
-            try{
-                setLoading(true)
-                const res = await axios.get<ReportReason[]>('/reports/reasons')
-                if (mounted) setReasons(res.data) // 살아있을 때만 반영
-            } catch (e) {
-                console.error(e)
-              } finally {
-                setLoading(false)
-            }
-        })()
-         // 클린업: 언마운트 시 setState 호출 방지
-    return () => {
-        mounted = false
-      }
-    }, [])
+    const fetchReasons = useCallback(async () => {
+        let mounted = true;
+        try {
+            setLoading(true);
+            const res = await axios.get<ReportReason[]>('/reports/reasons');
+            if (mounted) setReasons(res.data);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+        return () => {
+            mounted = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        fetchReasons();
+    }, [fetchReasons]);
 
     // ─────────────────────────────────────────────────────────────
     // 2) 모달 열기: 타겟 정보 저장 후 열림
     // ─────────────────────────────────────────────────────────────
     const openReport = useCallback((params: OpenReportParams) => {
-        setTarget(params)
-        setIsOpen(true)
-    }, [])
+        setTarget(params);
+        setSuccessCallback(() => params.onSuccess ?? null);
+        if (!reasons.length && !loading) {
+            fetchReasons();
+        }
+        setIsOpen(true);
+    }, [reasons.length, loading, fetchReasons])
 
      // 3) 모달 닫기: 전송 중엔 닫기 방지
      const closeReport = useCallback(()=>{
@@ -88,7 +94,10 @@ export function ReportProvider({ children }: { children: React.ReactNode }){
               .join('&');
       
             await axios.post(`/reports?${qs}`, payload);
-      
+            if (successCallback) {
+                successCallback();
+                setSuccessCallback(null);
+            }
             return true;
           } catch (err: any) {
             console.error('[REPORT] error', err?.response?.status, err?.response?.data);
