@@ -1,26 +1,47 @@
 import Pagination from '../../../components/common/pagination/Pagination';
 import * as rs from './MyReviewStyle'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import MyReviewCard from './MyReviewCard';
 import ReceivedReviewCard from './ReceivedReviewCard';
+import { getReceivedReviews, getWrittenReviews } from '../api/reviewApi';
+import type { ReviewType } from '../types/review';
 
 const MyReview:React.FC=()=>{
 
+    const location = useLocation();
     const [activeTab, setActiveTab] = useState<'written' | 'received'>('written');
+    const [writtenReviews, setWrittenReviews] = useState<ReviewType[]>([]);
+    const [receivedReviews, setReceivedReviews] = useState<ReviewType[]>([]);
+    const [loading, setLoading] = useState(false);
 
-    const dummyReviews = [
-        {
-          id: 1,
-          postTitle: '엑소 백현 포카 교환',
-          date: '2025.07.14',
-          rating: 4,
-          content: '친절하고 빠른 거래 감사합니다!',
-          images: ['이미지링크1', '이미지링크2','이미지링크2','이미지링크2','이미지링크2'],
-          thumbnail: '썸네일링크'
-        },
-        // 다른 더미 데이터
-    ];
+    const fetchReviews = async () => {
+        setLoading(true);
+        try {
+            const [written, received] = await Promise.all([
+                getWrittenReviews(),
+                getReceivedReviews(),
+            ]);
+            setWrittenReviews(written);
+            setReceivedReviews(received);
+        } catch (e) {
+            console.error('후기 조회 실패', e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchReviews();
+    }, []);
+
+    useEffect(() => {
+        const tab = (location.state as { tab?: 'written' | 'received' } | null)?.tab;
+        if (tab === 'written' || tab === 'received') {
+            setActiveTab(tab);
+        }
+    }, [location.state]);
 
     return(
         <rs.MyReviewContainer>
@@ -39,12 +60,14 @@ const MyReview:React.FC=()=>{
             </rs.ReviewTabMenu>
                 <rs.ReviewList>
                 {activeTab === 'written' ? (
-                    dummyReviews.length > 0 ? (
+                    writtenReviews.length > 0 ? (
                         <>
-                        {dummyReviews.map((review) => (
-                            <MyReviewCard key={review.id} review={review} />
+                        {writtenReviews.map((review) => (
+                            <MyReviewCard key={review.id} review={review} onChanged={fetchReviews} />
                         ))}
-                        <Pagination currentPage={1} totalPages={2} onPageChange={() => {}} />
+                        {!loading && (
+                            <Pagination currentPage={1} totalPages={1} onPageChange={() => {}} />
+                        )}
                         </>
                     ) : (
                         <rs.EmptyMessage>
@@ -53,12 +76,14 @@ const MyReview:React.FC=()=>{
                         </rs.EmptyMessage>
                     )
                 ) : (
-                    dummyReviews.length > 0 ? (
+                    receivedReviews.length > 0 ? (
                         <>
-                        {dummyReviews.map((review) => (
+                        {receivedReviews.map((review) => (
                             <ReceivedReviewCard key={review.id} review={review} />
                         ))}
-                        <Pagination currentPage={1} totalPages={2} onPageChange={() => {}} />
+                        {!loading && (
+                            <Pagination currentPage={1} totalPages={1} onPageChange={() => {}} />
+                        )}
                         </>    
                     ) : (
                     <rs.EmptyMessage>

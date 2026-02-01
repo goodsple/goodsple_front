@@ -1,6 +1,7 @@
 import * as rs from './MyReviewStyle'
 import starFull from "../../../assets/images/star_full.png";
 import starEmpty from "../../../assets/images/star_empty.png";
+import placeholderImg from "../../../assets/images/placeholder.png";
 
 import type { ReviewType } from "../types/review";
 import { useState } from 'react';
@@ -38,7 +39,7 @@ const [isReportCompleteModalOpen, setIsReportCompleteModalOpen] = useState(false
     return (
         <rs.ReviewCard>
           <rs.ThumbnailWrap>
-            <img src={review.thumbnail} alt="썸네일" />
+            <img src={review.thumbnail || placeholderImg} alt="썸네일" />
           </rs.ThumbnailWrap>
           <rs.ReviewContentWrap>
             <rs.PostInfo>

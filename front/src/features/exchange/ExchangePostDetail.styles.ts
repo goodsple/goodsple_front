@@ -316,6 +316,94 @@ export const Content = styled.div`
   white-space: pre-wrap;
 `;
 
+export const ReviewSection = styled.section`
+  width: 100%;
+`;
+
+export const ReviewTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 12px;
+`;
+
+export const ReviewCount = styled.span`
+  font-size: 14px;
+  font-weight: 600;
+  color: #777;
+  margin-left: 6px;
+`;
+
+export const EmptyReview = styled.p`
+  font-size: 14px;
+  color: #777;
+`;
+
+export const ReviewList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+export const ReviewCard = styled.div`
+  border: 1px solid #e6d9ff;
+  border-radius: 10px;
+  padding: 14px 16px;
+  background-color: #fff;
+`;
+
+export const ReviewHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+export const ReviewUser = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+export const ReviewAvatar = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #ddd;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+export const ReviewNickname = styled.div`
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+`;
+
+export const ReviewDate = styled.div`
+  font-size: 12px;
+  color: #999;
+`;
+
+export const ReviewRating = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+`;
+
+export const ReviewContent = styled.p`
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+  margin-bottom: 10px;
+`;
+
+
 export const DetailBoxWrapper = styled.div`
   display: flex;
   gap: 16px;

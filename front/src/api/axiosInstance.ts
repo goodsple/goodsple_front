@@ -31,7 +31,8 @@ const ALLOWED_PARAM_KEYS = new Set([
   "actions",
   "roomId", "commRoomId", "date",
   "swLat", "swLng", "neLat", "neLng",
-  "peerId","postId","beforeId","limit","lastReadMessageId"
+  "peerId","postId","beforeId","limit","lastReadMessageId",
+  "latitude","longitude","address"
 ]);
 
 const normalizeArrayParam = (v: any) => {
