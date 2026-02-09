@@ -1,41 +1,37 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../api/axiosInstance";
 import * as Wn from "./WhatsNewSectionStyle";
 
-const dummyPosts = [
-  {
-    id: 1,
-    title: "뉴진스 하입보이 포카 교환해요",
-  },
-  {
-    id: 2,
-    title: "세븐틴 콘서트 머플러 나눔",
-  },
-  {
-    id: 3,
-    title: "원피스 일러스트 아크릴 키링 교환",
-  },
-  {
-    id: 4,
-    title: "리그 오브 레전드 한정 스킨 굿즈 판매",
-  },
-  {
-    id: 5,
-    title: "야구 구단 응원봉 교환 (두산 → 한화)",
-  },
-  {
-    id: 6,
-    title: "마블 영화 아트북 양도",
-  },
-  {
-    id: 7,
-    title: "엑소 바시티 양도",
-  },
-  {
-    id: 8,
-    title: "BTS dvd 양도",
-  },
-];
+type PostItem = {
+  exchangePostId: number;
+  exchangePostTitle: string;
+  imageUrl?: string | null;
+};
 
 const WhatsNewSection = () => {
+    const [posts, setPosts] = useState<PostItem[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 8;
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      const fetchPosts = async () => {
+        try {
+          const res = await axiosInstance.get<PostItem[]>("/posts");
+          const list = res.data ?? [];
+          setPosts(list);
+        } catch (e) {
+          console.error("What's New 조회 실패", e);
+        }
+      };
+      fetchPosts();
+    }, []);
+
+    const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
+    const startIndex = (currentPage - 1) * pageSize;
+    const pagePosts = posts.slice(startIndex, startIndex + pageSize);
+
     return (
       <Wn.Section>
         <Wn.Inner>
@@ -45,23 +41,36 @@ const WhatsNewSection = () => {
   
           <Wn.CardWrapper>
             <Wn.CardGrid>
-              {dummyPosts.map((post) => (
-                <Wn.Card key={post.id}>
-                  <Wn.Thumbnail />
-                  <Wn.PostTitle>{post.title}</Wn.PostTitle>
+              {pagePosts.map((post) => (
+                <Wn.Card
+                  key={post.exchangePostId}
+                  onClick={() => navigate(`/exchange/detail/${post.exchangePostId}`)}
+                >
+                  <Wn.Thumbnail src={post.imageUrl ?? undefined} alt="게시글 썸네일" />
+                  <Wn.PostTitle>{post.exchangePostTitle}</Wn.PostTitle>
                 </Wn.Card>
               ))}
             </Wn.CardGrid>
             <Wn.PaginationRow>
-                <Wn.PageArrowButton>{'←'}</Wn.PageArrowButton>
+                <Wn.PageArrowButton
+                  disabled={currentPage <= 1}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                >
+                  {'←'}
+                </Wn.PageArrowButton>
 
                 <Wn.PageCenter>
-                    <span className="current">01</span>
+                    <span className="current">{String(currentPage).padStart(2, "0")}</span>
                     <span className="dash">—</span>
-                    <span className="total">02</span>
+                    <span className="total">{String(totalPages).padStart(2, "0")}</span>
                 </Wn.PageCenter>
 
-                <Wn.PageArrowButton>{'→'}</Wn.PageArrowButton>
+                <Wn.PageArrowButton
+                  disabled={currentPage >= totalPages}
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                >
+                  {'→'}
+                </Wn.PageArrowButton>
             </Wn.PaginationRow>
           </Wn.CardWrapper>
         </Wn.Inner>

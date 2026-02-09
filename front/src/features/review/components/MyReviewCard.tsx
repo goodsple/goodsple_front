@@ -3,20 +3,25 @@ import * as rs from "./MyReviewStyle";
 import starFull from "../../../assets/images/star_full.png";
 import starEmpty from "../../../assets/images/star_empty.png";
 import deleteImg from "../../../assets/images/Delete.png";
+import placeholderImg from "../../../assets/images/placeholder.png";
 
 import { useState } from "react";
 import type { ReviewType } from "../types/review";
 import ConfirmModal from "../../../components/common/modal/ConfirmModal";
+import { deleteReview, updateReview, uploadReviewImages } from "../api/reviewApi";
 
-const MyReviewCard: React.FC<{ review: ReviewType }> = ({ review }) => {
+type ImageItem = string | File;
+
+const MyReviewCard: React.FC<{ review: ReviewType; onChanged?: () => void }> = ({ review, onChanged }) => {
 
     const [isEdit, setIsEdit] = useState(false); // 수정여부
     const [rating, setRating] = useState(review.rating); // 리뷰 별점
     const [content,setContent] = useState(review.content); // 리뷰 내용
-    const [images, setImages] = useState<string[]>(review.images); // 리뷰 사진
+    const [images, setImages] = useState<ImageItem[]>(review.images); // 리뷰 사진
 
     const [isConfirmOpen, setIsConfirmOpen] = useState(false); // 모달 오픈 여부
     const [confirmType, setConfirmType] = useState<"edit"|"delete"|null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // 이미지 삭제
     const handleImageRemove = (index: number) => {
@@ -25,12 +30,10 @@ const MyReviewCard: React.FC<{ review: ReviewType }> = ({ review }) => {
     
     // 이미지 추가
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-        const newFiles = Array.from(e.target.files).map((file) =>
-        URL.createObjectURL(file)
-        );
+      if (e.target.files) {
+        const newFiles = Array.from(e.target.files);
         setImages([...images, ...newFiles].slice(0, 5));
-    }
+      }
     };
 
     // 저장 시 모달 
@@ -46,16 +49,39 @@ const MyReviewCard: React.FC<{ review: ReviewType }> = ({ review }) => {
     };
 
     // 모달에서 확인 클릭 시
-    const handleConfirm = () => {
-      if (confirmType === "edit") {
-        setIsEdit(false);
-        // 저장 로직
+    const handleConfirm = async () => {
+      if (!confirmType || isSubmitting) return;
+      setIsSubmitting(true);
+
+      try {
+        if (confirmType === "edit") {
+          const existingUrls = images.filter((img): img is string => typeof img === "string");
+          const newFiles = images.filter((img): img is File => img instanceof File);
+          const uploadedUrls = await uploadReviewImages(newFiles);
+          const imageUrls = [...existingUrls, ...uploadedUrls].slice(0, 5);
+
+          await updateReview(review.id, {
+            rating,
+            content,
+            imageUrls,
+          });
+
+          setImages(imageUrls);
+          setIsEdit(false);
+          onChanged?.();
+        }
+        if (confirmType === "delete") {
+          await deleteReview(review.id);
+          onChanged?.();
+        }
+      } catch (e) {
+        console.error("리뷰 처리 실패", e);
+        alert("처리에 실패했습니다. 다시 시도해주세요.");
+      } finally {
+        setIsConfirmOpen(false);
+        setConfirmType(null);
+        setIsSubmitting(false);
       }
-      if (confirmType === "delete") {
-        // 삭제 로직
-      }
-      setIsConfirmOpen(false);
-      setConfirmType(null);
     };
     
     // 모달 취소 시
@@ -67,7 +93,7 @@ const MyReviewCard: React.FC<{ review: ReviewType }> = ({ review }) => {
     return(
         <rs.ReviewCard>
         <rs.ThumbnailWrap>
-          <img src={review.thumbnail} alt="썸네일" />
+          <img src={review.thumbnail || placeholderImg} alt="썸네일" />
         </rs.ThumbnailWrap>
         <rs.ReviewContentWrap>
           <rs.PostInfo>

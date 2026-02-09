@@ -64,10 +64,11 @@ export const Card = styled.div`
   }
 `;
 
-export const Thumbnail = styled.div`
+export const Thumbnail = styled.img`
   width: 100%;
   aspect-ratio: 2 / 1; 
   background-color: #f3f4f6;
+  object-fit: cover;
 `;
 
 
@@ -137,4 +138,3 @@ export const PageCenter = styled.div`
     font-weight: 400;
   }
 `;
-

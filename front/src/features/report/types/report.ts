@@ -19,6 +19,7 @@ export interface OpenReportParams {
   targetType: TargetType;
   targetId: number;
   reportTargetUserId?: number | null;
+  onSuccess?: () => void;
 }
 
 // 백엔드로 보낼 페이로드(= 변환 후 라벨 사용)

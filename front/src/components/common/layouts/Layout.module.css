@@ -1,3 +1,10 @@
+.layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFDFA;
+}
+
 .outlet {
     width: 100%;
     display: flex;
@@ -6,5 +13,5 @@
     overflow: hidden;
     position: relative;
     padding-top: 100px;
-    background-color: #FFFDFA;
+    flex: 1;
 }

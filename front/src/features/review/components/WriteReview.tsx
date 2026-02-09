@@ -5,6 +5,8 @@ import deleteImg from '../../../assets/images/Delete.png';
 
 import { useState } from 'react';
 import ConfirmModal from '../../../components/common/modal/ConfirmModal';
+import { createReview, uploadReviewImages } from '../api/reviewApi';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 type PostInfo = {
@@ -19,7 +21,17 @@ const dummyPost: PostInfo = {
     writerNickname: "백현와이프"
 };
 
-const WriteReview:React.FC<{ post: PostInfo }> = ({post = dummyPost}) => {
+type LocationState = {
+    exchangePostId?: number;
+    postInfo?: PostInfo;
+};
+
+const WriteReview:React.FC<{ post?: PostInfo }> = ({post}) => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const state = (location.state || {}) as LocationState;
+    const exchangePostId = state.exchangePostId;
+    const postInfo = state.postInfo || post || dummyPost;
 
     const [rating, setRating] = useState(0);  // 별점
     const [content,setContent] = useState(""); // 후기내용
@@ -28,7 +40,7 @@ const WriteReview:React.FC<{ post: PostInfo }> = ({post = dummyPost}) => {
 
     const [isConfirmOpen, setIsConfirmOpen] = useState(false); // 모달 오픈 여부
 
-    const isSubmitEnabled = rating > 0 && content.trim() !== "" && images.length > 0;
+    const isSubmitEnabled = rating > 0 && content.trim() !== "" && images.length > 0 && !!exchangePostId;
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if(e.target.files) {
@@ -50,9 +62,28 @@ const WriteReview:React.FC<{ post: PostInfo }> = ({post = dummyPost}) => {
     }
 
     // 모달 확인 클릭 시
-    const handleConfirm = () => {
-        setIsConfirmOpen(false);
-        
+    const handleConfirm = async () => {
+        if (!exchangePostId) {
+            alert("거래글 정보가 없습니다.");
+            setIsConfirmOpen(false);
+            return;
+        }
+
+        try {
+            const imageUrls = await uploadReviewImages(images);
+            await createReview({
+                exchangePostId,
+                rating,
+                content,
+                imageUrls,
+            });
+            setIsConfirmOpen(false);
+            navigate("/reviews");
+        } catch (e) {
+            console.error("리뷰 등록 실패", e);
+            alert("리뷰 등록에 실패했습니다.");
+            setIsConfirmOpen(false);
+        }
     };
     
     // 모달 취소 클릭 시
@@ -64,14 +95,14 @@ const WriteReview:React.FC<{ post: PostInfo }> = ({post = dummyPost}) => {
         <wr.ReviewContainer>
             <wr.ReviewTitle>후기 작성</wr.ReviewTitle>
             <wr.InfoWrap>
-                <img src={post.thumbnailUrl} alt="게시글 썸네일" />
+                <img src={postInfo.thumbnailUrl} alt="게시글 썸네일" />
                 <wr.InfoText>
-                    <p>{post.title}</p>
-                    <span>{post.writerNickname}님과 행복한 거래를 나눴어요 :)</span>
+                    <p>{postInfo.title}</p>
+                    <span>{postInfo.writerNickname}님과 행복한 거래를 나눴어요 :)</span>
                 </wr.InfoText>
             </wr.InfoWrap>
             <wr.RatingWrap>
-                <wr.RatingTitle>신뢰도 점수 평가 ({post.writerNickname}님에 대해 점수를 매겨주세요 :) )</wr.RatingTitle>
+                <wr.RatingTitle>신뢰도 점수 평가 ({postInfo.writerNickname}님에 대해 점수를 매겨주세요 :) )</wr.RatingTitle>
                 <wr.StarRating>
                     {Array.from({length:5}).map((_,i)=>(
                         <img 

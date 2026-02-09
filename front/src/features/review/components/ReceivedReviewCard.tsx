@@ -1,44 +1,43 @@
 import * as rs from './MyReviewStyle'
 import starFull from "../../../assets/images/star_full.png";
 import starEmpty from "../../../assets/images/star_empty.png";
+import placeholderImg from "../../../assets/images/placeholder.png";
 
 import type { ReviewType } from "../types/review";
-import { useState } from 'react';
-import ReportModal from '../../../components/common/modal/ReportModal';
-import ConfirmModal from '../../../components/common/modal/ConfirmModal';
+import { useReport } from '../../report/ReportContext';
+import { useEffect, useState } from 'react';
+import axiosInstance from '../../../api/axiosInstance';
 
 
 const ReceivedReviewCard:React.FC<{ review: ReviewType }> = ({ review }) => {
-    
-const [isReportModalOpen, setIsReportModalOpen] = useState(false); // 신고 모달 상태
-const [isReportCompleteModalOpen, setIsReportCompleteModalOpen] = useState(false); // 신고하기 버튼 클릭시 확인 모달 오픈 여부
+  const { openReport } = useReport();
+  const [reported, setReported] = useState(false);
 
-  // 신고 버튼 클릭 시
+  useEffect(() => {
+    const fetchReported = async () => {
+      try {
+        const res = await axiosInstance.get(`/reports/check?targetType=review&targetId=${review.id}`);
+        setReported(Boolean(res.data?.reported));
+      } catch (e) {
+        // 로그인 전/에러 시에는 기본 false 유지
+      }
+    };
+    fetchReported();
+  }, [review.id]);
+
   const handleReportClick = () => {
-    setIsReportModalOpen(true)
-  }
-
-  // 신고모달 신고하기 클릭 
-  const handleReportConfirm = (selectedReasons: string[], detailText: string) => {
-    console.log(selectedReasons,detailText);
-    setIsReportModalOpen(false)
-    setIsReportCompleteModalOpen(true);
-  }
-
-  // 신고모달 취소 클릭
-  const handleReportCancel = () => {
-    setIsReportModalOpen(false)
-  }
-
-  // 신고하기 버튼 클릭시 공통 확인 모달 
-  const handleReportCompleteConfirm = () => {
-    setIsReportCompleteModalOpen(false);
+    openReport({
+      targetType: 'REVIEW',
+      targetId: review.id,
+      reportTargetUserId: review.writerId ?? null,
+      onSuccess: () => setReported(true),
+    });
   };
 
     return (
         <rs.ReviewCard>
           <rs.ThumbnailWrap>
-            <img src={review.thumbnail} alt="썸네일" />
+            <img src={review.thumbnail || placeholderImg} alt="썸네일" />
           </rs.ThumbnailWrap>
           <rs.ReviewContentWrap>
             <rs.PostInfo>
@@ -66,24 +65,13 @@ const [isReportCompleteModalOpen, setIsReportCompleteModalOpen] = useState(false
           </rs.ReviewContentWrap>
     
           <rs.ButtonWrap>
-            <rs.DeleteButton onClick={handleReportClick}>신고</rs.DeleteButton>
-            {/* 신고모달 오픈 */}
-            {isReportModalOpen && (
-              <ReportModal 
-               onConfirm={handleReportConfirm}
-               onCancel={handleReportCancel}/>
-            )}
-
-            {/* 신고하기 활성화 버튼 클릭 시 확인 모달 오픈 */}
-            {isReportCompleteModalOpen && (
-              <ConfirmModal
-                isOpen={isReportCompleteModalOpen}
-                content="신고가 접수되었습니다."
-                showCancel={false}
-                confirmText="확인"
-                onConfirm={handleReportCompleteConfirm}
-              />
-            )}
+            <rs.DeleteButton
+              onClick={handleReportClick}
+              disabled={reported}
+              style={reported ? { background: '#eee', color: '#777', cursor: 'default' } : undefined}
+            >
+              {reported ? '신고됨' : '신고'}
+            </rs.DeleteButton>
           </rs.ButtonWrap>
         </rs.ReviewCard>
     );

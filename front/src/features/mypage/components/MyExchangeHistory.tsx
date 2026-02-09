@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import * as S from './MyExchangeHistory.styles.ts';
 import Pagination from '../../../components/common/pagination/Pagination';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -35,6 +36,7 @@ const MyExchangeHistory = () => {
     const [data, setData] = useState<ExchangeHistory[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const navigate = useNavigate();
 
     // 거래상대 선택 모달 상태
     const [showBuyerModal, setShowBuyerModal] = useState(false);
@@ -130,10 +132,33 @@ const MyExchangeHistory = () => {
         // 2️⃣ 구매자
         if (item.buyer) {
             if (item.reviewWritten) {
-                return <S.ReviewButton>남긴 후기 보러가기</S.ReviewButton>;
+                return (
+                    <S.ReviewButton
+                        onClick={() => navigate('/reviews', { state: { tab: 'written' } })}
+                    >
+                        남긴 후기 보러가기
+                    </S.ReviewButton>
+                );
             }
             if (item.canWriteReview) {
-                return <S.ReviewButton>후기 작성하기</S.ReviewButton>;
+                return (
+                    <S.ReviewButton
+                        onClick={() =>
+                            navigate('/writereview', {
+                                state: {
+                                    exchangePostId: item.exchangePostId,
+                                    postInfo: {
+                                        thumbnailUrl: item.imageUrl,
+                                        title: item.title,
+                                        writerNickname: item.opponentNickname ?? '상대방',
+                                    },
+                                },
+                            })
+                        }
+                    >
+                        후기 작성하기
+                    </S.ReviewButton>
+                );
             }
             return <S.ReviewButton disabled>후기 작성 불가</S.ReviewButton>;
         }
@@ -141,7 +166,13 @@ const MyExchangeHistory = () => {
         // 3️⃣ 판매자
         if (item.seller) {
             if (item.reviewWritten) {
-                return <S.ReviewButton>받은 후기 보러가기</S.ReviewButton>;
+                return (
+                    <S.ReviewButton
+                        onClick={() => navigate('/reviews', { state: { tab: 'received' } })}
+                    >
+                        받은 후기 보러가기
+                    </S.ReviewButton>
+                );
             }
             return (
                 <S.ReviewButton
