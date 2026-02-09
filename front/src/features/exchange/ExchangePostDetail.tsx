@@ -12,8 +12,8 @@ import locationIcon from '../../assets/images/placeholder.png';
 import deliveryIcon from '../../assets/images/shipping-fee.png';
 import BookmarkFolderSelector from '../bookmark/components/BookmarkFolderSelector';
 import FolderCreationModal from '../bookmark/components/FolderCreationModal';
-import * as S from './ExchangePostDetail.styles';
 import { useReport } from '../report/ReportContext';
+import * as S from './ExchangePostDetail.styles';
 
 // 채팅 api
 import { startRoom } from '../exchangeChat/api/ExchangeChatApi';
@@ -103,6 +103,8 @@ const ExchangePostDetail = () => {
 
     const [bookmarkCount, setBookmarkCount] = useState<number>(0);
     const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
+
+    const [shouldReopenSelector, setShouldReopenSelector] = useState(false);
 
     const navigate = useNavigate(); // 훅으로 navigate 함수 가져오기
 
@@ -270,8 +272,14 @@ const ExchangePostDetail = () => {
                 folderColor: color,
             };
 
-            setFolders((prev) => [...prev, newFolder]);
-            setIsFolderModalOpen(false);
+            setFolders((prev) => [...prev, newFolder]); // 폴더 추가
+            setIsFolderModalOpen(false); // 생성 모달 먼저 닫기
+
+            if (shouldReopenSelector) {
+                setIsSelectorOpen(true);      // 다시 폴더 선택 모달 열기
+                setShouldReopenSelector(false);
+            }
+
         } catch (err) {
             console.error("폴더 생성 실패", err);
         }
@@ -337,7 +345,7 @@ const ExchangePostDetail = () => {
 
         try {
             if (isBookmarked) {
-                // 1️현재 게시글(postId)에 해당하는 북마크Id 가져오기
+                // 현재 게시글(postId)에 해당하는 북마크Id 가져오기
                 const userBookmarksRes = await axiosInstance.get("/bookmarks", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -544,6 +552,7 @@ const ExchangePostDetail = () => {
                                 mode={isBookmarked ? "move" : "add"}
                                 onSelect={handleSelectFolder}
                                 onAddFolder={() => {
+                                    setShouldReopenSelector(true);
                                     setIsSelectorOpen(false);
                                     setIsFolderModalOpen(true);
                                 }}
