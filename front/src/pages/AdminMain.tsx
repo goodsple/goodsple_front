@@ -3,6 +3,7 @@ import * as S from './AdminMainStyle';
 import adminBannerImg from '../assets/images/main-banner.png';
 import AdminUserStatsPanel from '../features/admin/dashborad/user/AdminUserStatsPanel';
 import AdminReportStatsPanel from '../features/admin/dashborad/report/ AdminReportStatsPanel';
+import AdminAuctionStatsPanel from '../features/admin/dashborad/auction/AdminAuctionStatsPanel';
 
 function AdminMain() {
   return (
@@ -14,12 +15,14 @@ function AdminMain() {
       <S.ContentWrapper>
         <S.GridContainer>
           <S.InfoBox>
-            <AdminUserStatsPanel/>
+            <AdminUserStatsPanel />
           </S.InfoBox>
           <S.InfoBox>
-            <AdminReportStatsPanel/>
+            <AdminReportStatsPanel />
           </S.InfoBox>
-          <S.InfoBox className="full-width">라이브 경매</S.InfoBox>
+          <S.InfoBox className="full-width">
+            <AdminAuctionStatsPanel />
+          </S.InfoBox>
           <S.InfoBox>커뮤니티</S.InfoBox>
           <S.InfoBox>인기검색어</S.InfoBox>
         </S.GridContainer>
