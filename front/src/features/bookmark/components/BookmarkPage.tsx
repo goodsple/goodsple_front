@@ -189,8 +189,8 @@ const BookmarkPage: React.FC = () => {
                     }}
                 />
 
-                {/* 북마크 추가 버튼 */}
-                <s.AddBookmark onClick={() => setIsSelectorOpen(true)}>북마크 추가</s.AddBookmark>
+                {/* 북마크 추가 버튼 => 게시글 구현 전 예시 버튼*/}
+                {/* <s.AddBookmark onClick={() => setIsSelectorOpen(true)}>북마크 추가</s.AddBookmark> */}
 
                 {/* 폴더 선택 모달 */}
                 <BookmarkFolderSelector
