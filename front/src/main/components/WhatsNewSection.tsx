@@ -6,7 +6,7 @@ import * as Wn from "./WhatsNewSectionStyle";
 type PostItem = {
   exchangePostId: number;
   exchangePostTitle: string;
-  imageUrl?: string | null;
+  thumbnailUrl?: string | null;
 };
 
 const WhatsNewSection = () => {
@@ -46,7 +46,7 @@ const WhatsNewSection = () => {
                   key={post.exchangePostId}
                   onClick={() => navigate(`/exchange/detail/${post.exchangePostId}`)}
                 >
-                  <Wn.Thumbnail src={post.imageUrl ?? undefined} alt="게시글 썸네일" />
+                  <Wn.Thumbnail src={post.thumbnailUrl ?? undefined} alt="게시글 썸네일" />
                   <Wn.PostTitle>{post.exchangePostTitle}</Wn.PostTitle>
                 </Wn.Card>
               ))}
