@@ -13,6 +13,7 @@ import WhatsNewSection from '../components/WhatsNewSection';
 import CateButtons from '../../features/usermain/components/CateButtons';
 import CommMegaPhoneBox from '../../features/usermain/components/CommMegaPhoneBox';
 import SearchBox from '../../features/usermain/components/SearchBox';
+import PopupNotice from '../../features/notice/PopupNotice';
 
 function Main() {
 
@@ -43,6 +44,9 @@ function Main() {
 
   return (
     <>
+    {/* 팝업 공지사항 */}
+    <PopupNotice />
+
       {/* 검색 + 카테고리 */}
       <SearchBox />
       <CateButtons />

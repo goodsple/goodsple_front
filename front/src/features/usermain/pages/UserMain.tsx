@@ -42,7 +42,6 @@ function UserMain() {
 
   return (
     <>
-      <PopupNotice />
       <BasicComponents />
       <RealTimePopular />
       <RealTimeEventZone />

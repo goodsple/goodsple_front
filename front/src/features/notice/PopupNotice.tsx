@@ -7,7 +7,7 @@ interface Popup {
     noticeId: number;
     noticeTitle: string;
     popupInfo: {
-        popupSummary: string;
+    popupSummary: string;
     };
 }
 
@@ -25,6 +25,7 @@ const PopupNotice: React.FC = () => {
                     // 최대 3개만 저장
                     setPopups(res.data.slice(0, 3));
                 }
+                // console.log("팝업 응답:", res.data);
             } catch (err) {
                 console.error('팝업 공지 불러오기 실패', err);
             }
@@ -43,6 +44,7 @@ const PopupNotice: React.FC = () => {
     };
 
     if (popups.length === 0) return null;
+    // console.log("현재 popups 상태:", popups);
 
     return (
         <>
