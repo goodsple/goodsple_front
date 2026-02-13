@@ -43,7 +43,6 @@ import PaymentPage from './features/payment/pages/PaymentPage';
 import PaymentSuccessPage from './features/payment/pages/PaymentSuccessPage';
 import MyReview from './features/review/components/MyReview';
 import WriteReview from './features/review/components/WriteReview.tsx';
-import UserMain from './features/usermain/pages/UserMain.tsx';
 import Main from './main/pages/Main.tsx';
 
 // 관리자화면 컴포넌트

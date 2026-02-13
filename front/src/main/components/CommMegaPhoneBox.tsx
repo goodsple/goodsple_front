@@ -1,7 +1,7 @@
 import { Client, type Frame } from '@stomp/stompjs';
 import { useEffect, useState } from 'react';
 import SockJS from 'sockjs-client';
-import megaPhone from '../../../assets/images/megaphone.png';
+import megaPhone from '../../assets/images/megaphone.png';
 import * as s from './CommMegaPhoneBoxStyle.ts';
 
 const CommMegaPhoneBox: React.FC = () => {
