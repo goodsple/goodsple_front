@@ -112,6 +112,7 @@ export default function ChatLayout({
                     nickname={currentRoom!.nick}
                     avatar={currentRoom!.avatar}
                     levelText={currentRoom!.levelText}
+                    badgeImageUrl={currentRoom!.badgeImageUrl}
                     verified={currentRoom!.verified}
                     />
                 </S.InitialWrap>
