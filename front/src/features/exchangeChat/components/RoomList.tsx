@@ -73,10 +73,10 @@ const RoomList = forwardRef<HTMLDivElement, Props>(
                       <S.NickLine>
                         <S.Nick>{r.nick}</S.Nick>
                         <S.Time>• {relTime(r.updatedAt)}</S.Time>
+                        {unread > 0 && <S.Unread>{unread}</S.Unread>}
                       </S.NickLine>
                       <S.Last>{r.last}</S.Last>
                     </div>
-                    {unread > 0 && <S.Unread>{unread}</S.Unread>}
                   </S.Row>
 
                   <S.KebabBtn

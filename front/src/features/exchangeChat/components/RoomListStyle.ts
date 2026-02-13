@@ -85,7 +85,8 @@ export const Unread = styled.span`
   border-radius: 999px;
   font-size: 12px;
   padding: 2px 8px;
-  margin-top: 16px;
+  margin-left: 6px;
+  line-height: 1;
 `;
 
 export const KebabBtn = styled.button`
@@ -147,4 +148,3 @@ export const EmptyCenter = styled.div`
     transform: translateY(0);
   }
 `;
-

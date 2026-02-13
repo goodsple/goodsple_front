@@ -123,6 +123,7 @@ export const LogoutButton = styled.button`
 `;
 
 export const IconBox = styled.div<IconBoxProps>`
+  position: relative;
   width:28px;
   height:28px;
   cursor: pointer;
@@ -147,6 +148,17 @@ export const IconBox = styled.div<IconBoxProps>`
     `
     margin-left:15px;
     `}
+`;
+
+export const UnreadDot = styled.span`
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #E03131;
+  border: 2px solid #FFFDFA;
 `;
 
 export const ProfileWrapper = styled.div<ProfileWrapperProps>`
@@ -183,4 +195,3 @@ export const Overlay = styled.div<{ $open: boolean }>`
   transition: opacity 0.3s ease-in-out;
   z-index: 100;
 `;
-
