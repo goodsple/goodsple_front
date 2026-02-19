@@ -1,9 +1,9 @@
 import * as S from './AdminMainStyle';
 
 import adminBannerImg from '../assets/images/main-banner.png';
-import AdminUserStatsPanel from '../features/admin/dashborad/user/AdminUserStatsPanel';
-import AdminReportStatsPanel from '../features/admin/dashborad/report/ AdminReportStatsPanel';
-import AdminAuctionStatsPanel from '../features/admin/dashborad/auction/AdminAuctionStatsPanel';
+import AdminUserStatsPanel from '../features/admin/dashboard/user/AdminUserStatsPanel';
+import AdminReportStatsPanel from '../features/admin/dashboard/report/AdminReportStatsPanel';
+import AdminAuctionStatsPanel from '../features/admin/dashboard/auction/AdminAuctionStatsPanel';
 
 function AdminMain() {
   return (

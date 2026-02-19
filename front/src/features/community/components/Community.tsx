@@ -2,7 +2,7 @@ import { useEffect, useState, type KeyboardEvent } from 'react';
 import axiosInstance from '../../../api/axiosInstance';
 import Logo from '../../../assets/images/logo.png';
 import sendIcon from '../../../assets/images/send_purple.png';
-import SearchBox from '../../usermain/components/SearchBox';
+import SearchBox from '../../../main/components/SearchBox';
 import type { ChatMessage, MessageType } from '../hooks/useWebSocket';
 import { useWebSocket } from '../hooks/useWebSocket';
 import * as s from './CommunityStyle';

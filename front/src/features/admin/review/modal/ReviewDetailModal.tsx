@@ -29,10 +29,12 @@ const ReviewDetailModal: React.FC<Props> = ({ isOpen, review, onClose, onSave })
 
   // ── 1) 리뷰가 바뀔 때마다 초기화 ──
   useEffect(() => {
-    if (!review || !containerRef.current) return;
+    if (!review) return;
     setStatus(review.status);
     setPhotoIndex(0);
-    containerRef.current.scrollLeft = 0;
+    if (containerRef.current) {
+      containerRef.current.scrollLeft = 0;
+    }
   }, [review]);
 
   // 스크롤 인덱스
@@ -50,6 +52,8 @@ const ReviewDetailModal: React.FC<Props> = ({ isOpen, review, onClose, onSave })
   }, []);
 
     if (!isOpen || !review) return null;
+    const photos = review.photos ?? [];
+    const hasPhotos = photos.length > 0;
 
     const handleClickSave = () => setShowConfirm(true);
 
@@ -71,7 +75,7 @@ const ReviewDetailModal: React.FC<Props> = ({ isOpen, review, onClose, onSave })
 
     // 사진이 여러 장일 때 넘기는 예시 (optional)
     const prevPhoto = () => setPhotoIndex(i => Math.max(0, i - 1));
-    const nextPhoto = () => setPhotoIndex(i => Math.min(review.photos!.length - 1, i + 1));
+    const nextPhoto = () => setPhotoIndex(i => Math.min(photos.length - 1, i + 1));
 
   return (
       <S.Overlay>
@@ -120,47 +124,49 @@ const ReviewDetailModal: React.FC<Props> = ({ isOpen, review, onClose, onSave })
             <S.FieldFull row>
               <S.Label>후기 내용</S.Label>
               <S.ReviewContentWrapper>
-                <S.PhotoSliderWrapper>
-                    {/* 스크롤 가능한 영역 */}
-                    <S.LargePhotoContainer ref={containerRef}>
-                        {review.photos!.map((url,idx)=>(
-                            <S.LargePhoto 
-                                key={idx} 
-                                src={url} 
-                                alt={`후기 사진 ${idx + 1}`} 
-                            />
-                        ))}
-                    </S.LargePhotoContainer>
+                {hasPhotos && (
+                  <S.PhotoSliderWrapper>
+                      {/* 스크롤 가능한 영역 */}
+                      <S.LargePhotoContainer ref={containerRef}>
+                          {photos.map((url,idx)=>(
+                              <S.LargePhoto 
+                                  key={idx} 
+                                  src={url} 
+                                  alt={`후기 사진 ${idx + 1}`} 
+                              />
+                          ))}
+                      </S.LargePhotoContainer>
 
-                    {/* 스크롤 외부에 고정될 화살표/인디케이터 */}
-                    {photoIndex > 0 && (
-                        <S.NavArrowLeft
-                            src={arrowLeft}
-                            alt="이전 사진" 
-                            onClick={() => {
-                                const el = containerRef.current!;
-                                const newIndex = photoIndex - 1;
-                                el.scrollLeft = newIndex * el.clientWidth;
-                                setPhotoIndex(newIndex);
-                            }}
-                        />
-                    )}
-                    {photoIndex < review.photos!.length - 1 && (
-                        <S.NavArrowRight
-                            src={arrowRight}
-                            alt="다음 사진"
-                            onClick={() => {
-                                const el = containerRef.current!;
-                                const newIndex = photoIndex + 1;
-                                el.scrollLeft = newIndex * el.clientWidth;
-                                setPhotoIndex(newIndex);
-                            }}
-                        />
-                    )}
-                    <S.PageIndicatorOverlay>
-                        {photoIndex + 1}/{review.photos!.length}
-                    </S.PageIndicatorOverlay>
-                </S.PhotoSliderWrapper>
+                      {/* 스크롤 외부에 고정될 화살표/인디케이터 */}
+                      {photoIndex > 0 && (
+                          <S.NavArrowLeft
+                              src={arrowLeft}
+                              alt="이전 사진" 
+                              onClick={() => {
+                                  const el = containerRef.current!;
+                                  const newIndex = photoIndex - 1;
+                                  el.scrollLeft = newIndex * el.clientWidth;
+                                  setPhotoIndex(newIndex);
+                              }}
+                          />
+                      )}
+                      {photoIndex < photos.length - 1 && (
+                          <S.NavArrowRight
+                              src={arrowRight}
+                              alt="다음 사진"
+                              onClick={() => {
+                                  const el = containerRef.current!;
+                                  const newIndex = photoIndex + 1;
+                                  el.scrollLeft = newIndex * el.clientWidth;
+                                  setPhotoIndex(newIndex);
+                              }}
+                          />
+                      )}
+                      <S.PageIndicatorOverlay>
+                          {photoIndex + 1}/{photos.length}
+                      </S.PageIndicatorOverlay>
+                  </S.PhotoSliderWrapper>
+                )}
 
                 <S.Content>{review.content}</S.Content>
 

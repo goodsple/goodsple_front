@@ -10,9 +10,9 @@ import AuctionSection from '../components/AuctionSection';
 import MainBannerSection from '../components/MainBannerSection';
 import WhatsNewSection from '../components/WhatsNewSection';
 
-import CateButtons from '../../features/usermain/components/CateButtons';
-import CommMegaPhoneBox from '../../features/usermain/components/CommMegaPhoneBox';
-import SearchBox from '../../features/usermain/components/SearchBox';
+import CateButtons from '../components/CateButtons';
+import CommMegaPhoneBox from '../components/CommMegaPhoneBox';
+import SearchBox from '../components/SearchBox';
 import PopupNotice from '../../features/notice/PopupNotice';
 
 function Main() {
@@ -70,7 +70,7 @@ function Main() {
                     position: 'fixed',
                     right: '30px',
                     bottom: '30px',
-                    width: '100px',
+                    width: '70px',
                     cursor: 'pointer',
                     zIndex: 1000,
                 }}

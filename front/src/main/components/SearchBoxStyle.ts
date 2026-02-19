@@ -3,17 +3,16 @@
 import styled from "styled-components";
 
 export const SearchIcon = styled.img`
-  width: 50px;
-  height: 50px;
-  margin-right: 20px;
+  width: 45px;
+  height: 45px;
   transform: translateX(150%);
 `;
 
 export const SearchIcon2 = styled.img`
   position: absolute;
   right: 20px;
-  width: 45px;
-  height: 45px;
+  width: 35px;
+  height: 35px;
 `;
 
 export const SearchWrap = styled.div`
