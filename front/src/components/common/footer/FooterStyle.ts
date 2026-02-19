@@ -47,6 +47,7 @@ export const FooterRight = styled.div`
 export const FooterLogo = styled.img`
     width: 130px;
     object-fit: contain;
+    margin-top: 4px;
 `;
 
 export const SectionTitle = styled.strong`

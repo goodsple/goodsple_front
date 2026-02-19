@@ -46,7 +46,7 @@ export const RightArea = styled.div`
 `;
 
 export const Logo = styled.img`
-    height: 60px;
+    height: 54px;
     object-fit: contain;
     cursor: pointer;
 `;
