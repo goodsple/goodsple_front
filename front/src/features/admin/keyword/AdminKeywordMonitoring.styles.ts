@@ -27,18 +27,60 @@ export const KeywordTable = styled.table`
   }
 `;
 
-export const ActionButton = styled.button`
+export const ActionButton = styled.button<{
+  variant?: 'block' | 'unblock' | 'default';
+}>`
   padding: 6px 12px;
   margin: 0 4px;
   font-size: 14px;
-  border: 1px solid #888;
   border-radius: 10px;
-  background-color: white;
   cursor: pointer;
+  transition: all 0.2s ease;
+
+  background-color: ${({ variant }) =>
+    variant === 'block'
+      ? '#f9f9f9'
+      : variant === 'unblock'
+      ? '#f4f6f8'
+      : 'white'};
+
+  border: 1px solid
+    ${({ variant }) =>
+      variant === 'block'
+        ? '#c62828'
+        : variant === 'unblock'
+        ? '#2e7d32'
+        : '#ccc'};
+
+  color: ${({ variant }) =>
+    variant === 'block'
+      ? '#c62828'
+      : variant === 'unblock'
+      ? '#2e7d32'
+      : '#333'};
 
   &:hover {
-    background-color: #444444;
+    background-color: ${({ variant }) =>
+      variant === 'block'
+        ? '#c62828'
+        : variant === 'unblock'
+        ? '#2e7d32'
+        : '#444'};
+
     color: white;
-    border-color: #444444;
   }
+
+  &:disabled {
+    background-color: #d9d9d9;
+    color: #ffffff;
+    border-color: #d9d9d9;
+    cursor: not-allowed;
+  }
+`;
+
+export const StatusText = styled.span<{ status: 'VISIBLE' | 'BLOCKED' }>`
+  color: ${({ status }) =>
+    status === 'BLOCKED' ? '#e53935' : 'inherit'};
+  font-weight: ${({ status }) =>
+    status === 'BLOCKED' ? '600' : '400'};
 `;
