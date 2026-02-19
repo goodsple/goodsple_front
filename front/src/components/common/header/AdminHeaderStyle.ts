@@ -13,7 +13,7 @@ export const HeaderContainer = styled.header`
 `;
 
 export const LogoImage = styled.img`
-  height: 68px;
+  height: 45px;
   cursor: pointer;
 `;
 
