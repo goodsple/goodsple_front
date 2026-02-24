@@ -47,3 +47,23 @@ export const fetchReportStats = async (months = 3): Promise<ReportStatsResponse>
   const res = await axiosInstance.get('/admin/dashboard/reports', { params: { months } });
   return res.data;
 };
+
+// 인기 검색어 관련 타입과 API 함수
+export interface PopularKeywordSummary {
+  totalSearchCount: number;
+  visibleKeywordCount: number;
+  blockedKeywordCount: number;
+  totalSearchDiff?: number; // 검색수 변동 (예: +100, -50)
+}
+
+export interface PopularKeywordItem {
+  keyword: string;
+  searchCount: number;
+  rank: number;
+  rankChange?: number; // 랭킹 변동 (예: +1, -2, 0)
+}
+
+export const fetchPopularKeywordStats = async () => {
+  const res = await fetch('/api/admin/dashboard/popular-keywords');
+  return res.json();
+};
