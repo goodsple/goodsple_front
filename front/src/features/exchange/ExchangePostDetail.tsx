@@ -8,6 +8,11 @@ import bookmarkIcon from '../../assets/images/bookmarkIcon.png';
 import chatIcon from '../../assets/images/chatIcon.png';
 import clockIcon from '../../assets/images/clock.png';
 import defaultProfile from '../../assets/images/default_profile.png';
+import { default as defaultBadge, default as lv1Badge } from '../../assets/images/LV1.png';
+import lv2Badge from '../../assets/images/LV2.png';
+import lv3Badge from '../../assets/images/LV3.png';
+import lv4Badge from '../../assets/images/LV4.png';
+import lv5Badge from '../../assets/images/LV5.png';
 import locationIcon from '../../assets/images/placeholder.png';
 import deliveryIcon from '../../assets/images/shipping-fee.png';
 import BookmarkFolderSelector from '../bookmark/components/BookmarkFolderSelector';
@@ -46,7 +51,9 @@ interface Post {
         id: number;
         profileImageUrl: string | null;
         nickname: string;
-        level: number;
+        
+        badgeLevel: number;
+        badgeName: string;
         badgeImageUrl: string | null;
     }
 
@@ -79,6 +86,13 @@ interface Folder {
     folderColor: string;
 }
 
+const badgeImageMap: Record<string, string> = {
+    "/images/LV1.png": lv1Badge,
+    "/images/LV2.png": lv2Badge,
+    "/images/LV3.png": lv3Badge,
+    "/images/LV4.png": lv4Badge,
+    "/images/LV5.png": lv5Badge,
+};
 
 // 교환게시글 상세 컴포넌트
 const ExchangePostDetail = () => {
@@ -418,7 +432,7 @@ const ExchangePostDetail = () => {
                         userId: post.writer.id,
                         nickname: post.writer.nickname,
                         avatar: post.writer.profileImageUrl ?? undefined,
-                        levelText: `Lv.${post.writer.level ?? 1} 교환러`,
+                        // levelText: `Lv.${post.writer.level ?? 1} 교환러`,
                     },
                     postPreview: {
                         title: post.title,
@@ -437,7 +451,7 @@ const ExchangePostDetail = () => {
         }
     };
 
-
+    console.log(post.writer);
 
     return (
         <S.Container>
@@ -597,11 +611,18 @@ const ExchangePostDetail = () => {
                         <S.WriterName>{post.writer.nickname || '익명'}</S.WriterName>
                         {/* <S.WriterLevel>{user.level}</S.WriterLevel> 가져올 레벨 db 없음 */}
                         <S.WriterLevel>
-                            {/* Lv.{post.writer.level} */}
-                            Lv.1 새싹 교환러
-                            {post.writer.badgeImageUrl && (
-                                <img src={post.writer.badgeImageUrl} alt="뱃지 이미지" />
-                            )}
+                            LV{post.writer.badgeLevel}. {post.writer.badgeName}
+
+                            <img
+                                src={
+                                        post.writer.badgeImageUrl
+                                            ? badgeImageMap[post.writer.badgeImageUrl]
+                                            : defaultBadge
+                                    }
+                                alt="뱃지"
+                                width="40px"
+                                height="40px"
+                            />
                         </S.WriterLevel>
                     </div>
                 </S.WriterProfile>

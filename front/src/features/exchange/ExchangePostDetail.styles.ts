@@ -307,6 +307,8 @@ export const WriterName = styled.div`
 export const WriterLevel = styled.div`
   font-size: 13px;
   color: #777;
+  display: flex;
+  align-items: center;
 `;
 
 export const Content = styled.div`

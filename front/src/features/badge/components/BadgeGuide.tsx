@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import axiosInstance from '../../../api/axiosInstance';
 import LV1badge from '../../../assets/images/LV1.png';
 import LV2badge from '../../../assets/images/LV2.png';
 import LV3badge from '../../../assets/images/LV3.png';
@@ -6,11 +7,52 @@ import LV4badge from '../../../assets/images/LV4.png';
 import LV5badge from '../../../assets/images/LV5.png';
 import * as s from './BadgeGuideStyle';
 
+// 서버 DTO 타입 추가
+interface MyScoreResponseDto { 
+    userId: number;
+    trustScore: number;
+    reviewScore: number;
+    penaltyScore: number;
+    totalScore: number;
+    badgeLevel: number;
+    badgeName: string;
+    badgeImageUrl: string;
+    nextMinScore: number | null;
+    scoreGap: number;
+}
+
+// 레벨 -> 이미지 매핑
+const badgeImages: Record<number, string> = { 
+    1: LV1badge,
+    2: LV2badge,
+    3: LV3badge,
+    4: LV4badge,
+    5: LV5badge,
+};
+
 const BadgeGuide:React.FC = () => {
 
     const [isCalcOpen, setIsCalcOpen] = useState(false);
     const [faqOpenStates, setFaqOpenStates] = useState<boolean[]>(Array(5).fill(false));
     const timerRef = useRef<number | null>(null); 
+
+    const [myScore, setMyScore] = useState<MyScoreResponseDto | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchMyScore = async () => {
+            try {
+                const res = await axiosInstance.get('/badge/myscores');
+                setMyScore(res.data);
+            } finally {
+                setLoading(false); 
+            }
+        };
+
+        fetchMyScore();
+    }, []);
+
+
 
 
     const toggleCalcInfo = () => {
@@ -36,23 +78,54 @@ const BadgeGuide:React.FC = () => {
 
                 {/* 내 등급에 맞는 뱃지 */}
                 <s.MyBadgeInfoBox>
+
+                    {loading && <div>불러오는 중...</div>} 
+
+                    {!loading && myScore && (  
+
+                        <>
                             <s.BadgeCard>
-                                <img src={LV1badge} alt="뱃지 이미지"/>
+                                {/* 레벨 기반 이미지 사용 */}
+                                <img
+                                    src={badgeImages[myScore.badgeLevel]}   
+                                    alt="뱃지 이미지"
+                                />
+
                                 <s.MyBadgeInfo>
-                                    <s.BadgeName><b>LV1.</b> 새싹 교환러</s.BadgeName>
-                                    <s.BadgeScore><b>20</b> 점</s.BadgeScore>
+                                    <s.BadgeName>
+                                        <b>LV{myScore.badgeLevel}.</b> {myScore.badgeName}   
+                                    </s.BadgeName>
+
+                                    <s.BadgeScore>
+                                        <b>{myScore.totalScore}</b> 점 
+                                    </s.BadgeScore>
                                 </s.MyBadgeInfo>
                             </s.BadgeCard>
 
+                            {/* 게이지 퍼센트 동적 계산 */}
                             <s.GaugeBar>
-                                <s.GaugeFill percent={70} />
+                                <s.GaugeFill
+                                    percent={
+                                        myScore.nextMinScore
+                                            ? Math.min(
+                                                100,
+                                                (myScore.totalScore / myScore.nextMinScore) * 100
+                                            )   
+                                            : 100   
+                                    }
+                                />
                             </s.GaugeBar>
 
+                            {/* 다음 등급까지 남은 점수 */}
                             <s.NextBadgeGap>
-                                팬덤 대통령까지 51점 남았습니다!!
+                                {myScore.nextMinScore
+                                    ? `${myScore.scoreGap}점 남았습니다!`  
+                                    : '최고 등급입니다 👑'}             
                             </s.NextBadgeGap>
-
+                        </>
+                    )}
                 </s.MyBadgeInfoBox>
+
 
                 {/* 등급 단계별 뱃지 소개 ?  */}
                 <s.BadgeGuideBox>

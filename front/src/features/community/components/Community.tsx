@@ -1,6 +1,12 @@
 import { useEffect, useState, type KeyboardEvent } from 'react';
 import axiosInstance from '../../../api/axiosInstance';
+import defaultProfileImg from '../../../assets/images/default_profile.png';
 import Logo from '../../../assets/images/logo.png';
+import { default as defaultBadgeImg, default as Lv1Badge } from '../../../assets/images/LV1.png';
+import Lv2Badge from '../../../assets/images/LV2.png';
+import Lv3Badge from '../../../assets/images/LV3.png';
+import Lv4Badge from '../../../assets/images/LV4.png';
+import Lv5Badge from '../../../assets/images/LV5.png';
 import sendIcon from '../../../assets/images/send_purple.png';
 import SearchBox from '../../../main/components/SearchBox';
 import type { ChatMessage, MessageType } from '../hooks/useWebSocket';
@@ -8,15 +14,25 @@ import { useWebSocket } from '../hooks/useWebSocket';
 import * as s from './CommunityStyle';
 import CommUserInfoModal from './CommUserInfoModal';
 
+const badgeImageMap: Record<string, string> = {
+  "/images/LV1.png": Lv1Badge,
+  "/images/LV2.png": Lv2Badge,
+  "/images/LV3.png": Lv3Badge,
+  "/images/LV4.png": Lv4Badge,
+  "/images/LV5.png": Lv5Badge,
+};
+
+const BASE_URL = 'http://localhost:8080'; // ⭐ 서버 주소
+
 export interface ChatRoom {
-    id: string;
-    name: string;
+  id: string;
+  name: string;
 }
 
 type SelectedUserInfo = {
   userId: number;
   nickname: string;
-  userProfile: string;
+  userProfile: string | null;
   badgeName: string;
   badgeImage: string;
 };
@@ -80,14 +96,26 @@ const Community: React.FC = () => {
     try {
       const res = await axiosInstance.get(`/chat/user/${msg.userId}`);
 
+      const BASE_URL = 'http://localhost:8080'; // ⭐ 서버 주소
+
       const userData = res.data;
       setSelectedUserInfo({
         userId: Number(msg.userId),
         nickname: userData.nickname || '익명',
-        userProfile: userData.userProfile || '/assets/images/default_profile.png',
-        badgeName: userData.badges?.[0]?.name || 'LV. 1 신규 유저',
-        badgeImage: userData.badges?.[0]?.image || '/assets/images/LV1.png',
+        userProfile: userData.userProfile
+          ? `${BASE_URL}${userData.userProfile}`
+          : null,
+
+        badgeName: userData.badgeName || 'LV. 1 신규 유저',
+
+        badgeImage: userData.badgeImageUrl
+          ? badgeImageMap[userData.badgeImageUrl] || defaultBadgeImg
+          : defaultBadgeImg,
       });
+
+      console.log("userData 전체 =", userData);
+      console.log("userProfile =", userData.userProfile);
+      console.log("badgeImageUrl =", userData.badgeImageUrl);
 
       setProfileModalOpen(true);
     } catch (err: any) {
@@ -141,17 +169,22 @@ const Community: React.FC = () => {
                 <s.ChatMessagesWrapper id="chatMessagesWrapper">
                   {(roomMessages[selectedRoom] || []).map((msg, idx) => {
                     const isMine = Number(msg.userId) === myUserId;
-
                     return (
                       <s.ChatMessageItem key={idx} $isMine={isMine}>
                         {/* 상대방 메시지 프로필만 표시 */}
                         {!isMine && (
                           <s.ProfileSection>
-                            <s.ProfileImage
-                              src={msg.userProfile || '/assets/images/default_profile.png'}
-                              alt="프로필 이미지"
-                              onClick={() => handleProfileClick(msg)}
-                            />
+                            <s.ProfileImage $isDefault={!msg.userProfile}>
+                              <img
+                                src={
+                                  msg.userProfile
+                                    ? `${BASE_URL}${msg.userProfile}`
+                                    : defaultProfileImg
+                                }
+                                alt="프로필"
+                                onClick={() => handleProfileClick(msg)}
+                              />
+                            </s.ProfileImage>
                             <s.UserName>{msg.nickname}</s.UserName>
                           </s.ProfileSection>
                         )}
@@ -193,7 +226,7 @@ const Community: React.FC = () => {
                           if (megaphoneRemaining > 0) setMessageType('MEGAPHONE'); 
                           else alert('이번 달 확성기 사용 횟수를 모두 사용했습니다.'); 
                         }}
-                        disabled={megaphoneRemaining <= 0} // 수정됨✨
+                        disabled={megaphoneRemaining <= 0} // 수정됨
                       >
                         확성기
                       </s.TypeButton>
