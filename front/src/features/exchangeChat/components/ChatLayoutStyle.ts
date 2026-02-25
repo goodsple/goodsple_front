@@ -5,7 +5,7 @@ const COLORS = {
   trackBg:'#F8F6F3', railBg:'#FAF8F8', thumb:'#9A9A9A', cap:'#E6E2DC'
 };
 
-export const Layout = styled.div<{ hasSider: boolean }>`
+export const Layout = styled.div<{ hasSider?: boolean }>`
     box-sizing: border-box;
     display: grid;
     grid-template-columns: minmax(360px, 1fr) 24px minmax(360px, 1fr);
@@ -101,8 +101,8 @@ export const Main = styled.section<{ mode: 'empty' | 'chat' }>`
   min-height: 0; /* 내부 스크롤 작동 핵심 */
 `;
 
-export const Content = styled.div<{withBorders?: boolean}>`
-  border-bottom: ${({withBorders}) => (withBorders ? `1px solid ${COLORS.line}` : '0')};
+export const Content = styled.div<{$withBorders?: boolean}>`
+  border-bottom: ${({$withBorders}) => ($withBorders ? `1px solid ${COLORS.line}` : '0')};
   overflow: hidden; /* 내부(MessageList)만 스크롤 */
 `;
 

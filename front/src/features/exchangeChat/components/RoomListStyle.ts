@@ -28,7 +28,7 @@ export const Scroll = styled.div<{ $empty?: boolean }>`
   `}
 `;
 
-export const Item = styled.button<{ $active?: boolean }>`
+export const Item = styled.div<{ $active?: boolean }>`
   width: 100%;
   text-align: left;
   background: ${({ $active }) => ($active ? '#F6F3FF' : 'transparent')};
