@@ -31,11 +31,11 @@ export class ChatSocket {
       if (transport === 'sockjs') {
         // SockJS는 http(s)로 열어야 함
         const scheme = loc.protocol === 'https:' ? 'https:' : 'http:';
-        return `${scheme}//${loc.host}/ws-stomp`;
+        return `${scheme}//${loc.host}/ws`;
       } else {
         // 순수 WS는 ws(s)로
         const scheme = loc.protocol === 'https:' ? 'wss:' : 'ws:';
-        return `${scheme}//${loc.host}/ws-stomp`;
+        return `${scheme}//${loc.host}/ws`;
       }
     })();
 
