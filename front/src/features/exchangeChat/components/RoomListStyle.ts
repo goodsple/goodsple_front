@@ -28,7 +28,7 @@ export const Scroll = styled.div<{ $empty?: boolean }>`
   `}
 `;
 
-export const Item = styled.button<{ $active?: boolean }>`
+export const Item = styled.div<{ $active?: boolean }>`
   width: 100%;
   text-align: left;
   background: ${({ $active }) => ($active ? '#F6F3FF' : 'transparent')};
@@ -85,7 +85,8 @@ export const Unread = styled.span`
   border-radius: 999px;
   font-size: 12px;
   padding: 2px 8px;
-  margin-top: 16px;
+  margin-left: 6px;
+  line-height: 1;
 `;
 
 export const KebabBtn = styled.button`
@@ -147,4 +148,3 @@ export const EmptyCenter = styled.div`
     transform: translateY(0);
   }
 `;
-

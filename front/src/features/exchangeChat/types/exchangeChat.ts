@@ -19,7 +19,7 @@
 /* =========================
  * 프론트 표시용 엔티티 타입
  * ========================= */
-export type Room = {
+  export type Room = {
     /** 문자열 id: 라우팅/리스트 key 안정성 */
     id: string;
     nick: string;
@@ -41,6 +41,7 @@ export type Room = {
         tags?: string[];
     };
     levelText?: string;
+    badgeImageUrl?: string;
 
     /** 좌측 목록에서 숨길지 여부(구매자용) */
     hidden?: boolean; // 기본 undefined/false
@@ -73,6 +74,7 @@ export type Room = {
       avatar?: string | null;
       verified?: boolean | null;
       levelText?: string | null;
+      badgeImageUrl?: string | null;
     } | null;
     last?: { id?: number | string; text?: string | null; createdAt?: string | null } | null;
     lastMessage?:
@@ -144,6 +146,7 @@ export type Room = {
     const avatar   = p?.avatar ?? undefined;
     const verified = !!p?.verified;
     const level    = p?.levelText ?? undefined;
+    const badgeImg = p?.badgeImageUrl ?? undefined;
   
     // 마지막 메시지 추출 (last / lastMessage 모두 대응)
     const lastRaw = d.last ?? d.lastMessage ?? null;
@@ -159,6 +162,7 @@ export type Room = {
       avatar,
       verified,
       levelText: level,
+      badgeImageUrl: badgeImg,
       last: lastText,
       unread: d.unreadCount ?? 0,
       updatedAt: updated,

@@ -8,7 +8,7 @@ import Lv3Badge from '../../../assets/images/LV3.png';
 import Lv4Badge from '../../../assets/images/LV4.png';
 import Lv5Badge from '../../../assets/images/LV5.png';
 import sendIcon from '../../../assets/images/send_purple.png';
-import SearchBox from '../../usermain/components/SearchBox';
+import SearchBox from '../../../main/components/SearchBox';
 import type { ChatMessage, MessageType } from '../hooks/useWebSocket';
 import { useWebSocket } from '../hooks/useWebSocket';
 import * as s from './CommunityStyle';

@@ -2,7 +2,6 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   max-width: 1200px;
-  min-width: 1200px; /* 최소 너비 */
   margin: 0 auto;
   padding: 40px 20px 60px;
   box-sizing: border-box;

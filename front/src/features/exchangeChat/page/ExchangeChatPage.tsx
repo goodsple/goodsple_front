@@ -216,7 +216,7 @@ export default function ExchangeChatPage() {
       prev.map(r => ({
         ...r,
         unread: r.id === roomId ? 0 : (r.unread ?? 0),
-        hidden: canSeeAllRooms ? false : r.id !== roomId,
+        hidden: false, // 입장한 방은 무조건 보이게
       }))
     );
 

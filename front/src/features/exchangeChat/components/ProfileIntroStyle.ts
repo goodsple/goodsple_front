@@ -37,6 +37,12 @@ export const Badge = styled.span`
 
 `;
 
+export const BadgeImage = styled.img`
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+`;
+
 export const Level = styled.div`
   margin-top: 2px;       
   font-size: 14px;

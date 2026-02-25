@@ -64,7 +64,7 @@ export default function ChatLayout({
   }, [rooms, currentRoomId, initialRoomId]);
 
   return (
-    <S.Layout hasSider={showRooms}>
+    <S.Layout $hasSider={showRooms}>
       {/* 좌측 컬럼은 유지, 아이템 숨김은 RoomList에서 처리 */}
       <S.Sider>
         {showRooms && (
@@ -90,7 +90,7 @@ export default function ChatLayout({
       {/* 우측 */}
       <S.Main mode={mode} style={{ ['--composer-h' as any]: '76px' }}>
         {mode === 'empty' ? (
-          <S.Content withBorders={false}>
+          <S.Content $withBorders={false}>
             <S.EmptyState>
               <S.EmptyBox>
                 <S.EmptyImg src={chatImg} alt="채팅 안내" />
@@ -100,7 +100,7 @@ export default function ChatLayout({
           </S.Content>
         ) : (
           <>
-            <S.Content withBorders>
+            <S.Content $withBorders>
             {isFirstChat ? (
                 // 첫 대화 화면도 스크롤 대상 DOM을 만들어 ref 연결
                 <S.InitScroll ref={msgScrollRef}>
@@ -112,6 +112,7 @@ export default function ChatLayout({
                     nickname={currentRoom!.nick}
                     avatar={currentRoom!.avatar}
                     levelText={currentRoom!.levelText}
+                    badgeImageUrl={currentRoom!.badgeImageUrl}
                     verified={currentRoom!.verified}
                     />
                 </S.InitialWrap>

@@ -1,8 +1,10 @@
 import CSS from './userCategory.module.css';
 // import newjeans from '../../../assets/cateImages/newjeans.jpg';
-import BasicComponents from '../../usermain/components/BasicComponents.tsx';
 // import PopularPosts from './PopularPosts.tsx';
 import CategoryBoard from './CategoryBoard.tsx';
+import SearchBox from '../../../main/components/SearchBox';
+import CateButtons from '../../../main/components/CateButtons';
+import CommMegaPhoneBox from '../../../main/components/CommMegaPhoneBox';
 import CategorySelect from '../pages/CategorySelect.tsx';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -51,7 +53,9 @@ function CategoryMain() {
 
   return (
     <>
-      <BasicComponents />
+      <SearchBox />
+      <CateButtons />
+      <CommMegaPhoneBox />
       <div className={CSS.popularContainer}>
         <div className={CSS.categoryMain}>
           <CategorySelect

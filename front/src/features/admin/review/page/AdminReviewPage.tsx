@@ -6,7 +6,6 @@ import SearchControls from '../components/SearchControls';
 import ReviewTable from '../components/ReviewTable';
 import Pagination from '../../../../components/common/pagination/Pagination';
 import ConfirmModal from '../../../../components/common/modal/ConfirmModal';
-import { mockReviews } from '../mock/mockReviews';
 import type { AdminReview, SearchCriteria } from '../types/adminReview';
 import ReviewDetailModal from '../modal/ReviewDetailModal';
 
@@ -31,11 +30,28 @@ const AdminReviewPage: React.FC = () => {
     const [detailOpen, setDetailOpen]       = useState(false);
     const [selectedReview, setSelectedReview] = useState<AdminReview|null>(null);
 
+    const fetchReviews = async (cond: SearchCriteria, page: number) => {
+        setLoading(true);
+        try {
+            const res = await axiosInstance.get('/admin/reviews', {
+                params: {
+                    ...cond,
+                    page: page - 1,
+                    size: 10,
+                },
+            });
+            setReviews(res.data?.content ?? []);
+            setTotalPages(res.data?.totalPages ?? 1);
+        } catch (e) {
+            console.error('후기 목록 조회 실패', e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(()=>{
-        // Mock 테스트
-        setReviews(mockReviews);
-        setTotalPages(3);
-    },[]);
+        fetchReviews(criteria, currentPage);
+    },[criteria, currentPage]);
 
     const handleSearch = (c: SearchCriteria) => {
         setCriteria(c);
@@ -43,19 +59,24 @@ const AdminReviewPage: React.FC = () => {
     };
 
     // 리뷰 행 클릭 시
-    const handleRowClick = (review: AdminReview) => {
-        setSelectedReview(review);
-        setDetailOpen(true);
+    const handleRowClick = async (review: AdminReview) => {
+        try {
+            const res = await axiosInstance.get(`/admin/reviews/${review.reviewId}`);
+            setSelectedReview(res.data ?? review);
+            setDetailOpen(true);
+        } catch (e) {
+            console.error('후기 상세 조회 실패', e);
+        }
     };
 
     // 모달에서 저장
     const handleSaveDetail = async ({ reviewId, status }: { reviewId:string; status:AdminReview['status'] }) => {
-        // await axiosInstance.put(`/admin/reviews/${reviewId}`, { status });
+        await axiosInstance.put(`/admin/reviews/${reviewId}`, { status });
         setDetailOpen(false);
         // 결과 표시
         setResultMsg(status === 'BLIND' ? '블라인드 처리되었습니다.' : '정상 처리되었습니다.');
         setResultOpen(true);
-        // TODO: 목록 갱신
+        fetchReviews(criteria, currentPage);
     };
 
     // 기존 onAction (블라인드/복구) 콜백
@@ -65,11 +86,11 @@ const AdminReviewPage: React.FC = () => {
         setConfirmOpen(true);
     };
     const doAction = async () => {
-        // await axiosInstance.put(`/admin/reviews/${pendingId}`, { status: pendingStatus });
+        await axiosInstance.put(`/admin/reviews/${pendingId}`, { status: pendingStatus });
         setConfirmOpen(false);
         setResultMsg(pendingStatus === 'BLIND' ? '블라인드 처리되었습니다.' : '정상 처리되었습니다.');
         setResultOpen(true);
-        // TODO: 목록 갱신
+        fetchReviews(criteria, currentPage);
     };
 
   return (

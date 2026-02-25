@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import map from "../../../assets/images/map.png";
-import search from "../../../assets/images/search.png";
+import map from "../../assets/images/map.png";
+import search from "../../assets/images/search.png";
 import PopularKeywords from "./PopularKeywords.tsx";
 import * as s from "./SearchBoxStyle"; // styled-components 모음
 import axios from "axios";

@@ -1,7 +1,8 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserNav from '../nav/UserNav';
 import { useAuth } from '../../../features/auth/contexts/AuthContext';
+import { getRoomSummaries } from '../../../features/exchangeChat/api/ExchangeChatApi';
 
 import * as style from './HeaderStyle';
 import logoImg from '../../../assets/images/logo.png';
@@ -20,6 +21,7 @@ function Header() {
   // Context에서 가져온 userProfile
   const { userProfile, setUserProfile } = useAuth();
   const isLoggedIn = Boolean(userProfile);
+  const [hasUnread, setHasUnread] = useState(false);
 
   // 로그아웃: Context만 초기화
   const handleLogout = useCallback(() => {
@@ -38,6 +40,31 @@ function Header() {
     setUserProfile(null);
     navigate('/login');
   }, [navigate, setUserProfile]);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setHasUnread(false);
+      return;
+    }
+    let mounted = true;
+
+    const fetchUnread = async () => {
+      try {
+        const rooms = await getRoomSummaries();
+        const total = rooms.reduce((sum, r) => sum + (r.unread ?? 0), 0);
+        if (mounted) setHasUnread(total > 0);
+      } catch (e) {
+        console.error('채팅 unread 조회 실패', e);
+      }
+    };
+
+    fetchUnread();
+    const timer = setInterval(fetchUnread, 30000);
+    return () => {
+      mounted = false;
+      clearInterval(timer);
+    };
+  }, [isLoggedIn]);
 
 
   return (
@@ -66,6 +93,7 @@ function Header() {
                 onClick={() => navigate('/exchange-chat')} 
                 >
                   <img src={chatImg} alt="채팅" />
+                  {hasUnread && <style.UnreadDot />}
                 </style.IconBox>
 
                 {/* <style.IconBox $iconType="alarm">
