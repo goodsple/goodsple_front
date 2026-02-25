@@ -126,13 +126,24 @@ export const ProfileSection = styled.div`
         flex-direction: column;
 `;
 
-export const ProfileImage = styled.img`
+export const ProfileImage = styled.div<{ $isDefault?: boolean }>`
         width: 42px;
         height: 42px;
-        border: 1px solid #444;
+        background: ${({ $isDefault }) => ($isDefault ? '#D9D9D9' : 'none')}; 
         border-radius: 50%;
+        align-items: center;
+        display: flex;
+        justify-content: center;
         object-fit: cover;
+        overflow: hidden;
         cursor: pointer;
+
+        img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                ${({ $isDefault }) => $isDefault && 'margin-top: 15px;'}
+        }
 `;
 
 export const UserName = styled.div`
@@ -142,7 +153,7 @@ export const UserName = styled.div`
         color: #444;
 `;
 
-// 메시지 입력창 
+// 메시지 입력창 ------------------------------------
 export const ChatInputBox = styled.div`
         width: 85%;
         height: 90px;

@@ -1,7 +1,9 @@
 import type React from 'react';
+import defaultProfileImg from '../../../assets/images/default_profile.png';
+import defaultBadgeImg from '../../../assets/images/LV1.png';
 import reportIcon from '../../../assets/images/ReportIcon.png';
-import * as s from './CommUserInfoModalStyle';
 import { useReport } from '../../report/ReportContext';
+import * as s from './CommUserInfoModalStyle';
 
 
 interface Props {
@@ -9,7 +11,7 @@ interface Props {
   nickname: string;
   badgeName: string;
   badgeImage: string;
-  userProfile: string;
+  userProfile: string | null;
   onClose: () => void;
 }
 
@@ -40,12 +42,18 @@ const CommUserInfoModal: React.FC<Props> = ({userId, nickname, badgeName, badgeI
         </s.TopBar>
 
         <s.CenterBar>
-            <s.ProfileImage src={userProfile} alt="유저 프로필" />
+            {/* <s.ProfileImage src={userProfile || defaultProfileImg}  alt="유저 프로필" /> */}
+            <s.ProfileImage $isDefault={!userProfile}>
+              <img
+                src={userProfile || defaultProfileImg}
+                alt="유저 프로필"
+              />
+            </s.ProfileImage>
             <s.Info>
                 <s.UserName>{nickname}</s.UserName>
                 <s.BadgeInfo>
                     <span>{badgeName}</span>
-                    <s.BadgeImage src={badgeImage} alt="뱃지" />
+                    <s.BadgeImage src={badgeImage || defaultBadgeImg}  alt="뱃지" />
                 </s.BadgeInfo>
             </s.Info>
         </s.CenterBar>

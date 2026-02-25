@@ -47,11 +47,24 @@ export const CenterBar = styled.div`
         align-items: center;
 `;
 
-export const ProfileImage = styled.div`
+export const ProfileImage = styled.div<{ $isDefault?: boolean }>`
         width: 120px;
         height: 120px;
-        border-radius: 60px;
-        background: #444;
+        border-radius: 50%;
+        background: ${({ $isDefault }) => ($isDefault ? '#D9D9D9' : 'none')}; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        margin-bottom: 20px;
+        margin-top: 10px;
+
+        img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                ${({ $isDefault }) => $isDefault && 'margin-top: 25px;'}
+        }
 `;
 
 export const Info = styled.div`
@@ -61,23 +74,21 @@ export const Info = styled.div`
 
 export const UserName = styled.div`
         font-size: 24px;
-        font-weight: 600;
+        font-weight: 650;
 `;
 
 export const BadgeInfo = styled.div`
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 500;
-        margin: 30px 0;
+        margin: 15px 0;
         display: flex;
         align-items: center;
 `;
 
-export const BadgeImage = styled.div`
-        width: 30px;
-        height: 30px;
-        margin-left: 10px;
+export const BadgeImage = styled.img`
+        width: 40px;
+        height: 40px;
         border-radius: 50px;
-        background: #444;
 `;
 
 export const BtnGroup = styled.div`
