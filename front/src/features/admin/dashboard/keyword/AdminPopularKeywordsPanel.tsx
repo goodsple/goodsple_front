@@ -44,9 +44,18 @@ const AdminPopularKeywordsPanel = () => {
             )
             : 0;
 
-    const renderDiff = (value?: number) => {
-        if (!value) return <S.Flat>-</S.Flat>;
-        if (value > 0) return <S.Up>▲ {value}</S.Up>;
+    const renderDiff = (value?: number | null, isNew?: boolean) => {
+        if (isNew) return <S.New>NEW</S.New>;
+
+        if (value === null || value === undefined)
+            return <S.Flat>-</S.Flat>;
+
+        if (value === 0)
+            return <S.Flat>-</S.Flat>;
+
+        if (value > 0)
+            return <S.Up>▲ {value}</S.Up>;
+
         return <S.Down>▼ {Math.abs(value)}</S.Down>;
     };
 
@@ -62,7 +71,7 @@ const AdminPopularKeywordsPanel = () => {
 
                 <S.Right>
                     <S.Count>{item.searchCount}</S.Count>
-                    <S.Change>{renderDiff(item.rankChange)}</S.Change>
+                    <S.Change>{renderDiff(item.rankChange, item.isNew)}</S.Change>
                 </S.Right>
             </S.Item>
         );

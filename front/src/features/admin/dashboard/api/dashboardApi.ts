@@ -61,6 +61,7 @@ export interface PopularKeywordItem {
   searchCount: number;
   rank: number;
   rankChange?: number; // 랭킹 변동 (예: +1, -2, 0)
+  isNew?: boolean;
 }
 
 export const fetchPopularKeywordStats = async () => {

@@ -148,3 +148,8 @@ export const MetaRow = styled.div`
     font-weight: 700;
   }
 `;
+
+export const New = styled.span`
+    color: #ff4d4f;
+    font-weight: 600;
+`;
