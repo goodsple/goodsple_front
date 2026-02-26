@@ -4,9 +4,33 @@ import axiosInstance from '../../../api/axiosInstance';
 import type { UserInfo } from '../types/myProfile';
 
 import profileImg from '../../../assets/images/default_profile.png';
-import badge from '../../../assets/images/LV1.png';
+import LV1 from '../../../assets/images/LV1.png';
+import LV2 from '../../../assets/images/LV2.png';
+import LV3 from '../../../assets/images/LV3.png';
+import LV4 from '../../../assets/images/LV4.png';
+import LV5 from '../../../assets/images/LV5.png';
 import * as s from './MyPageStyle';
 
+const badgeImages: Record<number, string> = {
+  1: LV1,
+  2: LV2,
+  3: LV3,
+  4: LV4,
+  5: LV5
+};
+
+interface MyScoreResponseDto {
+  userId: number;
+  trustScore: number;
+  reviewScore: number;
+  penaltyScore: number;
+  totalScore: number;
+  badgeLevel: number;
+  badgeName: string;
+  badgeImageUrl: string;
+  nextMinScore: number | null;
+  scoreGap: number;
+}
 
 const MyPage:React.FC = () => {
 
@@ -14,6 +38,7 @@ const MyPage:React.FC = () => {
 
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     const [loading, setLoading] = useState(true);
+    const [myScore, setMyScore] = useState<MyScoreResponseDto | null>(null);
 
     // 페이지 접속 시 유저 정보 가져오기
     useEffect(() => {
@@ -22,6 +47,11 @@ const MyPage:React.FC = () => {
             // '/users/me' 경로 확인 (뒤에 슬래시 빼는 게 안전)
             const res = await axiosInstance.get<UserInfo>('/users/me');
             setUserInfo(res.data);
+
+            // 뱃지 정보
+            const badgeRes = await axiosInstance.get<MyScoreResponseDto>('/badge/myscores');
+            setMyScore(badgeRes.data);
+
           } catch (err) {
             console.error('유저 정보 조회 실패', err);
           } finally {
@@ -29,7 +59,7 @@ const MyPage:React.FC = () => {
           }
         };
         fetchUser();
-      }, []);
+      }, [myScore]);
 
     const handleEditProfile = () => {
         navigate(`/editprofile`);
@@ -53,10 +83,15 @@ const MyPage:React.FC = () => {
                     </s.ProfileImage>
                        {userInfo.nickname}
                     <s.profileBadge>
-
-                        LV1. 새싹 교환러
-                        <img src={badge} alt="뱃지 이미지"/>
-
+                       {myScore && (
+                            <>
+                            LV{myScore.badgeLevel}. {myScore.badgeName}
+                            <img
+                                src={badgeImages[myScore.badgeLevel]}
+                                alt="뱃지 이미지"
+                            />
+                            </>
+                        )}
                     </s.profileBadge>
 
                     <s.EditProfileButton type="button" onClick={() => handleEditProfile()}>

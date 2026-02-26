@@ -87,7 +87,7 @@ const BadgeGuide:React.FC = () => {
                             <s.BadgeCard>
                                 {/* 레벨 기반 이미지 사용 */}
                                 <img
-                                    src={badgeImages[myScore.badgeLevel]}   
+                                    src={badgeImages[myScore.badgeLevel] ?? LV1badge}   
                                     alt="뱃지 이미지"
                                 />
 
