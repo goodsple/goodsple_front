@@ -67,3 +67,24 @@ export const fetchPopularKeywordStats = async () => {
   const res = await fetch('/api/admin/dashboard/popular-keywords');
   return res.json();
 };
+
+// 커뮤니티 통계 타입
+export type CommunityMonthlyStat = {
+  month: string;
+  roomId: string;
+  activeUsers: number;
+};
+
+export type CommunityStatsResponse = {
+  monthlyStats: CommunityMonthlyStat[];
+};
+
+// 커뮤니티 통계 조회
+export const fetchCommunityStats = async (
+  months = 3,
+): Promise<CommunityStatsResponse> => {
+  const res = await axiosInstance.get('/admin/dashboard/community', {
+    params: { months },
+  });
+  return res.data;
+};
