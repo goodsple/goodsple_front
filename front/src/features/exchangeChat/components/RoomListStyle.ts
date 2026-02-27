@@ -7,6 +7,8 @@ export const Wrap = styled.div`
   flex-direction: column;
   height: 100%;
   background: #fff;
+  position: relative;     /* 버튼/메뉴 기준 */
+  overflow: hidden;       /* 가로 스크롤 막기 */
 `;
 
 export const Title = styled.div`
@@ -16,8 +18,10 @@ export const Title = styled.div`
 `;
 
 export const Scroll = styled.div<{ $empty?: boolean }>`
-  height: 100%;
-  overflow: ${({ $empty }) => ($empty ? 'hidden' : 'auto')};
+flex: 1 1 auto;
+  overflow-y: auto;       /* 세로 스크롤만 */
+  overflow-x: hidden;
+  padding: 0 15px 10px 0;
 
   /* 빈 상태일 때 기본 스크롤바 완전 숨김 */
   ${({ $empty }) =>
