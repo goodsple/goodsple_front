@@ -30,7 +30,7 @@ export default function ExchangeChatPage() {
     undefined;
 
   const isNewRoom = location.state?.isNewRoom === true;
-  const isWriter  = location.state?.isWriter === true;
+  const isWriter = location.state?.isWriter === true;
   const peer = location.state?.peer;
   const postPreview = location.state?.postPreview;
 
@@ -108,8 +108,8 @@ export default function ExchangeChatPage() {
         const next = canSeeAllRooms
           ? list
           : (initialRoomId
-              ? list.map(r => ({ ...r, hidden: r.id !== initialRoomId }))
-              : list);
+            ? list.map(r => ({ ...r, hidden: r.id !== initialRoomId }))
+            : list);
 
         setRooms(next);
         if (listLockedInit) requestAnimationFrame(() => setListLocked(false));
@@ -148,24 +148,33 @@ export default function ExchangeChatPage() {
   useEffect(() => {
     if (!initialRoomId || isNewRoom) return;
     (async () => {
+      console.log("🟡 [STEP1] initialRoomId", initialRoomId);  // 👈 추가
       if (messagesByRoom[initialRoomId]) {
+        console.log("🟡 [STEP2] 기존 messages 존재", messagesByRoom[initialRoomId]); // 👈 추가
         const last = maxId(messagesByRoom[initialRoomId]);
+        console.log("🔴 [STEP3] LAST ID 계산 결과", last); // 👈 이미 있음(확인용)
         if (last > 0) {
+          console.log("🟢 [STEP4] sendRead 호출 직전", last); // 👈 추가
           socket.sendRead(initialRoomId, last);
-          try { await markRead(initialRoomId, last); } catch {}
+          try { await markRead(initialRoomId, last); } catch { }
           applyReadOptimistic(initialRoomId, last, 'me');
           zeroUnread(initialRoomId); // ← 리스트 배지 0 고정
         }
         return;
       }
       const msgs = await getMessages(initialRoomId, { limit: 50, myUserId });
+      console.log("🟡 [STEP5] getMessages 결과", msgs); // 👈 추가
+
       setMessagesByRoom(prev => ({ ...prev, [initialRoomId]: msgs }));
       setRooms(prev => prev.map(r => (r.id === initialRoomId ? { ...r, unread: 0 } : r)));
 
       const last = maxId(msgs);
+      console.log("🔴 [STEP6] LAST ID (getMessages)", last); // 👈 추가
+
       if (last > 0) {
+        console.log("🟢 [STEP7] sendRead 호출 직전 (getMessages)", last); // 👈 추가
         socket.sendRead(initialRoomId, last);
-        try { await markRead(initialRoomId, last); } catch {}
+        try { await markRead(initialRoomId, last); } catch { }
         applyReadOptimistic(initialRoomId, last, 'me');
         zeroUnread(initialRoomId); // ← 리스트 배지 0 고정
       }
@@ -207,6 +216,8 @@ export default function ExchangeChatPage() {
 
   /* ─────────────── 방 입장(읽음 커서 포함: 내가 읽음) ─────────────── */
   const handleEnterRoom = async (roomId: string) => {
+    // console.log("🟡 [ENTER1] 방 입장", roomId); 
+
     setCurrentRoomId(roomId);
 
     // 리스트 배지 0 고정
@@ -223,12 +234,19 @@ export default function ExchangeChatPage() {
     if (!messagesByRoom[roomId]) {
       try {
         const msgs = await getMessages(roomId, { limit: 50, myUserId });
+        // console.log("🟡 [ENTER2] getMessages 결과", msgs); 
+        // console.log("🟡 첫 메시지 구조", msgs[0]);
+
         setMessagesByRoom(prev => ({ ...prev, [roomId]: msgs }));
 
         const last = maxId(msgs);
+        // console.log("🔴 [ENTER3] LAST ID", last); 
+
         if (last > 0) {
+          // console.log("🟢 [ENTER4] sendRead 호출 직전", last);
+
           socket.sendRead(roomId, last);
-          try { await markRead(roomId, last); } catch {}
+          try { await markRead(roomId, last); } catch { }
           applyReadOptimistic(roomId, last, 'me');
           zeroUnread(roomId); // ← 리스트 배지 0 고정
         }
@@ -239,7 +257,7 @@ export default function ExchangeChatPage() {
       const last = maxId(messagesByRoom[roomId]);
       if (last > 0) {
         socket.sendRead(roomId, last);
-        try { await markRead(roomId, last); } catch {}
+        try { await markRead(roomId, last); } catch { }
         applyReadOptimistic(roomId, last, 'me');
         zeroUnread(roomId); // ← 리스트 배지 0 고정
       }
@@ -302,11 +320,16 @@ export default function ExchangeChatPage() {
 
     // 열린 방에서 "상대"가 보낸 메시지라면 → 내가 읽은 것으로 처리
     if (!isMine && isOpen) {
+      // console.log("🟡 [LIVE1] 상대 메시지 + 열린 방"); 
+
       const upTo = Number(msg.id ?? 0);
+      // console.log("🔴 [LIVE2] upTo 계산", upTo); 
+
       if (upTo > 0) {
+        // console.log("🟢 [LIVE3] sendRead 호출 직전", upTo);
         applyReadOptimistic(rid, upTo, 'me');
         socket.sendRead(rid, upTo);
-        (async () => { try { await markRead(rid, upTo); } catch {} })();
+        (async () => { try { await markRead(rid, upTo); } catch { } })();
         zeroUnread(rid); // ← 리스트 배지 0 고정
       }
     }
@@ -314,15 +337,30 @@ export default function ExchangeChatPage() {
 
   /* ───────────────────────── WS 구독: user 토픽 ───────────────────────── */
   useEffect(() => {
+
+    // 테스트
+    // console.log('SUBSCRIBE USER TOPIC', { myUserId: myUserId });
+
+    // 테스트
     const unsub = socket.subscribeUser(myUserId, (packet: any) => {
+      console.log('USER TOPIC MESSAGE', { packet });
+
       const type = packet?.type ?? '';
       const data = packet?.data ?? packet;
 
       if (type === 'message:new') {
+        // console.log('NEW MESSAGE (user)', { userId: myUserId, data });
         onNewIncoming(data);
         return;
       }
       if (type === 'message:read') {
+        // console.log(
+        //   'READ EVENT', {
+        //   readerId: data?.userId,
+        //   myUserId,
+        //   last: data?.lastReadMessageId
+        // }
+        // )
         const rid = String(data?.roomId ?? '');
         const readerId = Number(data?.userId ?? 0);
         const last = Number(data?.lastReadMessageId ?? 0);
@@ -337,21 +375,33 @@ export default function ExchangeChatPage() {
         }
       }
     });
-    return () => { try { unsub(); } catch {} };
+    return () => { try { unsub(); } catch { } };
   }, [socket, myUserId, onNewIncoming]);
 
   /* ───────────────────────── WS 구독: room 토픽 ───────────────────────── */
   useEffect(() => {
     if (!currentRoomId) return;
+
+    // console.log('SUBSCRIBE ROOM TOPIC', { currentRoomId: currentRoomId });
+    //socket.sendRead(currentRoomId, 999); // 테스트: 방 구독 시 서버에 읽음 상태 전송(실제론 maxId로)
+
     const unsub = socket.subscribeRoom(currentRoomId, (packet: any) => {
+      // console.log('ROOM TOPIC MESSAGE', { roomId: currentRoomId, packet });
       const type = packet?.type ?? '';
       const data = packet?.data ?? packet;
 
       if (type === 'message:new') {
+        // console.log('NEW MESSAGE (room)', { roomId: currentRoomId, data });
         onNewIncoming(data);
         return;
       }
       if (type === 'message:read') {
+        // console.log(
+        //   'READ EVENT (room)', {
+        //   readerId: data?.userId,
+        //   myUserId,
+        //   last: data?.lastReadMessageId
+        // })
         const rid = String(data?.roomId ?? '');
         const readerId = Number(data?.userId ?? 0);
         const last = Number(data?.lastReadMessageId ?? 0);
@@ -364,7 +414,7 @@ export default function ExchangeChatPage() {
         }
       }
     });
-    return () => { try { unsub(); } catch {} };
+    return () => { try { unsub(); } catch { } };
   }, [socket, currentRoomId, myUserId, onNewIncoming]);
 
   /* ───────────────────────── 정렬/키/프리뷰 주입 ───────────────────────── */
