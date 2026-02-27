@@ -169,6 +169,10 @@ const Community: React.FC = () => {
                 <s.ChatMessagesWrapper id="chatMessagesWrapper">
                   {(roomMessages[selectedRoom] || []).map((msg, idx) => {
                     const isMine = Number(msg.userId) === myUserId;
+
+                    //  content가 없고 JOIN 로그가 아니면 렌더링하지 않도록 조건 추가
+                    if (!msg.content && msg.actionType !== 'JOIN') return null; // 
+
                     return (
                       <s.ChatMessageItem key={idx} $isMine={isMine}>
                         {/* 상대방 메시지 프로필만 표시 */}
@@ -191,7 +195,12 @@ const Community: React.FC = () => {
 
                         {/* 메시지 내용 */}
                         <s.ChatMessageBubble $isMine={isMine}>
-                          {msg.content}
+                          {/* {msg.content} */}
+                          {msg.content?.trim() !== '' 
+                          ? msg.content 
+                          : msg.actionType === 'JOIN' 
+                          ? `${msg.nickname}님이 입장했습니다.` // JOIN 로그일 때 텍스트 표시
+                          : null}
                         </s.ChatMessageBubble>
                       </s.ChatMessageItem>
                     );

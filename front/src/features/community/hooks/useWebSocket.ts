@@ -13,6 +13,7 @@ export interface ChatMessage {
   content: string;
   roomId: string;
   type: MessageType;
+  actionType?: string | null;
 }
 
 export const useWebSocket = (selectedRoom: string | null, myUserId: number) => {

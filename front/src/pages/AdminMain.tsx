@@ -1,10 +1,11 @@
 import * as S from './AdminMainStyle';
 
 import adminBannerImg from '../assets/images/main-banner.png';
-import AdminUserStatsPanel from '../features/admin/dashboard/user/AdminUserStatsPanel';
-import AdminReportStatsPanel from '../features/admin/dashboard/report/AdminReportStatsPanel';
 import AdminAuctionStatsPanel from '../features/admin/dashboard/auction/AdminAuctionStatsPanel';
+import AdminCommunityStatsPanel from '../features/admin/dashboard/community/AdminCommunityPanel';
 import AdminPopularKeywordsPanel from '../features/admin/dashboard/keyword/AdminPopularKeywordsPanel';
+import AdminReportStatsPanel from '../features/admin/dashboard/report/AdminReportStatsPanel';
+import AdminUserStatsPanel from '../features/admin/dashboard/user/AdminUserStatsPanel';
 
 function AdminMain() {
   return (
@@ -24,7 +25,9 @@ function AdminMain() {
           <S.InfoBox className="full-width">
             <AdminAuctionStatsPanel />
           </S.InfoBox>
-          <S.InfoBox>커뮤니티</S.InfoBox>
+          <S.InfoBox>
+            <AdminCommunityStatsPanel />
+          </S.InfoBox>
           <S.InfoBox>
             <AdminPopularKeywordsPanel />
           </S.InfoBox>
