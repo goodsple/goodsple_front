@@ -58,6 +58,7 @@ export class ChatSocket {
 
     // 4) 콜백/로그
     this.client.onConnect = () => {
+      console.log('[STOMP CONNECTED]');
       if (this.pendingSubs.length) this.pendingSubs.splice(0).forEach(run => run());
       if (this.pendingPublishes.length) {
         const jobs = this.pendingPublishes.splice(0);
@@ -69,7 +70,7 @@ export class ChatSocket {
               headers: job.headers ?? {},
             });
           } catch (e) {
-            console.error('[STOMP publish flush failed]', e, job);
+            // console.error('[STOMP publish flush failed]', e, job);
           }
         }
       }
@@ -113,20 +114,23 @@ export class ChatSocket {
       }
     };
   }
-  private publishWhenReady(destination: string, body: any, headers?: Record<string, string>) {
-    if (this.client.connected) {
-      this.client.publish({
-        destination,
-        body: typeof body === 'string' ? body : JSON.stringify(body),
-        headers: headers ?? {},
-      });
-      return;
-    }
+private publishWhenReady(destination: string, body: any, headers?: Record<string, string>) {
+  if (!this.client.connected) {
+    console.log("⏳ Not connected yet. Queueing publish:", destination);
     this.pendingPublishes.push({ destination, body, headers });
+    return;
   }
+
+  this.client.publish({
+    destination,
+    body: typeof body === 'string' ? body : JSON.stringify(body),
+    headers: headers ?? {},
+  });
+}
 
   /** 방 토픽 구독: /topic/chat.{roomId} */
   subscribeRoom(roomId: string, cb: (payload: any) => void): UnsubFn {
+    // console.log("SUBSCRIBE INSTANCE", this);
     const dest = `/topic/chat.${roomId}`;
     return this.subscribeWhenReady(() =>
       this.client.subscribe(dest, (frame: IMessage) => {
@@ -154,6 +158,12 @@ export class ChatSocket {
   }
   /** 읽음 커서 송신 */
   sendRead(roomId: string, lastReadMessageId: number) {
-    this.publishWhenReady('/app/chat/read', { roomId: Number(roomId), lastReadMessageId });
+    // console.log("SOCKET INSTANCE", this);
+    // console.log("🔥 SEND READ호출", roomId, lastReadMessageId);
+    // console.log("🔥 connected?", this.client.connected);
+    this.publishWhenReady('/app/chat/read', {
+      roomId: Number(roomId),
+      lastReadMessageId
+    });
   }
 }
