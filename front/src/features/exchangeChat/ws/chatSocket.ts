@@ -1,5 +1,5 @@
-import { Client } from '@stomp/stompjs';
 import type { IMessage, StompSubscription } from '@stomp/stompjs';
+import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client'; // npm i sockjs-client
 
 type UnsubFn = () => void;
@@ -15,6 +15,7 @@ export class ChatSocket {
   private pendingSubs: Array<() => void> = [];
   private pendingPublishes: PendingPublish[] = [];
   private isActivated = false;
+  private errorHandler?: (message: string) => void;
 
   constructor(token: string, url?: string) {
     // 1) 트랜스포트 선택: env > 기본값
@@ -74,6 +75,18 @@ export class ChatSocket {
           }
         }
       }
+
+      //  금칙어 에러 구독
+      this.client.subscribe('/user/queue/errors', (frame: IMessage) => {
+        try {
+          const body = JSON.parse(frame.body);
+          if (body?.type === 'error') {
+            this.errorHandler?.(body.message);
+          }
+        } catch {
+          this.errorHandler?.(frame.body);
+        }
+      });
     };
     this.client.onStompError = (frame) => {
       console.error('[STOMP ERROR]', frame.headers['message'], frame.body);
@@ -86,10 +99,45 @@ export class ChatSocket {
     };
   }
 
+  setErrorHandler(cb: (message: string) => void) {
+    this.errorHandler = cb;
+  }
+
   activate() {
     if (this.isActivated) return;
     this.isActivated = true;
     this.client.activate();
+
+    // ⭐ 금칙어 에러 구독 추가
+    this.client.onConnect = () => {
+      console.log('[STOMP CONNECTED]');
+      
+      if (this.pendingSubs.length) this.pendingSubs.splice(0).forEach(run => run());
+      if (this.pendingPublishes.length) {
+        const jobs = this.pendingPublishes.splice(0);
+        for (const job of jobs) {
+          try {
+            this.client.publish({
+              destination: job.destination,
+              body: typeof job.body === 'string' ? job.body : JSON.stringify(job.body),
+              headers: job.headers ?? {},
+            });
+          } catch (e) { }
+        }
+      }
+
+      // ⭐ 여기서 금칙어 에러 구독
+      this.client.subscribe('/user/queue/errors', (frame: IMessage) => {
+        try {
+          const body = JSON.parse(frame.body);
+          if (body?.type === 'error') {
+            this.errorHandler?.(body.message);
+          }
+        } catch {
+          this.errorHandler?.(frame.body);
+        }
+      });
+    };
   }
   deactivate() {
     this.isActivated = false;

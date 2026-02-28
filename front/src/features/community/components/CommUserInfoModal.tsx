@@ -60,7 +60,7 @@ const CommUserInfoModal: React.FC<Props> = ({userId, nickname, badgeName, badgeI
 
         <s.BtnGroup>
           <s.CancelBtn onClick={onClose}>취소</s.CancelBtn>
-          <s.ChatBtn>1:1 채팅</s.ChatBtn>
+          {/* <s.ChatBtn>1:1 채팅</s.ChatBtn> */}
         </s.BtnGroup>
       </s.Modal>
     </s.Overlay>
