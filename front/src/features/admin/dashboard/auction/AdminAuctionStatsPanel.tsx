@@ -46,16 +46,9 @@ const AdminAuctionStatsPanel = () => {
 
         const json = (await res.json()) as AdminAuctionStatsResponse;
 
-        // 서버에서 과거->최신 정렬 보장한다고 했지만, 방어적으로 한번만 정렬
         const list = Array.isArray(json?.auctionStats) ? json.auctionStats : [];
-        const sorted = [...list].sort((a, b) => {
-          // "MM/DD" 문자열이라 단순 비교로는 연도跨越에 취약하지만,
-          // 현재는 최근 20회 고정이고 동일 연도 내 운영 가정이므로 충분.
-          // 필요시 백엔드에서 ISO 날짜로 내려받아 정렬하도록 개선.
-          return a.date.localeCompare(b.date);
-        });
 
-        if (mounted) setStats(sorted);
+        if (mounted) setStats(list);
       } catch (e: unknown) {
         if (mounted) {
           if (e instanceof Error) setErrorMsg(e.message);
