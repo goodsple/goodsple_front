@@ -93,12 +93,12 @@ export const BadgeImage = styled.img`
 
 export const BtnGroup = styled.div`
         display: flex;
-        gap: 20px;
         align-items: center;
+        justify-content: center;
 `;
 
 export const CancelBtn = styled.div`
-        width: 55%;
+        width: 60%;
         line-height: 42px;
         color: #997BEB;
         background: #ffffff;
@@ -109,14 +109,14 @@ export const CancelBtn = styled.div`
         cursor: pointer;
 `;
 
-export const ChatBtn = styled.div`
-        width: 55%;
-        line-height: 42px;
-        color: #ffffff;
-        background: #997BEB;
-        font-size: 16px;
-        font-weight: 500;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-`;
+// export const ChatBtn = styled.div`
+//         width: 55%;
+//         line-height: 42px;
+//         color: #ffffff;
+//         background: #997BEB;
+//         font-size: 16px;
+//         font-weight: 500;
+//         border: none;
+//         border-radius: 10px;
+//         cursor: pointer;
+// `;

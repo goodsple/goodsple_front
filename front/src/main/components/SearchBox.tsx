@@ -1,10 +1,10 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import map from "../../assets/images/map.png";
 import search from "../../assets/images/search.png";
 import PopularKeywords from "./PopularKeywords.tsx";
 import * as s from "./SearchBoxStyle"; // styled-components 모음
-import axios from "axios";
 
 
 interface PopularKeyword {
@@ -30,19 +30,40 @@ const SearchBox: React.FC = () => {
   };
 
   // 검색 실행 함수
+  // const handleSearch = async () => {
+  //   if (!keyword.trim() || isSearching) return;
+
+  //   setIsSearching(true); // 중복 방지
+
+  //   console.log("handleSearch 호출:", keyword);
+
+  //   try {
+  //     // SearchBox에서는 기록/조회수 API 호출하지 않고 SearchResultsPage에서 처리
+  //     // 단순 검색 결과 페이지로 이동
+  //     navigate(`/search-results?keyword=${encodeURIComponent(keyword)}`);
+  //   } catch (err) {
+  //     console.error("검색 실행 실패:", err);
+  //   } finally {
+  //     setIsSearching(false);
+  //   }
+  // };
   const handleSearch = async () => {
     if (!keyword.trim() || isSearching) return;
 
-    setIsSearching(true); // 중복 방지
-
-    console.log("handleSearch 호출:", keyword);
+    setIsSearching(true);
 
     try {
-      // SearchBox에서는 기록/조회수 API 호출하지 않고 SearchResultsPage에서 처리
-      // 단순 검색 결과 페이지로 이동
+      // 🔥 여기서 실제 검색 API 먼저 호출
+      await axios.get('/api/searchPosts/search', {
+        params: { keyword }
+      });
+
+      // 성공하면 페이지 이동
       navigate(`/search-results?keyword=${encodeURIComponent(keyword)}`);
-    } catch (err) {
-      console.error("검색 실행 실패:", err);
+
+    } catch (err: any) {
+      alert(err.response?.data?.message || "금칙어가 포함되었습니다.");
+      return;
     } finally {
       setIsSearching(false);
     }

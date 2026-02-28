@@ -145,6 +145,12 @@ const ChatBotDialog: React.FC = () => {
                 }),
             });
 
+            if (!response.ok) {
+                const errorData = await response.json();
+                alert(errorData?.message || "금칙어가 포함되었습니다.");
+                return;
+            }
+
             const data = await response.json();
 
             if (isNewChat && data.logId) {
@@ -222,11 +228,11 @@ const ChatBotDialog: React.FC = () => {
         if (!inputText.trim()) return;
 
         const userMessage = inputText;
-        setChatHistory(prev => [
-            ...prev,
-            <UserMessage key={`user-${prev.length}`} content={userMessage} />,
-        ]);
-        setInputText('');
+        // setChatHistory(prev => [
+        //     ...prev,
+        //     <UserMessage key={`user-${prev.length}`} content={userMessage} />,
+        // ]);
+        // setInputText('');
 
         const isNewChat = logId === null;
 
@@ -248,6 +254,18 @@ const ChatBotDialog: React.FC = () => {
                     userId: userId           
                 }),
             });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                alert(errorData?.message || "금칙어가 포함되었습니다.");
+                return;
+            }
+
+            setChatHistory(prev => [
+                ...prev,
+                <UserMessage key={`user-${prev.length}`} content={userMessage} />,
+            ]);
+            setInputText('');
 
             const data = await response.json();
             console.log("📩 Chatbot response:", data);

@@ -1,9 +1,9 @@
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import ChatLayout from '../components/ChatLayout';
-import type { Room, Msg } from '../types/exchangeChat';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { getMyUserIdFromToken } from '../../../utils/jwtUtils';
-import { getRoomSummaries, getMessages, postMessage, leaveRoom, markRead } from '../api/ExchangeChatApi';
+import { getMessages, getRoomSummaries, leaveRoom, markRead, postMessage } from '../api/ExchangeChatApi';
+import ChatLayout from '../components/ChatLayout';
+import type { Msg, Room } from '../types/exchangeChat';
 import { ChatSocket } from '../ws/chatSocket';
 
 type NavState = {
@@ -55,7 +55,14 @@ export default function ExchangeChatPage() {
   // STOMP
   const token = localStorage.getItem('accessToken') ?? '';
   const socket = useMemo(() => new ChatSocket(token), [token]);
-  useEffect(() => { socket.activate(); return () => socket.deactivate(); }, [socket]);
+  useEffect(() => {
+    socket.setErrorHandler((msg) => {
+      alert('금칙어가 포함되었습니다.'); // 여기서 금칙어 alert 뜸
+    });
+
+    socket.activate(); 
+    return () => socket.deactivate(); 
+    }, [socket]);
 
   /* ───────────────────────── 공통 헬퍼 ───────────────────────── */
 
@@ -209,8 +216,13 @@ export default function ExchangeChatPage() {
             : r
         )
       );
-    } catch (e) {
+    } catch (e : any) {
       console.error('send failed', e);
+
+      // 금칙어 포함 시 alert
+      if (e?.response?.data?.message?.includes('금칙어')) {
+        alert('금칙어가 포함되었습니다.');
+      }
     }
   };
 
