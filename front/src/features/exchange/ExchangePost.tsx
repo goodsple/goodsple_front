@@ -437,7 +437,14 @@ const ExchangePost = () => {
                         {/* 3차 카테고리 드롭다운 (2차 선택 시 활성화) */}
 
                         <S.Select onChange={handleThirdCategoryChange} value={thirdCateId}>
-                            <option value="">{secondCateId ? '3차 카테고리 선택' : '2차 카테고리 선택하세요.'}</option>
+                            <option value="">
+                                {!firstCateId
+                                    ? '1차 카테고리 선택하세요.'
+                                    : !secondCateId
+                                        ? '2차 카테고리 선택하세요.'
+                                        : '3차 카테고리 선택'
+                                }
+                            </option>
                             {filteredThirdCategories.map(category => (
                                 <option key={category.thirdCateId} value={category.thirdCateId}>
                                     {category.thirdCateName}
