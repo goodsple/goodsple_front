@@ -18,6 +18,13 @@ const AdminNoticeEdit = () => {
     const [popupImage, setPopupImage] = useState<File | null>(null);
     const [popupSummary, setPopupSummary] = useState('');
 
+    const [originalTitle, setOriginalTitle] = useState('');
+    const [originalContent, setOriginalContent] = useState('');
+    const [originalPopupEnabled, setOriginalPopupEnabled] = useState(false);
+    const [originalPopupStart, setOriginalPopupStart] = useState('');
+    const [originalPopupEnd, setOriginalPopupEnd] = useState('');
+    const [originalPopupSummary, setOriginalPopupSummary] = useState('');
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
 
@@ -45,9 +52,14 @@ const AdminNoticeEdit = () => {
                     headers: { Authorization: `Bearer ${accessToken}` },
                 });
                 const data = response.data;
+
                 setTitle(data.noticeTitle);
                 setContent(data.noticeContent);
                 setPopupEnabled(data.isPopup);
+
+                setOriginalTitle(data.noticeTitle);
+                setOriginalContent(data.noticeContent);
+                setOriginalPopupEnabled(data.isPopup);
 
                 if (data.popupInfo) {
                     setPopupId(data.popupInfo.popupId || null);
@@ -55,6 +67,10 @@ const AdminNoticeEdit = () => {
                     setPopupEnd(data.popupInfo.popupEnd || '');
                     setPopupImage(null); // 실제 파일은 불러오기 힘들고 URL 표시만 가능
                     setPopupSummary(data.popupInfo.popupSummary || '');
+
+                    setOriginalPopupStart(data.popupInfo.popupStart || '');
+                    setOriginalPopupEnd(data.popupInfo.popupEnd || '');
+                    setOriginalPopupSummary(data.popupInfo.popupSummary || '');
                 }
             } catch (error) {
                 console.error('공지사항 불러오기 실패:', error);
@@ -82,9 +98,24 @@ const AdminNoticeEdit = () => {
         }
 
         setErrors(newErrors);
-
-        // 2. 에러 있으면 제출 중단
         if (Object.values(newErrors).some(e => e !== '')) return;
+
+        // 2. 수정된 내용 있는지 체크
+        const isChanged =
+            title !== originalTitle ||
+            content !== originalContent ||
+            popupEnabled !== originalPopupEnabled ||
+            popupStart !== originalPopupStart ||
+            popupEnd !== originalPopupEnd ||
+            popupSummary !== originalPopupSummary ||
+            file !== null ||
+            popupImage !== null;
+
+        if (!isChanged) {
+            setModalMessage('수정된 내용이 없습니다.');
+            setIsModalOpen(true);
+            return;
+        }
 
         try {
             // 3. PUT 요청용 데이터
@@ -242,15 +273,15 @@ const AdminNoticeEdit = () => {
                         <S.FormGroup>
                             <S.Label>팝업 요약 메세지</S.Label>
                             <S.FieldWrapper>
-                            <S.Textarea
-                                maxLength={203}
-                                value={popupSummary}
-                                onChange={(e) => {
-                                    setPopupSummary(e.target.value);
-                                    setErrors(prev => ({ ...prev, popupSummary: '' }));
-                                }}
-                            />
-                            {errors.popupSummary && <S.ErrorText>{errors.popupSummary}</S.ErrorText>}
+                                <S.Textarea
+                                    maxLength={203}
+                                    value={popupSummary}
+                                    onChange={(e) => {
+                                        setPopupSummary(e.target.value);
+                                        setErrors(prev => ({ ...prev, popupSummary: '' }));
+                                    }}
+                                />
+                                {errors.popupSummary && <S.ErrorText>{errors.popupSummary}</S.ErrorText>}
                             </S.FieldWrapper>
                             <S.CharCount>{popupSummary.length}/203</S.CharCount>
                         </S.FormGroup>
