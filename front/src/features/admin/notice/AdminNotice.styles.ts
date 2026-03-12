@@ -25,7 +25,7 @@ export const Label = styled.label`
 `;
 
 export const Input = styled.input`
-  // flex: 1;
+  flex: 1;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #9A9A9A;
@@ -33,7 +33,7 @@ export const Input = styled.input`
 `;
 
 export const Textarea = styled.textarea`
-  flex: 1;
+  // flex: 1;
   height: 120px;
   padding: 10px;
   font-size: 16px;
