@@ -61,6 +61,16 @@ export const CategoryGrid = styled.div`
   flex-grow: 1;
 `;
 
+// GS반값・CU알뜰택배 선택 드롭다운
+export const SelectHalf = styled.select`
+  width: 170px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+
+`;
+
+
 // 카테고리 스크롤 가능하게 스타일링
 export const Select = styled.select`
   width: 180px;

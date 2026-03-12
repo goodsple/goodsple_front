@@ -702,7 +702,7 @@ const ExchangePost = () => {
                                 {parcelOptions.halfOption === '가능' && (
                                     <S.ConditionalOptions>
                                         <S.FormField>
-                                            <S.Select
+                                            <S.SelectHalf
                                                 value={parcelOptions.halfDetailOption}
                                                 onChange={e =>
                                                     setParcelOptions(prev => ({ ...prev, halfDetailOption: e.target.value }))
@@ -711,7 +711,7 @@ const ExchangePost = () => {
                                                 <option value="둘다 가능">둘다 가능</option>
                                                 <option value="GS25">GS25만 가능</option>
                                                 <option value="CU">CU만 가능</option>
-                                            </S.Select>
+                                            </S.SelectHalf>
                                         </S.FormField>
 
                                         <S.FormField>
