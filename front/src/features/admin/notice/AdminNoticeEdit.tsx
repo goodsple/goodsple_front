@@ -25,6 +25,13 @@ const AdminNoticeEdit = () => {
     const navigate = useNavigate();
     let userId = null;
 
+    const [errors, setErrors] = useState({
+        title: '',
+        content: '',
+        popupPeriod: '',
+        popupSummary: ''
+    });
+
     if (accessToken) {
         const decoded: any = jwtDecode(accessToken);
         userId = decoded.userId || decoded.id || decoded.sub;
@@ -60,11 +67,66 @@ const AdminNoticeEdit = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        // 1. 유효성 검사
+        const newErrors = { title: '', content: '', popupPeriod: '', popupSummary: '' };
+
+        if (!title.trim()) newErrors.title = '공지 제목을 입력해주세요.';
+        if (!content.trim()) newErrors.content = '공지 내용을 입력해주세요.';
+
+        if (popupEnabled) {
+            if (!popupStart || !popupEnd) newErrors.popupPeriod = '팝업 노출 기간을 입력해주세요.';
+            if (popupStart && popupEnd && new Date(popupStart) > new Date(popupEnd)) {
+                newErrors.popupPeriod = '시작일은 종료일보다 늦을 수 없습니다.';
+            }
+            if (!popupSummary.trim()) newErrors.popupSummary = '팝업 요약 메세지를 입력해주세요.';
+        }
+
+        setErrors(newErrors);
+
+        // 2. 에러 있으면 제출 중단
+        if (Object.values(newErrors).some(e => e !== '')) return;
+
+        try {
+            // 3. PUT 요청용 데이터
+            const popupData = popupEnabled
+                ? {
+                    popupId,
+                    popupStart: popupStart || null,
+                    popupEnd: popupEnd || null,
+                    popupImageUrl: popupImage ? URL.createObjectURL(popupImage) : null,
+                    popupSummary: popupSummary || null,
+                }
+                : null;
+
+            const noticeData = {
+                userId,
+                noticeTitle: title,
+                noticeContent: content,
+                isPopup: popupEnabled,
+                attachments: [], // 필요 시 파일 추가
+                popupInfo: popupData,
+            };
+
+            await axios.put(`/api/admin/notices/${noticeId}`, noticeData, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            setModalMessage('공지사항이 수정되었습니다.');
+            setIsModalOpen(true);
+        } catch (error) {
+            console.error('공지사항 수정 실패:', error);
+            alert('공지사항 수정 중 오류가 발생했습니다.');
+        }
+
+
         try {
             // 팝업 체크 여부에 따라 popupInfo 처리
             const popupData = popupEnabled
                 ? {
-                    popupId, 
+                    popupId,
                     popupStart: popupStart || null,
                     popupEnd: popupEnd || null,
                     popupImageUrl: popupImage ? URL.createObjectURL(popupImage) : null,
@@ -102,21 +164,36 @@ const AdminNoticeEdit = () => {
             <S.FormContainer onSubmit={handleSubmit}>
                 <S.FormGroup>
                     <S.Label>공지 제목</S.Label>
-                    <S.Input
-                        maxLength={40}
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                    />
+
+                    <S.FieldWrapper>
+                        <S.Input
+                            maxLength={40}
+                            value={title}
+                            onChange={(e) => {
+                                setTitle(e.target.value);
+                                setErrors(prev => ({ ...prev, title: '' }));
+                            }}
+                        />
+                        {errors.title && <S.ErrorText>{errors.title}</S.ErrorText>}
+                    </S.FieldWrapper>
+
                     <S.CharCount>{title.length}/40</S.CharCount>
                 </S.FormGroup>
 
                 <S.FormGroup>
                     <S.Label>공지 내용</S.Label>
-                    <S.Textarea
-                        maxLength={2000}
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                    />
+
+                    <S.FieldWrapper>
+                        <S.Textarea
+                            maxLength={2000}
+                            value={content}
+                            onChange={(e) => {
+                                setContent(e.target.value);
+                                setErrors(prev => ({ ...prev, content: '' }));
+                            }}
+                        />
+                        {errors.content && <S.ErrorText>{errors.content}</S.ErrorText>}
+                    </S.FieldWrapper>
                     <S.CharCount>{content.length}/2000</S.CharCount>
                 </S.FormGroup>
 
@@ -138,11 +215,23 @@ const AdminNoticeEdit = () => {
                     <>
                         <S.FormGroup>
                             <S.Label>팝업 노출기간</S.Label>
-                            <S.DateRangeWrapper>
-                                <S.Input type="date" value={popupStart} onChange={(e) => setPopupStart(e.target.value)} />
-                                <span>~</span>
-                                <S.Input type="date" value={popupEnd} onChange={(e) => setPopupEnd(e.target.value)} />
-                            </S.DateRangeWrapper>
+
+                            <S.FieldWrapper>
+                                <S.DateRangeWrapper>
+                                    <S.Input type="date" value={popupStart}
+                                        onChange={(e) => {
+                                            setPopupStart(e.target.value);
+                                            setErrors(prev => ({ ...prev, popupPeriod: '' }));
+                                        }} />
+                                    <span>~</span>
+                                    <S.Input type="date" value={popupEnd}
+                                        onChange={(e) => {
+                                            setPopupEnd(e.target.value);
+                                            setErrors(prev => ({ ...prev, popupPeriod: '' }));
+                                        }} />
+                                </S.DateRangeWrapper>
+                                {errors.popupPeriod && <S.ErrorText>{errors.popupPeriod}</S.ErrorText>}
+                            </S.FieldWrapper>
                         </S.FormGroup>
 
                         <S.FormGroup>
@@ -152,11 +241,17 @@ const AdminNoticeEdit = () => {
 
                         <S.FormGroup>
                             <S.Label>팝업 요약 메세지</S.Label>
+                            <S.FieldWrapper>
                             <S.Textarea
                                 maxLength={203}
                                 value={popupSummary}
-                                onChange={(e) => setPopupSummary(e.target.value)}
+                                onChange={(e) => {
+                                    setPopupSummary(e.target.value);
+                                    setErrors(prev => ({ ...prev, popupSummary: '' }));
+                                }}
                             />
+                            {errors.popupSummary && <S.ErrorText>{errors.popupSummary}</S.ErrorText>}
+                            </S.FieldWrapper>
                             <S.CharCount>{popupSummary.length}/203</S.CharCount>
                         </S.FormGroup>
                     </>
