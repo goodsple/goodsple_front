@@ -112,6 +112,7 @@ const ExchangePost = () => {
         setSecondCateId(selectedId);
         setThirdCateId(''); // 2차 변경 시 3차 초기화
 
+
         if (selectedId) {
             // 선택된 2차 카테고리에 속하는 3차 카테고리 필터링
             const thirdCates = allCategories.filter(
@@ -126,6 +127,8 @@ const ExchangePost = () => {
     // 3차 카테고리 변경 핸들러
     const handleThirdCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setThirdCateId(e.target.value);
+        setErrors(prev => ({ ...prev, category: '' })); // 카테고리 선택 시 유효성 검사 메시지 초기화
+
     };
 
     // --- 이미지 업로드 핸들러 ---
@@ -146,6 +149,8 @@ const ExchangePost = () => {
         //  // 미리보기를 위한 URL 생성
         const newImageUrls = files.map(file => URL.createObjectURL(file));
         setImagePreviews(prev => [...prev, ...newImageUrls]);
+
+        setErrors(prev => ({ ...prev, images: '' })); // 이미지 선택 시 유효성 검사 메시지 초기화
     };
 
     // --- 이미지 제거 핸들러 ---
@@ -181,8 +186,9 @@ const ExchangePost = () => {
                         // 시/구/동만 합치기
                         const fullAddress = `${region.region_1depthName} ${region.region_2depthName} ${region.region_3depthName}`;
                         setLocation(fullAddress);
-
                         setLocationCode(region.code); // region.code가 실제 행정동 코드라고 가정
+                        setErrors(prev => ({ ...prev, location: '' })); // 위치 설정 시 유효성 검사 메시지 초기화
+
                     }
                 } catch (err) {
                     console.error('위치 변환 실패:', err);
@@ -228,6 +234,7 @@ const ExchangePost = () => {
                         // 4. state 업데이트
                         setLocation(fullAddress);          // "서울특별시 중랑구 면목동"
                         setLocationCode(region.code);      // "1138010200"
+                        setErrors(prev => ({ ...prev, location: '' })); // 주소 검색하여 설정 시 유효성 검사 메시지 초기화
                     }
                 } catch (error) {
                     console.error("주소 검색 처리 실패:", error);
@@ -458,8 +465,8 @@ const ExchangePost = () => {
                         <S.CategoryGrid>
                             {/* 1차 카테고리 선택 */}
                             <S.Select onChange={handleFirstCategoryChange}
-                            value={firstCateId}
-                            size={5}
+                                value={firstCateId}
+                                size={5}
                             >
                                 <option value="">1차 카테고리 선택</option>
                                 {firstCategories.map(category => (
@@ -471,8 +478,8 @@ const ExchangePost = () => {
 
                             {/* 2차 카테고리 선택 (1차 선택 시 활성화) */}
                             <S.Select onChange={handleSecondCategoryChange}
-                            value={secondCateId}
-                            size={5}
+                                value={secondCateId}
+                                size={5}
                             >
                                 <option value="">{firstCateId ? '2차 카테고리 선택' : '1차 카테고리 선택하세요.'}</option>
                                 {filteredSecondCategories.map(category => (
@@ -485,8 +492,8 @@ const ExchangePost = () => {
 
                             {/* 3차 카테고리 선택 (2차 선택 시 활성화) */}
                             <S.Select onChange={handleThirdCategoryChange}
-                            value={thirdCateId}
-                            size={5}
+                                value={thirdCateId}
+                                size={5}
                             >
                                 <option value="">
                                     {!firstCateId
@@ -515,7 +522,10 @@ const ExchangePost = () => {
                             <S.Input
                                 placeholder="상품명을 입력해 주세요."
                                 value={productName}
-                                onChange={(e) => setProductName(e.target.value)}
+                                onChange={(e) => {
+                                    setProductName(e.target.value);
+                                    setErrors(prev => ({ ...prev, productName: '' })); // 입력 시 에러 초기화
+                                }}
                                 maxLength={40}
                             />
                             <S.CharCount>{productName.length}/40</S.CharCount>
@@ -536,8 +546,11 @@ const ExchangePost = () => {
 
 정확한 정보는 원활한 교환에 도움이 됩니다. 😊"
                                 value={productDescription}
-                                onChange={(e) => setProductDescription(e.target.value)}
-                                maxLength={2000} />
+                                onChange={(e) => {
+                                    setProductDescription(e.target.value);
+                                    setErrors(prev => ({ ...prev, productDescription: '' }));
+                                }}
+                            />
                             <S.CharCount>{productDescription.length}/2000</S.CharCount>
                         </S.TextAreaWrapper>
                         {errors.productDescription && <S.ErrorMessage>{errors.productDescription}</S.ErrorMessage>}
@@ -548,33 +561,33 @@ const ExchangePost = () => {
                     <S.Label>이미지 등록 (필수)</S.Label>
 
                     <S.FormField>
-                    <S.ImagePreviewWrapper>
-                        {imagePreviews.map((imageUrl, index) => (
-                            <S.ImageBox key={index}>
-                                <img src={imageUrl} alt={`preview-${index}`} />
-                                <S.DeleteButton
-                                    type="button"
-                                    onClick={() => handleRemoveImage(index)}>
-                                    ×</S.DeleteButton>
-                            </S.ImageBox>
-                        ))}
+                        <S.ImagePreviewWrapper>
+                            {imagePreviews.map((imageUrl, index) => (
+                                <S.ImageBox key={index}>
+                                    <img src={imageUrl} alt={`preview-${index}`} />
+                                    <S.DeleteButton
+                                        type="button"
+                                        onClick={() => handleRemoveImage(index)}>
+                                        ×</S.DeleteButton>
+                                </S.ImageBox>
+                            ))}
 
-                        {selectedImages.length < 5 && (
-                            <S.UploadLabel htmlFor="image-upload">
-                                +
-                                <span>이미지 추가</span>
-                                <input
-                                    id="image-upload"
-                                    type="file"
-                                    accept="image/*"
-                                    multiple
-                                    onChange={handleImageChange}
-                                    style={{ display: 'none' }}
-                                />
-                            </S.UploadLabel>
-                        )}
-                    </S.ImagePreviewWrapper>
-                    {errors.images && <S.ErrorMessage>{errors.images}</S.ErrorMessage>}
+                            {selectedImages.length < 5 && (
+                                <S.UploadLabel htmlFor="image-upload">
+                                    +
+                                    <span>이미지 추가</span>
+                                    <input
+                                        id="image-upload"
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        onChange={handleImageChange}
+                                        style={{ display: 'none' }}
+                                    />
+                                </S.UploadLabel>
+                            )}
+                        </S.ImagePreviewWrapper>
+                        {errors.images && <S.ErrorMessage>{errors.images}</S.ErrorMessage>}
                     </S.FormField>
                 </S.SectionRow>
 
@@ -655,9 +668,10 @@ const ExchangePost = () => {
                                                 type="number"
                                                 placeholder="금액 입력"
                                                 value={parcelOptions.normalFee}
-                                                onChange={e =>
-                                                    setParcelOptions(prev => ({ ...prev, normalFee: e.target.value }))
-                                                }
+                                                onChange={(e) => {
+                                                    setParcelOptions(prev => ({ ...prev, normalFee: e.target.value }));
+                                                    setErrors(prev => ({ ...prev, normalFee: '' }));
+                                                }}
                                             />
                                             <span>원</span>
                                         </S.AmountInputWrapper>
@@ -720,9 +734,10 @@ const ExchangePost = () => {
                                                     type="number"
                                                     placeholder="금액 입력"
                                                     value={parcelOptions.halfDetailPrice}
-                                                    onChange={e =>
-                                                        setParcelOptions(prev => ({ ...prev, halfDetailPrice: e.target.value }))
-                                                    }
+                                                    onChange={(e) => {
+                                                        setParcelOptions(prev => ({ ...prev, halfDetailPrice: e.target.value }));
+                                                        setErrors(prev => ({ ...prev, halfDetailPrice: '' }));
+                                                    }}
                                                 />
                                                 <span>원</span>
                                             </S.AmountInputWrapper>
