@@ -21,6 +21,13 @@ const AdminNotice = () => {
     const accessToken = localStorage.getItem('accessToken');
     const navigate = useNavigate();
 
+    const [errors, setErrors] = useState({
+        title: '',
+        content: '',
+        popupPeriod: '',
+        popupSummary: ''
+    });
+
     let userId = null;
 
     if (accessToken) {
@@ -31,6 +38,46 @@ const AdminNotice = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const newErrors = {
+            title: '',
+            content: '',
+            popupPeriod: '',
+            popupSummary: ''
+        };
+
+        setErrors(prev => ({ ...prev, title: '' }));
+
+        if (!title.trim()) {
+            newErrors.title = '공지 제목을 입력해주세요.';
+        }
+
+        if (!content.trim()) {
+            newErrors.content = '공지 내용을 입력해주세요.';
+        }
+
+        if (popupEnabled) {
+
+            if (!popupStart || !popupEnd) {
+                newErrors.popupPeriod = '팝업 노출 기간을 입력해주세요.';
+            }
+
+            if (new Date(popupStart) > new Date(popupEnd)) {
+                newErrors.popupPeriod = '시작일은 종료일보다 늦을 수 없습니다.';
+            }
+
+            if (!popupSummary.trim()) {
+                newErrors.popupSummary = '팝업 요약 메세지를 입력해주세요.';
+            }
+        }
+
+        setErrors(newErrors);
+
+        // 에러 하나라도 있으면 submit 중단
+        if (Object.values(newErrors).some(error => error !== '')) {
+            return;
+        }
+
 
         try {
             // 1. 공지사항 데이터 기본
@@ -90,21 +137,38 @@ const AdminNotice = () => {
             <S.FormContainer onSubmit={handleSubmit}>
                 <S.FormGroup>
                     <S.Label>공지 제목</S.Label>
-                    <S.Input
-                        maxLength={40}
-                        value={title}
-                        onChange={e => setTitle(e.target.value)}
-                    />
+
+                    <S.FieldWrapper>
+                        <S.Input
+                            maxLength={40}
+                            value={title}
+                            onChange={e => {
+                                setTitle(e.target.value);
+                                setErrors(prev => ({ ...prev, title: '' }));
+                            }}
+                        />
+
+                        {errors.title && <S.ErrorText>{errors.title}</S.ErrorText>}
+                    </S.FieldWrapper>
                     <S.CharCount>{title.length}/40</S.CharCount>
+
                 </S.FormGroup>
 
                 <S.FormGroup>
                     <S.Label>공지 내용</S.Label>
-                    <S.Textarea
-                        maxLength={2000}
-                        value={content}
-                        onChange={e => setContent(e.target.value)}
-                    />
+
+                    <S.FieldWrapper>
+                        <S.Textarea
+                            maxLength={2000}
+                            value={content}
+                            onChange={e => {
+                                setContent(e.target.value);
+                                setErrors(prev => ({ ...prev, content: '' }));
+                            }}
+                        />
+                        {errors.content && <S.ErrorText>{errors.content}</S.ErrorText>}
+                    </S.FieldWrapper>
+
                     <S.CharCount>{content.length}/2000</S.CharCount>
                 </S.FormGroup>
 
@@ -126,11 +190,27 @@ const AdminNotice = () => {
                     <>
                         <S.FormGroup>
                             <S.Label>팝업 노출기간</S.Label>
-                            <S.DateRangeWrapper>
-                                <S.Input type="date" value={popupStart} onChange={e => setPopupStart(e.target.value)} />
-                                <span>~</span>
-                                <S.Input type="date" value={popupEnd} onChange={e => setPopupEnd(e.target.value)} />
-                            </S.DateRangeWrapper>
+
+                            <S.FieldWrapper>
+                                <S.DateRangeWrapper>
+                                    <S.Input type="date" value={popupStart}
+                                        onChange={e => {
+                                            setPopupStart(e.target.value);
+                                            setErrors(prev => ({ ...prev, popupPeriod: '' }));
+                                        }}
+                                    />
+                                    <span>~</span>
+
+                                    <S.Input type="date" value={popupEnd}
+                                        onChange={e => {
+                                            setPopupEnd(e.target.value);
+                                            setErrors(prev => ({ ...prev, popupPeriod: '' }));
+                                        }}
+                                    />
+                                </S.DateRangeWrapper>
+
+                                {errors.popupPeriod && <S.ErrorText>{errors.popupPeriod}</S.ErrorText>}
+                            </S.FieldWrapper>
                         </S.FormGroup>
 
                         <S.FormGroup>
@@ -140,11 +220,18 @@ const AdminNotice = () => {
 
                         <S.FormGroup>
                             <S.Label>팝업 요약 메세지</S.Label>
-                            <S.Textarea
-                                maxLength={203}
-                                value={popupSummary}
-                                onChange={e => setPopupSummary(e.target.value)}
-                            />
+
+                            <S.FieldWrapper>
+                                <S.Textarea
+                                    maxLength={203}
+                                    value={popupSummary}
+                                    onChange={e => {
+                                        setPopupSummary(e.target.value);
+                                        setErrors(prev => ({ ...prev, popupSummary: '' }));
+                                    }}
+                                />
+                                {errors.popupSummary && <S.ErrorText>{errors.popupSummary}</S.ErrorText>}
+                            </S.FieldWrapper>
                             <S.CharCount>{popupSummary.length}/203</S.CharCount>
                         </S.FormGroup>
                     </>
