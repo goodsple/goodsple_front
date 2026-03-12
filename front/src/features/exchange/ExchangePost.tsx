@@ -456,8 +456,11 @@ const ExchangePost = () => {
 
                     <S.FormField>
                         <S.CategoryGrid>
-                            {/* 1차 카테고리 드롭다운 */}
-                            <S.Select onChange={handleFirstCategoryChange} value={firstCateId}>
+                            {/* 1차 카테고리 선택 */}
+                            <S.Select onChange={handleFirstCategoryChange}
+                            value={firstCateId}
+                            size={5}
+                            >
                                 <option value="">1차 카테고리 선택</option>
                                 {firstCategories.map(category => (
                                     <option key={category.firstCateId} value={category.firstCateId}>
@@ -466,8 +469,11 @@ const ExchangePost = () => {
                                 ))}
                             </S.Select>
 
-                            {/* 2차 카테고리 드롭다운 (1차 선택 시 활성화) */}
-                            <S.Select onChange={handleSecondCategoryChange} value={secondCateId}>
+                            {/* 2차 카테고리 선택 (1차 선택 시 활성화) */}
+                            <S.Select onChange={handleSecondCategoryChange}
+                            value={secondCateId}
+                            size={5}
+                            >
                                 <option value="">{firstCateId ? '2차 카테고리 선택' : '1차 카테고리 선택하세요.'}</option>
                                 {filteredSecondCategories.map(category => (
                                     <option key={category.secondCateId} value={category.secondCateId}>
@@ -477,9 +483,11 @@ const ExchangePost = () => {
                             </S.Select>
 
 
-                            {/* 3차 카테고리 드롭다운 (2차 선택 시 활성화) */}
-
-                            <S.Select onChange={handleThirdCategoryChange} value={thirdCateId}>
+                            {/* 3차 카테고리 선택 (2차 선택 시 활성화) */}
+                            <S.Select onChange={handleThirdCategoryChange}
+                            value={thirdCateId}
+                            size={5}
+                            >
                                 <option value="">
                                     {!firstCateId
                                         ? '1차 카테고리 선택하세요.'

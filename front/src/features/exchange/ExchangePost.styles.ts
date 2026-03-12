@@ -57,15 +57,50 @@ export const Label = styled.label`
 export const CategoryGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 2px;
   flex-grow: 1;
 `;
 
+// 카테고리 스크롤 가능하게 스타일링
 export const Select = styled.select`
-  width: 150px;
-  padding: 10px;
+  width: 180px;
+  // padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+
+   /* 최소 5개 옵션 보이도록 높이 조절 */
+  max-height: 200px; /* 옵션 많을 때 스크롤 */
+  overflow-y: auto;
+
+  option {
+    padding: 10px;
+    background-color: #fff;
+      &:hover {
+        background-color: #F5F5F5;  
+      }
+      &:checked {
+        background-color: rgba(153, 123, 235, 0.4); 
+      }
+  }
+
+  /* 스크롤바 커스터마이징 */
+  &::-webkit-scrollbar {
+    width: 5px; /* 가로 너비 조절 */
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #FAF8F8; 
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #9A9A9A; 
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8; 
+  }
 `;
 
 export const InputWrapper = styled.div`
