@@ -12,6 +12,12 @@ export const FormGroup = styled.div`
   margin-bottom: 24px;
 `;
 
+export const FieldWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
 export const Label = styled.label`
   width: 150px;
   font-weight: bold;
@@ -19,7 +25,7 @@ export const Label = styled.label`
 `;
 
 export const Input = styled.input`
-  flex: 1;
+  // flex: 1;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #9A9A9A;
@@ -85,4 +91,10 @@ export const SubmitButton = styled.button`
   &:hover {
     background-color: #7e63d6;
   }
+`;
+
+export const ErrorText = styled.div`
+  color: #e53935;
+  font-size: 13px;
+  margin-top: 6px;
 `;
