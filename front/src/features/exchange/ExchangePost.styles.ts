@@ -79,13 +79,14 @@ export const InputWrapper = styled.div`
     }
 `;
 
+// 상품명, 내 위치, 택배비 입력창
 export const Input = styled.input`
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
   color: #444;
-  margin-bottom: 15px;
+  margin-bottom: 3px;
 
   &::placeholder {
     color: #9A9A9A;
@@ -161,7 +162,7 @@ export const TextArea = styled.textarea`
 export const ButtonRow = styled.div`
   display: flex;
   gap: 10px;
-  margin-bottom: 10px;
+  // margin-top: 10px;
   flex-wrap: nowrap;
 `;
 
@@ -180,6 +181,7 @@ width: 100px;
   }
 `;
 
+// 직거래, 택배거래 버튼
 export const ToggleButton = styled(Button) <{ selected: boolean }>`
   background-color: ${({ selected }) => (selected ? '#B1FF90' : '#fff')};
   border: 1px solid ${({ selected }) => (selected ? '#B1FF90' : '#B1FF90')};
@@ -200,9 +202,11 @@ export const LocationSectionRow = styled.div`
   }
 `;
 
+
 export const LocationInputWrapper = styled.div`
   margin-left: 160px;
   margin-top: 10px;
+  // margin-bottom: 10px;
 `;
 
 export const DirectTradeInputWrapper = styled.div`
@@ -230,18 +234,19 @@ export const SubLabel = styled.div`
   font-size: 24px;
 `;
 
+// 배송비 설정 박스
 export const Box = styled.div`
   width: 100%;
   max-width: fit-content;
   border: 1px solid #9A9A9A;
-  padding: 16px;
+  padding: 25px;
 `;
 
 export const ParcelRow = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
-  margin-bottom: 12px;
+  margin-bottom: 15px; // 일반택배비 입력창이랑 반값선택 간격
 
     & > span {
     width: 200px; // 텍스트 칸 고정
@@ -317,7 +322,6 @@ export const DeleteButton = styled.button`
   width: 20px;
   height: 20px;
   font-size: 16px;
-  line-height: ;
   cursor: pointer;
 `;
 
@@ -434,4 +438,19 @@ export const UploadLabel = styled.label`
     font-size: 12px;
     color: #997beb;
   }
+`;
+
+export const FormField = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column; // 세로 정렬
+  width: 100%;
+  gap: 4px;
+`;
+
+// 유효성 검사 메시지
+export const ErrorMessage = styled.div`
+  color: #E03131;
+  font-size: 12px;
+
 `;

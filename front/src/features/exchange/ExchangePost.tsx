@@ -55,6 +55,19 @@ const ExchangePost = () => {
     const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
     // ↑↑↑↑↑↑ 이 코드는 '내 위치'나 '주소 검색'으로 얻은 좌표를 저장하는 역할을 합니다.
 
+    // 유효성 검사 메시지 상태
+    const [errors, setErrors] = useState({
+        productName: '',
+        productDescription: '',
+        images: '',
+        deliveryMethods: '',
+        location: '',
+        directTradePlace: '',
+        normalFee: '',
+        halfDetailPrice: '',
+        category: '',
+    });
+
 
     // 카테고리 불러오기
     useEffect(() => {
@@ -248,58 +261,86 @@ const ExchangePost = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault(); // 폼 제출 시 페이지 리로드 방지
 
-        // 3차 카테고리가 선택되지 않았으면 알림
+        // 초기화
+        setErrors({
+            productName: '',
+            productDescription: '',
+            images: '',
+            deliveryMethods: '',
+            location: '',
+            directTradePlace: '',
+            normalFee: '',
+            halfDetailPrice: '',
+            category: '',
+        });
+
+        let valid = true;
+
+        // 3차 카테고리
         if (!thirdCateId) {
-            alert('카테고리를 모두 선택해 주세요.');
-            return;
+            setErrors(prev => ({ ...prev, category: '❗카테고리를 모두 선택해 주세요.' }));
+            valid = false;
         }
 
         if (!productName.trim()) {
-            alert('상품명을 입력해 주세요.');
-            return;
+            setErrors(prev => ({ ...prev, productName: '❗상품명을 입력해 주세요.' }));
+            valid = false;
         }
 
-        if (!productDescription.trim()) {
-            alert('상품 설명을 입력해 주세요.');
-            return;
+        if (!productDescription.trim() || productDescription.length < 15) {
+            setErrors(prev => ({ ...prev, productDescription: '❗상품 설명을 15글자 이상 입력해 주세요.' }));
+            valid = false;
         }
 
         if (selectedImages.length === 0) {
-            alert('이미지를 1장 이상 등록해 주세요.');
-            return;
+            setErrors(prev => ({ ...prev, images: '❗상품 사진을 등록 해주세요.' }));
+            valid = false;
         }
 
         if (!location.trim()) {
-            alert('지역을 설정해 주세요.');
-            return;
+            setErrors(prev => ({ ...prev, location: '❗지역을 설정해 주세요.' }));
+            valid = false;
         }
-
-        if (!coordinates) {
-            alert('위치를 설정해야 합니다. "내 위치" 또는 "주소 검색" 버튼을 사용해주세요.');
-            return;
-        }
-        // ↑↑↑↑↑↑ 위치 버튼을 눌러 좌표가 설정되었는지 확인합니다.
 
         if (deliveryMethods.length === 0) {
-            alert('거래 방식을 선택해 주세요.');
-            return;
+            setErrors(prev => ({ ...prev, deliveryMethods: '❗거래방식을 선택해 주세요.' }));
+            valid = false;
         }
 
-        // 직거래 선택 시 희망 장소 체크
         if (deliveryMethods.includes('direct') && !directTradePlace.trim()) {
-            alert('거래 희망 장소를 입력해 주세요.(선택)');
-            return;
+            setErrors(prev => ({ ...prev, directTradePlace: '❗거래희망장소를 입력해 주세요.' }));
+            valid = false;
         }
 
-        if (deliveryMethods.includes('parcel') && !parcelOptions.normalFee) {
-            alert('택배 거래 방식을 선택하셨다면 배송비를 입력해 주세요.');
-            return;
+        if (deliveryMethods.includes('parcel')) {
+            const normalFee = parseInt(parcelOptions.normalFee || '0', 10);
+            if (!parcelOptions.normalFee) {
+                setErrors(prev => ({ ...prev, normalFee: '❗일반택배 배송비를 입력해 주세요.' }));
+                valid = false;
+            } else if (normalFee < 1000) {
+                setErrors(prev => ({ ...prev, normalFee: '❗1,000원 이상 입력해 주세요.' }));
+                valid = false;
+            } else if (normalFee > 25000) {
+                setErrors(prev => ({ ...prev, normalFee: '❗1,000원 ~ 25,000원 까지 입력 가능합니다.' }));
+                valid = false;
+            }
+
+            if (parcelOptions.halfOption === '가능') {
+                const halfPrice = parseInt(parcelOptions.halfDetailPrice || '0', 10);
+                if (!parcelOptions.halfDetailPrice) {
+                    setErrors(prev => ({ ...prev, halfDetailPrice: '❗배송비를 입력해 주세요.' }));
+                    valid = false;
+                } else if (halfPrice < 1000) {
+                    setErrors(prev => ({ ...prev, halfDetailPrice: '❗1,000원 이상 입력해 주세요.' }));
+                    valid = false;
+                } else if (halfPrice > 25000) {
+                    setErrors(prev => ({ ...prev, halfDetailPrice: '❗1,000원 ~ 25,000원 까지 입력 가능합니다.' }));
+                    valid = false;
+                }
+            }
         }
 
-        if (deliveryMethods.includes('parcel') && parcelOptions.halfOption === '가능' && !parcelOptions.halfDetailPrice) {
-            alert('반값 택배를 선택하셨다면 금액을 입력해 주세요.');
-            return;
-        }
+        if (!valid) return; // 유효성 통과 못하면 전송 중단
 
         // 1. FormData 객체 생성
         // const formData = new FormData();
@@ -412,81 +453,93 @@ const ExchangePost = () => {
             <form onSubmit={handleSubmit}>
                 <S.SectionRow>
                     <S.Label>카테고리 등록</S.Label>
-                    <S.CategoryGrid>
-                        {/* 1차 카테고리 드롭다운 */}
-                        <S.Select onChange={handleFirstCategoryChange} value={firstCateId}>
-                            <option value="">1차 카테고리 선택</option>
-                            {firstCategories.map(category => (
-                                <option key={category.firstCateId} value={category.firstCateId}>
-                                    {category.firstCateName}
+
+                    <S.FormField>
+                        <S.CategoryGrid>
+                            {/* 1차 카테고리 드롭다운 */}
+                            <S.Select onChange={handleFirstCategoryChange} value={firstCateId}>
+                                <option value="">1차 카테고리 선택</option>
+                                {firstCategories.map(category => (
+                                    <option key={category.firstCateId} value={category.firstCateId}>
+                                        {category.firstCateName}
+                                    </option>
+                                ))}
+                            </S.Select>
+
+                            {/* 2차 카테고리 드롭다운 (1차 선택 시 활성화) */}
+                            <S.Select onChange={handleSecondCategoryChange} value={secondCateId}>
+                                <option value="">{firstCateId ? '2차 카테고리 선택' : '1차 카테고리 선택하세요.'}</option>
+                                {filteredSecondCategories.map(category => (
+                                    <option key={category.secondCateId} value={category.secondCateId}>
+                                        {category.secondCateName}
+                                    </option>
+                                ))}
+                            </S.Select>
+
+
+                            {/* 3차 카테고리 드롭다운 (2차 선택 시 활성화) */}
+
+                            <S.Select onChange={handleThirdCategoryChange} value={thirdCateId}>
+                                <option value="">
+                                    {!firstCateId
+                                        ? '1차 카테고리 선택하세요.'
+                                        : !secondCateId
+                                            ? '2차 카테고리 선택하세요.'
+                                            : '3차 카테고리 선택'
+                                    }
                                 </option>
-                            ))}
-                        </S.Select>
-
-                        {/* 2차 카테고리 드롭다운 (1차 선택 시 활성화) */}
-                        <S.Select onChange={handleSecondCategoryChange} value={secondCateId}>
-                            <option value="">{firstCateId ? '2차 카테고리 선택' : '1차 카테고리 선택하세요.'}</option>
-                            {filteredSecondCategories.map(category => (
-                                <option key={category.secondCateId} value={category.secondCateId}>
-                                    {category.secondCateName}
-                                </option>
-                            ))}
-                        </S.Select>
-
-
-                        {/* 3차 카테고리 드롭다운 (2차 선택 시 활성화) */}
-
-                        <S.Select onChange={handleThirdCategoryChange} value={thirdCateId}>
-                            <option value="">
-                                {!firstCateId
-                                    ? '1차 카테고리 선택하세요.'
-                                    : !secondCateId
-                                        ? '2차 카테고리 선택하세요.'
-                                        : '3차 카테고리 선택'
-                                }
-                            </option>
-                            {filteredThirdCategories.map(category => (
-                                <option key={category.thirdCateId} value={category.thirdCateId}>
-                                    {category.thirdCateName}
-                                </option>
-                            ))}
-                        </S.Select>
-
-
-                    </S.CategoryGrid>
+                                {filteredThirdCategories.map(category => (
+                                    <option key={category.thirdCateId} value={category.thirdCateId}>
+                                        {category.thirdCateName}
+                                    </option>
+                                ))}
+                            </S.Select>
+                        </S.CategoryGrid>
+                        {errors.category && <S.ErrorMessage>{errors.category}</S.ErrorMessage>}
+                    </S.FormField>
                 </S.SectionRow>
 
                 <S.SectionRow>
                     <S.Label>상품명</S.Label>
-                    <S.InputWrapper>
-                        <S.Input
-                            placeholder="상품명을 입력해 주세요."
-                            value={productName}
-                            onChange={(e) => setProductName(e.target.value)}
-                            maxLength={40}
-                        />
-                        <S.CharCount>{productName.length}/40</S.CharCount>
-                    </S.InputWrapper>
+
+                    <S.FormField>
+                        <S.InputWrapper>
+                            <S.Input
+                                placeholder="상품명을 입력해 주세요."
+                                value={productName}
+                                onChange={(e) => setProductName(e.target.value)}
+                                maxLength={40}
+                            />
+                            <S.CharCount>{productName.length}/40</S.CharCount>
+                        </S.InputWrapper>
+                        {errors.productName && <S.ErrorMessage>{errors.productName}</S.ErrorMessage>}
+                    </S.FormField>
                 </S.SectionRow>
 
                 <S.SectionRow>
                     <S.Label>상품 설명</S.Label>
-                    <S.TextAreaWrapper>
-                        <S.TextArea
-                            placeholder="- 상품상태, 구성품, 특이사항 등을 상세하게 작성해 주세요.
+
+                    <S.FormField>
+                        <S.TextAreaWrapper>
+                            <S.TextArea
+                                placeholder="- 상품상태, 구성품, 특이사항 등을 상세하게 작성해 주세요.
 • K-POP: 포토카드 포함 여부, 초회판/통상판 구분, 개봉 여부
 • 애니메이션/게임/영화: 정품 여부, 패키지 구성, 기스/오염 유무
 
 정확한 정보는 원활한 교환에 도움이 됩니다. 😊"
-                            value={productDescription}
-                            onChange={(e) => setProductDescription(e.target.value)}
-                            maxLength={2000} />
-                        <S.CharCount>{productDescription.length}/2000</S.CharCount>
-                    </S.TextAreaWrapper>
+                                value={productDescription}
+                                onChange={(e) => setProductDescription(e.target.value)}
+                                maxLength={2000} />
+                            <S.CharCount>{productDescription.length}/2000</S.CharCount>
+                        </S.TextAreaWrapper>
+                        {errors.productDescription && <S.ErrorMessage>{errors.productDescription}</S.ErrorMessage>}
+                    </S.FormField>
                 </S.SectionRow>
 
                 <S.SectionRow>
                     <S.Label>이미지 등록 (필수)</S.Label>
+
+                    <S.FormField>
                     <S.ImagePreviewWrapper>
                         {imagePreviews.map((imageUrl, index) => (
                             <S.ImageBox key={index}>
@@ -513,48 +566,59 @@ const ExchangePost = () => {
                             </S.UploadLabel>
                         )}
                     </S.ImagePreviewWrapper>
+                    {errors.images && <S.ErrorMessage>{errors.images}</S.ErrorMessage>}
+                    </S.FormField>
                 </S.SectionRow>
 
-                <S.LocationSectionRow>
+                <S.SectionRow>
                     <S.Label>내 위치</S.Label>
-                    <S.ButtonRow>
-                        <S.Button type='button' onClick={handleGetMyLocation}>
-                            내 위치
-                        </S.Button>
-                        <S.Button type="button" onClick={handleSearchAddress}>
-                            주소 검색
-                        </S.Button>
-                    </S.ButtonRow>
-                </S.LocationSectionRow>
-                <S.LocationInputWrapper>
-                    <S.AutoFilledInput
-                        placeholder="지역을 설정해 주세요."
-                        value={location}
-                        readOnly />
-                </S.LocationInputWrapper>
+
+                    <S.FormField>
+                        <S.ButtonRow>
+                            <S.Button type='button' onClick={handleGetMyLocation}>
+                                내 위치
+                            </S.Button>
+                            <S.Button type="button" onClick={handleSearchAddress}>
+                                주소 검색
+                            </S.Button>
+                        </S.ButtonRow>
+
+                        <S.AutoFilledInput
+                            placeholder="지역을 설정해 주세요."
+                            value={location}
+                            readOnly />
+                        {errors.location && <S.ErrorMessage>{errors.location}</S.ErrorMessage>}
+                    </S.FormField>
+                </S.SectionRow>
+
 
                 <S.SectionRow>
                     <S.Label>거래 방식</S.Label>
-                    <S.ButtonRow>
-                        <S.ToggleButton
-                            selected={deliveryMethods.includes('direct')}
-                            onClick={() => toggleDeliveryMethod('direct')}
-                        >
-                            직거래
-                        </S.ToggleButton>
-                        <S.ToggleButton
-                            selected={deliveryMethods.includes('parcel')}
-                            onClick={() => toggleDeliveryMethod('parcel')}
-                        >
-                            택배거래
-                        </S.ToggleButton>
-                    </S.ButtonRow>
+
+                    <S.FormField>
+                        <S.ButtonRow>
+                            <S.ToggleButton
+                                selected={deliveryMethods.includes('direct')}
+                                onClick={() => toggleDeliveryMethod('direct')}
+                            >
+                                직거래
+                            </S.ToggleButton>
+                            <S.ToggleButton
+                                selected={deliveryMethods.includes('parcel')}
+                                onClick={() => toggleDeliveryMethod('parcel')}
+                            >
+                                택배거래
+                            </S.ToggleButton>
+                        </S.ButtonRow>
+                        {errors.deliveryMethods && <S.ErrorMessage>{errors.deliveryMethods}</S.ErrorMessage>}
+                    </S.FormField>
                 </S.SectionRow>
 
                 {deliveryMethods.includes('direct') && (
                     <S.DirectTradeInputWrapper>
                         <S.SubLabel>직거래</S.SubLabel>
                         <S.Divider />
+
                         <S.SectionRow>
                             <S.Label>거래 희망 장소</S.Label>
                             <S.Input placeholder="거래 희망 장소를 입력해 주세요. 예) 강남역 1번 출구 앞"
@@ -569,78 +633,93 @@ const ExchangePost = () => {
                     <S.ParcelTradeWrapper>
                         <S.SubLabel>택배거래</S.SubLabel>
                         <S.Divider />
-                        <S.SectionRow>
 
+                        <S.SectionRow>
                             <S.Label>배송비 설정</S.Label>
+
                             <S.Box>
                                 <S.ParcelRow>
                                     <span>일반택배(필수)</span>
-                                    <S.AmountInput
-                                        type="number"
-                                        placeholder="금액 입력"
-                                        value={parcelOptions.normalFee}
-                                        onChange={e =>
-                                            setParcelOptions(prev => ({ ...prev, normalFee: e.target.value }))
-                                        }
-                                    />
-                                    <span>원</span>
-                                </S.ParcelRow>
 
-                                <S.ParcelRow>
-                                    <span>GS반값・CU알뜰택배(선택)</span>
-                                    <S.RadioGroup>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="halfOption"
-                                                value="가능"
-                                                checked={parcelOptions.halfOption === '가능'}
-                                                onChange={e =>
-                                                    setParcelOptions(prev => ({ ...prev, halfOption: e.target.value }))
-                                                }
-                                            />
-                                            가능
-                                        </label>
-
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="halfOption"
-                                                value="불가능"
-                                                checked={parcelOptions.halfOption === '불가능'}
-                                                onChange={e =>
-                                                    setParcelOptions(prev => ({ ...prev, halfOption: e.target.value }))
-                                                }
-                                            />
-                                            불가능
-                                        </label>
-                                    </S.RadioGroup>
-                                </S.ParcelRow>
-
-                                {parcelOptions.halfOption === '가능' && (
-                                    <S.ConditionalOptions>
-                                        <S.Select
-                                            value={parcelOptions.halfDetailOption}
-                                            onChange={e =>
-                                                setParcelOptions(prev => ({ ...prev, halfDetailOption: e.target.value }))
-                                            }
-                                        >
-                                            <option value="둘다 가능">둘다 가능</option>
-                                            <option value="GS25">GS25만 가능</option>
-                                            <option value="CU">CU만 가능</option>
-                                        </S.Select>
-
+                                    <S.FormField>
                                         <S.AmountInputWrapper>
                                             <S.AmountInput
                                                 type="number"
                                                 placeholder="금액 입력"
-                                                value={parcelOptions.halfDetailPrice}
+                                                value={parcelOptions.normalFee}
                                                 onChange={e =>
-                                                    setParcelOptions(prev => ({ ...prev, halfDetailPrice: e.target.value }))
+                                                    setParcelOptions(prev => ({ ...prev, normalFee: e.target.value }))
                                                 }
                                             />
                                             <span>원</span>
                                         </S.AmountInputWrapper>
+                                        {errors.normalFee && <S.ErrorMessage>{errors.normalFee}</S.ErrorMessage>}
+                                    </S.FormField>
+                                </S.ParcelRow>
+
+                                <S.FormField>
+                                    <S.ParcelRow>
+                                        <span>GS반값・CU알뜰택배(선택)</span>
+                                        <S.RadioGroup>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    name="halfOption"
+                                                    value="가능"
+                                                    checked={parcelOptions.halfOption === '가능'}
+                                                    onChange={e =>
+                                                        setParcelOptions(prev => ({ ...prev, halfOption: e.target.value }))
+                                                    }
+                                                />
+                                                가능
+                                            </label>
+
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    name="halfOption"
+                                                    value="불가능"
+                                                    checked={parcelOptions.halfOption === '불가능'}
+                                                    onChange={e =>
+                                                        setParcelOptions(prev => ({ ...prev, halfOption: e.target.value }))
+                                                    }
+                                                />
+                                                불가능
+                                            </label>
+                                        </S.RadioGroup>
+                                    </S.ParcelRow>
+                                </S.FormField>
+
+
+                                {parcelOptions.halfOption === '가능' && (
+                                    <S.ConditionalOptions>
+                                        <S.FormField>
+                                            <S.Select
+                                                value={parcelOptions.halfDetailOption}
+                                                onChange={e =>
+                                                    setParcelOptions(prev => ({ ...prev, halfDetailOption: e.target.value }))
+                                                }
+                                            >
+                                                <option value="둘다 가능">둘다 가능</option>
+                                                <option value="GS25">GS25만 가능</option>
+                                                <option value="CU">CU만 가능</option>
+                                            </S.Select>
+                                        </S.FormField>
+
+                                        <S.FormField>
+                                            <S.AmountInputWrapper>
+                                                <S.AmountInput
+                                                    type="number"
+                                                    placeholder="금액 입력"
+                                                    value={parcelOptions.halfDetailPrice}
+                                                    onChange={e =>
+                                                        setParcelOptions(prev => ({ ...prev, halfDetailPrice: e.target.value }))
+                                                    }
+                                                />
+                                                <span>원</span>
+                                            </S.AmountInputWrapper>
+                                            {errors.halfDetailPrice && <S.ErrorMessage>{errors.halfDetailPrice}</S.ErrorMessage>}
+                                        </S.FormField>
                                     </S.ConditionalOptions>
                                 )}
                             </S.Box>
@@ -650,7 +729,7 @@ const ExchangePost = () => {
 
                 <S.SubmitButton type="submit" >등록하기</S.SubmitButton>
             </form>
-        </S.Container>
+        </S.Container >
     );
 };
 
