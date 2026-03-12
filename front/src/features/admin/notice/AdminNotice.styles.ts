@@ -25,7 +25,7 @@ export const Label = styled.label`
 `;
 
 export const Input = styled.input`
-  flex: 1;
+  // flex: 1;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #9A9A9A;
@@ -40,6 +40,7 @@ export const Textarea = styled.textarea`
   resize: vertical;
   border: 1px solid #9A9A9A;
   border-radius: 10px;
+  min-height: 120px;
 `;
 
 export const FileInput = styled.input`
