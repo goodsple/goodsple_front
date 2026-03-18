@@ -91,6 +91,8 @@ const ExchangePost = () => {
         setSecondCateId(''); // 1차 변경 시 2, 3차 초기화
         setThirdCateId('');
 
+        setErrors(prev => ({ ...prev, category: '' }));
+
         if (selectedId) {
             // 선택된 1차 카테고리에 속하는 2차 카테고리 필터링
             const secondCates = allCategories.filter(
@@ -468,7 +470,7 @@ const ExchangePost = () => {
                                 value={firstCateId}
                                 size={5}
                             >
-                                <option value="">1차 카테고리 선택하세요.</option>
+                                <option value="" disabled>1차 카테고리 선택하세요.</option>
                                 {firstCategories.map(category => (
                                     <option key={category.firstCateId} value={category.firstCateId}>
                                         {category.firstCateName}
@@ -481,7 +483,7 @@ const ExchangePost = () => {
                                 value={secondCateId}
                                 size={5}
                             >
-                                <option value="">{firstCateId ? '2차 카테고리 선택하세요.' : '1차 카테고리 선택하세요.'}</option>
+                                <option value="" disabled>{firstCateId ? '2차 카테고리 선택하세요.' : '1차 카테고리 선택하세요.'}</option>
                                 {filteredSecondCategories.map(category => (
                                     <option key={category.secondCateId} value={category.secondCateId}>
                                         {category.secondCateName}
@@ -495,7 +497,7 @@ const ExchangePost = () => {
                                 value={thirdCateId}
                                 size={5}
                             >
-                                <option value="">
+                                <option value="" disabled>
                                     {!firstCateId
                                         ? '1차 카테고리 선택하세요.'
                                         : !secondCateId
