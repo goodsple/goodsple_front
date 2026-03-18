@@ -468,7 +468,7 @@ const ExchangePost = () => {
                                 value={firstCateId}
                                 size={5}
                             >
-                                <option value="">1차 카테고리 선택</option>
+                                <option value="">1차 카테고리 선택하세요.</option>
                                 {firstCategories.map(category => (
                                     <option key={category.firstCateId} value={category.firstCateId}>
                                         {category.firstCateName}
@@ -481,7 +481,7 @@ const ExchangePost = () => {
                                 value={secondCateId}
                                 size={5}
                             >
-                                <option value="">{firstCateId ? '2차 카테고리 선택' : '1차 카테고리 선택하세요.'}</option>
+                                <option value="">{firstCateId ? '2차 카테고리 선택하세요.' : '1차 카테고리 선택하세요.'}</option>
                                 {filteredSecondCategories.map(category => (
                                     <option key={category.secondCateId} value={category.secondCateId}>
                                         {category.secondCateName}
@@ -500,7 +500,7 @@ const ExchangePost = () => {
                                         ? '1차 카테고리 선택하세요.'
                                         : !secondCateId
                                             ? '2차 카테고리 선택하세요.'
-                                            : '3차 카테고리 선택'
+                                            : '3차 카테고리 선택하세요.'
                                     }
                                 </option>
                                 {filteredThirdCategories.map(category => (
