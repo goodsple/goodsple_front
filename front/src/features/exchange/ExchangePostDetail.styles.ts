@@ -237,6 +237,12 @@ export const ActionButton = styled.button<{ $main?: boolean }>`
     object-fit: contain;
   }
 
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
   &:hover {
     background-color: ${({ $main }) => ($main ? '#7b65cc' : '#eaeaea')};
   }

@@ -54,7 +54,7 @@ interface Post {
         id: number;
         profileImageUrl: string | null;
         nickname: string;
-        
+
         badgeLevel: number;
         badgeName: string;
         badgeImageUrl: string | null;
@@ -406,6 +406,12 @@ const ExchangePostDetail = () => {
     const handleStartChat = async () => {
         if (!post) return;
 
+        // 거래완료 시 차단
+        if (post.status === 'COMPLETED') {
+            alert('이미 거래가 완료된 게시글입니다.');
+            return;
+        }
+
         const token = localStorage.getItem("accessToken");
         if (!token) {
             alert("로그인이 필요합니다.");
@@ -458,222 +464,224 @@ const ExchangePostDetail = () => {
 
     return (
         <>
-        <SearchBox />
-        <S.Container>
-            <S.TopSection>
-                {/* 왼쪽 이미지 슬라이더 */}
-                <S.ImageSliderWrapper>
-                    <S.ImageSlider ref={sliderRef}>
-                        {post.images.map((src, idx) => (
-                            <S.SlideImage key={idx} src={src} alt={`image-${idx}`} />
-                        ))}
-                    </S.ImageSlider>
+            <SearchBox />
+            <S.Container>
+                <S.TopSection>
+                    {/* 왼쪽 이미지 슬라이더 */}
+                    <S.ImageSliderWrapper>
+                        <S.ImageSlider ref={sliderRef}>
+                            {post.images.map((src, idx) => (
+                                <S.SlideImage key={idx} src={src} alt={`image-${idx}`} />
+                            ))}
+                        </S.ImageSlider>
 
-                    <S.IndicatorWrapper>
-                        {post.images.map((_, idx) => (
-                            <S.IndicatorDot
-                                key={idx}
-                                onClick={() => scrollToIndex(idx)}
-                                $active={currentIndex === idx} />
-                        ))}
-                    </S.IndicatorWrapper>
-                </S.ImageSliderWrapper>
+                        <S.IndicatorWrapper>
+                            {post.images.map((_, idx) => (
+                                <S.IndicatorDot
+                                    key={idx}
+                                    onClick={() => scrollToIndex(idx)}
+                                    $active={currentIndex === idx} />
+                            ))}
+                        </S.IndicatorWrapper>
+                    </S.ImageSliderWrapper>
 
-                {/* 오른쪽 정보 섹션 */}
-                <S.RightInfoSection>
-                    <S.TitleRow>
-                        <S.Category>{post.category}</S.Category>
-                        <S.Title>{post.title}</S.Title>
-                        <S.StatusRow>
-                            <S.StatusInfo>찜 {bookmarkCount}   조회수 {post.viewCount}
-                                <S.TimeWrapper>
-                                    <S.StatusIcon src={clockIcon} alt="시계 아이콘" />
-                                    {getTimeAgo(post.createdAt)}
-                                </S.TimeWrapper>
-                            </S.StatusInfo>
-                            {!isWriter && <S.ReportButton onClick={handleOpenReport}>신고하기</S.ReportButton>}
-                        </S.StatusRow>
-                    </S.TitleRow>
+                    {/* 오른쪽 정보 섹션 */}
+                    <S.RightInfoSection>
+                        <S.TitleRow>
+                            <S.Category>{post.category}</S.Category>
+                            <S.Title>{post.title}</S.Title>
+                            <S.StatusRow>
+                                <S.StatusInfo>찜 {bookmarkCount}   조회수 {post.viewCount}
+                                    <S.TimeWrapper>
+                                        <S.StatusIcon src={clockIcon} alt="시계 아이콘" />
+                                        {getTimeAgo(post.createdAt)}
+                                    </S.TimeWrapper>
+                                </S.StatusInfo>
+                                {!isWriter && <S.ReportButton onClick={handleOpenReport}>신고하기</S.ReportButton>}
+                            </S.StatusRow>
+                        </S.TitleRow>
 
-                    {/* 태그 */}
-                    <S.TagWrapper>
-                        {post.tradeType === 'DIRECT' || post.tradeType === 'BOTH' ? <S.Tag>직거래</S.Tag> : null}
-                        {post.tradeType === 'DELIVERY' || post.tradeType === 'BOTH' ? <S.Tag>택배거래</S.Tag> : null}
+                        {/* 태그 */}
+                        <S.TagWrapper>
+                            {post.tradeType === 'DIRECT' || post.tradeType === 'BOTH' ? <S.Tag>직거래</S.Tag> : null}
+                            {post.tradeType === 'DELIVERY' || post.tradeType === 'BOTH' ? <S.Tag>택배거래</S.Tag> : null}
 
-                        {/* 거래 상태 표시 */}
-                        <S.TradeStatus status={post.status}>
-                            {statusMap[post.status]}
-                        </S.TradeStatus>
-                    </S.TagWrapper>
+                            {/* 거래 상태 표시 */}
+                            <S.TradeStatus status={post.status}>
+                                {statusMap[post.status]}
+                            </S.TradeStatus>
+                        </S.TagWrapper>
 
-                    {/* 직거래 / 배송비 */}
-                    <S.DetailBoxWrapper>
-                        <S.DetailBox>
-                            <S.BoxTitle>
-                                <S.BoxIcon src={locationIcon} alt="직거래 희망지역 아이콘" />
-                                직거래 희망지역
-                            </S.BoxTitle>
-                            <S.BoxContent>{post.location}</S.BoxContent>
-                        </S.DetailBox>
+                        {/* 직거래 / 배송비 */}
+                        <S.DetailBoxWrapper>
+                            <S.DetailBox>
+                                <S.BoxTitle>
+                                    <S.BoxIcon src={locationIcon} alt="직거래 희망지역 아이콘" />
+                                    직거래 희망지역
+                                </S.BoxTitle>
+                                <S.BoxContent>{post.location}</S.BoxContent>
+                            </S.DetailBox>
 
-                        <S.DetailBox>
-                            <S.BoxTitle>
-                                <S.BoxIcon src={deliveryIcon} alt="배송비 아이콘" />
-                                배송비
-                            </S.BoxTitle>
+                            <S.DetailBox>
+                                <S.BoxTitle>
+                                    <S.BoxIcon src={deliveryIcon} alt="배송비 아이콘" />
+                                    배송비
+                                </S.BoxTitle>
 
-                            <S.BoxContent>
-                                {post.delivery?.normal != null ? `일반 - ${post.delivery.normal.toLocaleString()}원` : '-'}
-                            </S.BoxContent>
-
-                            {post.delivery?.halfDeliveryType === '둘다 가능' && post.delivery.half != null && (
                                 <S.BoxContent>
-                                    GS반값 • CU알뜰 - {post.delivery.half.toLocaleString()}원
+                                    {post.delivery?.normal != null ? `일반 - ${post.delivery.normal.toLocaleString()}원` : '-'}
                                 </S.BoxContent>
-                            )}
-                            {post.delivery?.halfDeliveryType === 'GS25' && post.delivery.half != null && (
-                                <S.BoxContent>
-                                    GS반값 - {post.delivery.half.toLocaleString()}원
-                                </S.BoxContent>
-                            )}
-                            {post.delivery?.halfDeliveryType === 'CU' && post.delivery.half != null && (
-                                <S.BoxContent>
-                                    CU알뜰 - {post.delivery.half.toLocaleString()}원
-                                </S.BoxContent>
-                            )}
-                        </S.DetailBox>
-                    </S.DetailBoxWrapper>
 
-                    {/* 버튼 */}
-                    {isWriter ? (
-                        <S.ManageButton
-                            onClick={() => navigate('/exchange')}
-                        >내 거래글 관리
-                        </S.ManageButton>
-                    ) : (
-                        <S.ButtonGroup>
-                            {/* <S.ActionButton onClick={() => setIsSelectorOpen(true)} style={{ cursor: "pointer" }}>
+                                {post.delivery?.halfDeliveryType === '둘다 가능' && post.delivery.half != null && (
+                                    <S.BoxContent>
+                                        GS반값 • CU알뜰 - {post.delivery.half.toLocaleString()}원
+                                    </S.BoxContent>
+                                )}
+                                {post.delivery?.halfDeliveryType === 'GS25' && post.delivery.half != null && (
+                                    <S.BoxContent>
+                                        GS반값 - {post.delivery.half.toLocaleString()}원
+                                    </S.BoxContent>
+                                )}
+                                {post.delivery?.halfDeliveryType === 'CU' && post.delivery.half != null && (
+                                    <S.BoxContent>
+                                        CU알뜰 - {post.delivery.half.toLocaleString()}원
+                                    </S.BoxContent>
+                                )}
+                            </S.DetailBox>
+                        </S.DetailBoxWrapper>
+
+                        {/* 버튼 */}
+                        {isWriter ? (
+                            <S.ManageButton
+                                onClick={() => navigate('/exchange')}
+                            >내 거래글 관리
+                            </S.ManageButton>
+                        ) : (
+                            <S.ButtonGroup>
+                                {/* <S.ActionButton onClick={() => setIsSelectorOpen(true)} style={{ cursor: "pointer" }}>
                                 <img src={isBookmarked ? bookmarkCheckIcon : bookmarkIcon} alt="찜하기 아이콘" />
                                 찜하기
                             </S.ActionButton> */}
 
-                            <S.ActionButton onClick={handleBookmarkToggle} style={{ cursor: "pointer" }}>
-                                <img src={isBookmarked ? bookmarkCheckIcon : bookmarkIcon} alt="찜하기 아이콘" />
-                                찜하기
-                            </S.ActionButton>
+                                <S.ActionButton onClick={handleBookmarkToggle} style={{ cursor: "pointer" }}>
+                                    <img src={isBookmarked ? bookmarkCheckIcon : bookmarkIcon} alt="찜하기 아이콘" />
+                                    찜하기
+                                </S.ActionButton>
 
 
-                            {/* 폴더 선택 모달 */}
-                            <BookmarkFolderSelector
-                                isOpen={isSelectorOpen}
-                                onClose={() => setIsSelectorOpen(false)}
-                                folders={folders}
-                                mode={isBookmarked ? "move" : "add"}
-                                onSelect={handleSelectFolder}
-                                onAddFolder={() => {
-                                    setShouldReopenSelector(true);
-                                    setIsSelectorOpen(false);
-                                    setIsFolderModalOpen(true);
-                                }}
-                            />
+                                {/* 폴더 선택 모달 */}
+                                <BookmarkFolderSelector
+                                    isOpen={isSelectorOpen}
+                                    onClose={() => setIsSelectorOpen(false)}
+                                    folders={folders}
+                                    mode={isBookmarked ? "move" : "add"}
+                                    onSelect={handleSelectFolder}
+                                    onAddFolder={() => {
+                                        setShouldReopenSelector(true);
+                                        setIsSelectorOpen(false);
+                                        setIsFolderModalOpen(true);
+                                    }}
+                                />
 
 
-                            {/* 새 폴더 추가 모달 */}
-                            <FolderCreationModal
-                                isOpen={isFolderModalOpen}
-                                onClose={() => setIsFolderModalOpen(false)}
-                                mode="create"
-                                folders={folders.map(f => ({ name: f.folderName, color: f.folderColor }))}
-                                onSubmit={handleCreateFolder}
-                            />
+                                {/* 새 폴더 추가 모달 */}
+                                <FolderCreationModal
+                                    isOpen={isFolderModalOpen}
+                                    onClose={() => setIsFolderModalOpen(false)}
+                                    mode="create"
+                                    folders={folders.map(f => ({ name: f.folderName, color: f.folderColor }))}
+                                    onSubmit={handleCreateFolder}
+                                />
 
-                            <S.ActionButton $main onClick={handleStartChat}>
-                                <img src={chatIcon} alt="채팅하기 아이콘" />
-                                채팅하기
-                            </S.ActionButton>
-                            {/* <S.ActionButton>
+                                <S.ActionButton $main onClick={handleStartChat}
+                                    disabled={post.status === 'COMPLETED'}
+                                >
+                                    <img src={chatIcon} alt="채팅하기 아이콘" />
+                                    {post.status === 'COMPLETED' ? '거래완료' : '채팅하기'}
+                                </S.ActionButton>
+                                {/* <S.ActionButton>
                                 <img src={lineIcon} alt="줄서기 아이콘" />
                                 줄서기
                             </S.ActionButton> */}
-                        </S.ButtonGroup>
-                    )}
+                            </S.ButtonGroup>
+                        )}
 
-                </S.RightInfoSection>
-            </S.TopSection>
+                    </S.RightInfoSection>
+                </S.TopSection>
 
-            {/* <S.Divider /> */}
+                {/* <S.Divider /> */}
 
-            <S.WriterSection>
-                <S.WriterProfile>
-                    <S.ProfileImage imageUrl={post.writer.profileImageUrl}>
-                        <img
-                            src={post.writer.profileImageUrl || defaultProfile}
-                            alt="작성자 프로필"
-                        />
-
-                    </S.ProfileImage>
-                    <div>
-                        <S.WriterName>{post.writer.nickname || '익명'}</S.WriterName>
-                        {/* <S.WriterLevel>{user.level}</S.WriterLevel> 가져올 레벨 db 없음 */}
-                        <S.WriterLevel>
-                            LV{post.writer.badgeLevel}. {post.writer.badgeName}
-
+                <S.WriterSection>
+                    <S.WriterProfile>
+                        <S.ProfileImage imageUrl={post.writer.profileImageUrl}>
                             <img
-                                src={
+                                src={post.writer.profileImageUrl || defaultProfile}
+                                alt="작성자 프로필"
+                            />
+
+                        </S.ProfileImage>
+                        <div>
+                            <S.WriterName>{post.writer.nickname || '익명'}</S.WriterName>
+                            {/* <S.WriterLevel>{user.level}</S.WriterLevel> 가져올 레벨 db 없음 */}
+                            <S.WriterLevel>
+                                LV{post.writer.badgeLevel}. {post.writer.badgeName}
+
+                                <img
+                                    src={
                                         post.writer.badgeImageUrl
                                             ? badgeImageMap[post.writer.badgeImageUrl]
                                             : defaultBadge
                                     }
-                                alt="뱃지"
-                                width="40px"
-                                height="40px"
-                            />
-                        </S.WriterLevel>
-                    </div>
-                </S.WriterProfile>
-            </S.WriterSection>
-            <S.Divider />
+                                    alt="뱃지"
+                                    width="40px"
+                                    height="40px"
+                                />
+                            </S.WriterLevel>
+                        </div>
+                    </S.WriterProfile>
+                </S.WriterSection>
+                <S.Divider />
 
-            <S.Content>
-                {post.description.split('\n').map((line, idx) => (
-                    <p key={idx}>{line}</p>
-                ))}
-            </S.Content>
-            <S.Divider />
+                <S.Content>
+                    {post.description.split('\n').map((line, idx) => (
+                        <p key={idx}>{line}</p>
+                    ))}
+                </S.Content>
+                <S.Divider />
 
-            <S.ReviewSection>
-                <S.ReviewTitle>
-                    후기 <S.ReviewCount>({reviews.length})</S.ReviewCount>
-                </S.ReviewTitle>
-                {reviews.length === 0 ? (
-                    <S.EmptyReview>곧 좋은 후기가 찾아올 거에요.</S.EmptyReview>
-                ) : (
-                    <S.ReviewList>
-                        {reviews.map((review) => (
-                            <S.ReviewCard key={review.reviewId}>
-                                <S.ReviewHeader>
-                                    <S.ReviewUser>
-                                        <S.ReviewAvatar>
-                                            <img
-                                                src={review.writerProfileImage || defaultProfile}
-                                                alt="작성자 프로필"
-                                            />
-                                        </S.ReviewAvatar>
-                                        <div>
-                                            <S.ReviewNickname>{review.writerNickname}</S.ReviewNickname>
-                                            <S.ReviewDate>{review.createdAt}</S.ReviewDate>
-                                        </div>
-                                    </S.ReviewUser>
-                                    <S.ReviewRating>⭐ {review.rating}</S.ReviewRating>
-                                </S.ReviewHeader>
-                                <S.ReviewContent>{review.content}</S.ReviewContent>
-                            </S.ReviewCard>
-                        ))}
-                    </S.ReviewList>
-                )}
-            </S.ReviewSection>
-            <S.Divider />
-        </S.Container>
+                <S.ReviewSection>
+                    <S.ReviewTitle>
+                        후기 <S.ReviewCount>({reviews.length})</S.ReviewCount>
+                    </S.ReviewTitle>
+                    {reviews.length === 0 ? (
+                        <S.EmptyReview>곧 좋은 후기가 찾아올 거에요.</S.EmptyReview>
+                    ) : (
+                        <S.ReviewList>
+                            {reviews.map((review) => (
+                                <S.ReviewCard key={review.reviewId}>
+                                    <S.ReviewHeader>
+                                        <S.ReviewUser>
+                                            <S.ReviewAvatar>
+                                                <img
+                                                    src={review.writerProfileImage || defaultProfile}
+                                                    alt="작성자 프로필"
+                                                />
+                                            </S.ReviewAvatar>
+                                            <div>
+                                                <S.ReviewNickname>{review.writerNickname}</S.ReviewNickname>
+                                                <S.ReviewDate>{review.createdAt}</S.ReviewDate>
+                                            </div>
+                                        </S.ReviewUser>
+                                        <S.ReviewRating>⭐ {review.rating}</S.ReviewRating>
+                                    </S.ReviewHeader>
+                                    <S.ReviewContent>{review.content}</S.ReviewContent>
+                                </S.ReviewCard>
+                            ))}
+                        </S.ReviewList>
+                    )}
+                </S.ReviewSection>
+                <S.Divider />
+            </S.Container>
         </>
     );
 };
