@@ -22,6 +22,9 @@ import * as S from './ExchangePostDetail.styles';
 
 // 채팅 api
 import { startRoom } from '../exchangeChat/api/ExchangeChatApi';
+import SearchBox from '../../main/components/SearchBox';
+import CateButtons from '../../main/components/CateButtons';
+import CommMegaPhoneBox from '../../main/components/CommMegaPhoneBox';
 
 interface JwtPayload {
     userId: number;
@@ -454,6 +457,8 @@ const ExchangePostDetail = () => {
     console.log(post.writer);
 
     return (
+        <>
+        <SearchBox />
         <S.Container>
             <S.TopSection>
                 {/* 왼쪽 이미지 슬라이더 */}
@@ -669,6 +674,7 @@ const ExchangePostDetail = () => {
             </S.ReviewSection>
             <S.Divider />
         </S.Container>
+        </>
     );
 };
 

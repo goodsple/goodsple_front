@@ -5,7 +5,7 @@ export const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
 //   background: #fff;
-  padding: 24px;
+  padding: 60px;
 `;
 
 export const TopSection = styled.div`
